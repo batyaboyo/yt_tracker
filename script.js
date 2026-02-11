@@ -1,28 +1,32 @@
 // Configuration & Constants
+const API_KEY = 'AIzaSyDioQzo_L1ntXG43T4ADLUkslRhcmccf-A';
 const CHANNELS = {
     lpbz: {
         id: 'lpbz',
+        channelId: 'UCScdEW9zdV25rmeMFm-DzRw', // Let's Pray and Bible Zone
         name: 'Lets Pray and Bible Zone',
         targetPerWeek: 4,
         types: ['Short Prayer', 'Long-form'],
         schedule: '2 short prayers & 2 long-form videos per week',
         color: '#818cf8',
-        uploadDays: [0, 2, 4, 6] // Just an example: Sun, Tue, Thu, Sat
+        uploadDays: [0, 2, 4, 6] // Sun, Tue, Thu, Sat
     },
     ecq: {
         id: 'ecq',
+        channelId: 'UCICJfsBh4-xIA57etZlEa2A', // Placeholder for Epic Cute Quests
         name: 'Epic Cute Quests',
         targetPerWeek: 2,
         types: ['Short'],
         schedule: '2 shorts per week',
         color: '#f472b6',
-        uploadDays: [1, 3] // Example: Mon, Wed
+        uploadDays: [1, 3] // Mon, Wed
     }
 };
 
 // State Management
 let videos = JSON.parse(localStorage.getItem('yt_tracker_videos')) || [];
 let activeTab = 'dashboard';
+let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 
 // DOM Elements
 const tabs = document.querySelectorAll('.nav-btn');
@@ -32,13 +36,108 @@ const videoForm = document.getElementById('video-form');
 const closeModalBtns = document.querySelectorAll('.close-modal');
 const addVideoBtns = document.querySelectorAll('.add-video-btn');
 const resetBtn = document.getElementById('reset-data-btn');
+const syncBtn = document.getElementById('sync-youtube-btn');
+const syncStatusEl = document.getElementById('sync-status');
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initForms();
+    updateSyncStatusDisplay();
     renderAll();
+
+    // Auto-sync if it's been more than 1 hour or never synced
+    checkAutoSync();
 });
+
+// Sync Logic
+async function syncWithYouTube() {
+    syncBtn.disabled = true;
+    syncBtn.innerText = 'Syncing...';
+
+    try {
+        for (const channelKey in CHANNELS) {
+            const channel = CHANNELS[channelKey];
+            await fetchChannelVideos(channel);
+        }
+
+        lastSync = new Date().toLocaleString();
+        localStorage.setItem('yt_tracker_last_sync', lastSync);
+        updateSyncStatusDisplay();
+    } catch (error) {
+        console.error('Sync failed:', error);
+        alert('YouTube Sync failed. Please check your API key or connection.');
+    } finally {
+        syncBtn.disabled = false;
+        syncBtn.innerText = 'Sync YouTube';
+        renderAll();
+    }
+}
+
+async function fetchChannelVideos(channel) {
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel.channelId}&maxResults=20&order=date&type=video&key=${API_KEY}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.items) {
+        // To get view counts, we need the "videos" endpoint
+        const videoIds = data.items.map(item => item.id.videoId).join(',');
+        const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${API_KEY}`;
+
+        const statsResponse = await fetch(statsUrl);
+        const statsData = await statsResponse.json();
+
+        statsData.items.forEach(item => {
+            const videoData = {
+                id: item.id,
+                channelId: channel.id,
+                title: item.snippet.title,
+                date: item.snippet.publishedAt.split('T')[0],
+                // Detect type: common pattern for shorts is #shorts or duration < 60s
+                type: detectVideoType(channel.id, item),
+                views: parseInt(item.statistics.viewCount) || 0,
+                isApiData: true
+            };
+
+            // Merge: update if exists, push if new
+            const existingIndex = videos.findIndex(v => v.id === videoData.id);
+            if (existingIndex > -1) {
+                videos[existingIndex] = videoData;
+            } else {
+                videos.push(videoData);
+            }
+        });
+
+        saveToLocal();
+    }
+}
+
+function detectVideoType(channelKey, item) {
+    const title = item.snippet.title.toLowerCase();
+    const duration = item.contentDetails.duration; // e.g. PT1M30S
+
+    if (channelKey === 'lpbz') {
+        if (title.includes('prayer') || title.includes('short')) return 'Short Prayer';
+        return 'Long-form';
+    } else {
+        return 'Short';
+    }
+}
+
+function updateSyncStatusDisplay() {
+    syncStatusEl.innerText = `Last synced: ${lastSync}`;
+}
+
+function checkAutoSync() {
+    const lastSyncTime = localStorage.getItem('yt_tracker_last_sync_timestamp');
+    const now = Date.now();
+
+    if (!lastSyncTime || now - parseInt(lastSyncTime) > 3600000) { // 1 hour
+        syncWithYouTube();
+        localStorage.setItem('yt_tracker_last_sync_timestamp', now.toString());
+    }
+}
 
 // Tab Logic
 function initTabs() {
@@ -46,7 +145,7 @@ function initTabs() {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
+
             activeTab = tab.dataset.tab;
             tabContents.forEach(content => {
                 content.classList.remove('active');
@@ -82,10 +181,16 @@ function initForms() {
     resetBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
             videos = [];
+            lastSync = 'Never';
+            localStorage.removeItem('yt_tracker_last_sync');
+            localStorage.removeItem('yt_tracker_last_sync_timestamp');
             saveToLocal();
+            updateSyncStatusDisplay();
             renderAll();
         }
     });
+
+    syncBtn.addEventListener('click', syncWithYouTube);
 }
 
 function openModal(channelId, videoId = null) {
@@ -93,7 +198,7 @@ function openModal(channelId, videoId = null) {
     document.getElementById('modal-title').innerText = videoId ? 'Edit Video' : 'Log New Video';
     document.getElementById('video-channel').value = channelId;
     document.getElementById('video-id').value = videoId || '';
-    
+
     // Set default date to today
     document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
 
@@ -126,7 +231,8 @@ function saveVideo() {
         title: document.getElementById('v-title').value,
         date: document.getElementById('v-date').value,
         type: document.getElementById('v-type').value,
-        views: parseInt(document.getElementById('v-views').value) || 0
+        views: parseInt(document.getElementById('v-views').value) || 0,
+        isApiData: false
     };
 
     if (id) {
@@ -195,7 +301,7 @@ function renderDashboard() {
     // Summary banner
     const lpbzOnSchedule = isOnSchedule('lpbz', lpbzVideos);
     const ecqOnSchedule = isOnSchedule('ecq', ecqVideos);
-    
+
     const banner = document.getElementById('dashboard-banner');
     if (lpbzOnSchedule && ecqOnSchedule) {
         banner.innerHTML = `<p>🔥 <strong>Amazing job!</strong> Both channels are currently on schedule for this week.</p>`;
@@ -242,7 +348,7 @@ function renderChannelCard(channelId, channelVideos) {
 function renderChannelView(channelId) {
     const channel = CHANNELS[channelId];
     const channelVideos = videos.filter(v => v.channelId === channelId)
-                                .sort((a,b) => new Date(b.date) - new Date(a.date));
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Render Stats
     const totalVids = channelVideos.length;
@@ -286,7 +392,7 @@ function renderChannelView(channelId) {
         const breakdown = document.getElementById('lpbz-breakdown');
         const counts = {};
         channel.types.forEach(t => counts[t] = channelVideos.filter(v => v.type === t).length);
-        
+
         breakdown.innerHTML = Object.entries(counts).map(([type, count]) => `
             <div class="breakdown-item" style="margin-bottom: 1rem">
                 <div style="display:flex; justify-content:space-between; margin-bottom: 0.2rem">
@@ -294,7 +400,7 @@ function renderChannelView(channelId) {
                     <span>${count}</span>
                 </div>
                 <div style="height: 8px; background: var(--bg-dark); border-radius: 4px; overflow:hidden">
-                    <div style="height:100%; width: ${totalVids ? (count/totalVids)*100 : 0}%; background: ${type === 'Short Prayer' ? 'var(--lpbz-primary)' : 'var(--accent)'}"></div>
+                    <div style="height:100%; width: ${totalVids ? (count / totalVids) * 100 : 0}%; background: ${type === 'Short Prayer' ? 'var(--lpbz-primary)' : 'var(--accent)'}"></div>
                 </div>
             </div>
         `).join('');
@@ -305,9 +411,13 @@ function renderChannelView(channelId) {
 function isOnSchedule(channelId, channelVideos) {
     const channel = CHANNELS[channelId];
     const now = new Date();
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1)); // Monday
-    startOfWeek.setHours(0,0,0,0);
-    
+    // Get start of current week (Monday)
+    const startOfWeek = new Date(now);
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+
     const vidsThisWeek = channelVideos.filter(v => new Date(v.date) >= startOfWeek);
     return vidsThisWeek.length >= channel.targetPerWeek;
 }
@@ -316,28 +426,36 @@ function calculateStreak(channelId) {
     const channel = CHANNELS[channelId];
     const channelVideos = videos.filter(v => v.channelId === channelId);
     let streak = 0;
-    let currentWeek = new Date();
-    
-    // Simple streak calculation: look back week by week
-    while(true) {
-        const startOfWeek = new Date(currentWeek.setDate(currentWeek.getDate() - currentWeek.getDay() + 1));
-        startOfWeek.setHours(0,0,0,0);
-        const endOfWeek = new Date(startOfWeek);
+    let currentWeekStart = new Date();
+    const day = currentWeekStart.getDay();
+    const diff = currentWeekStart.getDate() - day + (day === 0 ? -6 : 1);
+    currentWeekStart.setDate(diff);
+    currentWeekStart.setHours(0, 0, 0, 0);
+
+    while (true) {
+        const endOfWeek = new Date(currentWeekStart);
         endOfWeek.setDate(endOfWeek.getDate() + 7);
 
         const vidsInWeek = channelVideos.filter(v => {
             const d = new Date(v.date);
-            return d >= startOfWeek && d < endOfWeek;
+            return d >= currentWeekStart && d < endOfWeek;
         });
 
         if (vidsInWeek.length >= channel.targetPerWeek) {
             streak++;
-            currentWeek.setDate(currentWeek.getDate() - 7);
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
         } else {
+            // Check if we are currently in the middle of a week and haven't failed yet
+            const now = new Date();
+            if (streak === 0 && now >= currentWeekStart && now < endOfWeek) {
+                // Still in progress, don't break yet, but streak is 0
+                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+                continue;
+            }
             break;
         }
-        
-        if (streak > 52) break; // Cap
+
+        if (streak > 52) break; // Cap at 1 year
     }
     return streak;
 }
@@ -346,15 +464,15 @@ function getNextUploadInfo(channelId) {
     const channel = CHANNELS[channelId];
     const now = new Date();
     const currentDay = now.getDay();
-    
-    const nextDay = channel.uploadDays.find(d => d > currentDay) || channel.uploadDays[0];
+
+    const nextDay = channel.uploadDays.find(d => d > currentDay) ?? channel.uploadDays[0];
     const daysUntil = (nextDay + 7 - currentDay) % 7 || 7;
-    
+
     const nextDate = new Date();
     nextDate.setDate(now.getDate() + daysUntil);
-    
-    // Countdown calculation
-    const diff = nextDate.getTime() - new Date().getTime();
+    nextDate.setHours(12, 0, 0, 0); // Assume noon
+
+    const diff = nextDate.getTime() - now.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
