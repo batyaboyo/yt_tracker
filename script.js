@@ -27,6 +27,8 @@ const CHANNELS = {
 
 // State Management
 let videos = JSON.parse(localStorage.getItem('yt_tracker_videos')) || [];
+let ideas = JSON.parse(localStorage.getItem('yt_tracker_ideas')) || [];
+let subsHistory = JSON.parse(localStorage.getItem('yt_tracker_subs_history')) || { lpbz: [], ecq: [] };
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let charts = {};
@@ -49,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initForms();
     initSettings();
+    initIdeaBank();
     updateSyncStatusDisplay();
     renderAll();
     checkAutoSync();
@@ -97,8 +100,18 @@ async function fetchChannelData(channel) {
     const response = await fetch(url);
     const data = await response.json();
     if (data.items && data.items.length > 0) {
-        channel.subscribers = parseInt(data.items[0].statistics.subscriberCount) || 0;
-        localStorage.setItem(`yt_tracker_subs_${channel.id}`, channel.subscribers);
+        const subCount = parseInt(data.items[0].statistics.subscriberCount) || 0;
+        channel.subscribers = subCount;
+        localStorage.setItem(`yt_tracker_subs_${channel.id}`, subCount);
+
+        // Log history
+        const today = new Date().toISOString().split('T')[0];
+        const lastEntry = subsHistory[channel.id][subsHistory[channel.id].length - 1];
+        if (!lastEntry || lastEntry.date !== today) {
+            subsHistory[channel.id].push({ date: today, count: subCount });
+            if (subsHistory[channel.id].length > 30) subsHistory[channel.id].shift(); // Keep 30 days
+            localStorage.setItem('yt_tracker_subs_history', JSON.stringify(subsHistory));
+        }
     }
 }
 
@@ -123,6 +136,8 @@ async function fetchChannelVideos(channel) {
                     date: item.snippet.publishedAt.split('T')[0],
                     type: detectVideoType(channel.id, item),
                     views: parseInt(item.statistics.viewCount) || 0,
+                    likes: parseInt(item.statistics.likeCount) || 0,
+                    comments: parseInt(item.statistics.commentCount) || 0,
                     thumbnail: item.snippet.thumbnails.default.url,
                     status: 'Live',
                     checklist: { seo: true, thumb: true, playlist: true, desc: true },
@@ -184,7 +199,10 @@ function initForms() {
         btn.addEventListener('click', () => openModal(btn.dataset.channel));
     });
     closeModalBtns.forEach(btn => {
-        btn.addEventListener('click', () => videoModal.classList.remove('active'));
+        btn.addEventListener('click', () => {
+            videoModal.classList.remove('active');
+            videoForm.reset();
+        });
     });
     videoForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -193,6 +211,8 @@ function initForms() {
     resetBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
             videos = [];
+            ideas = [];
+            subsHistory = { lpbz: [], ecq: [] };
             lastSync = 'Never';
             localStorage.clear();
             saveToLocal();
@@ -203,14 +223,21 @@ function initForms() {
     syncBtn.addEventListener('click', syncWithYouTube);
 }
 
-function openModal(channelId, videoId = null) {
+function openModal(channelId, videoId = null, ideaData = null) {
     const channel = CHANNELS[channelId];
     videoForm.reset();
-    document.getElementById('modal-title').innerText = videoId ? 'Edit Video' : 'Log New Video';
+    document.getElementById('modal-title').innerText = videoId ? 'Edit Video' : (ideaData ? 'Promote Idea to Video' : 'Log New Video');
     document.getElementById('video-channel').value = channelId;
     document.getElementById('video-id').value = videoId || '';
     document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('v-type').innerHTML = channel.types.map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('v-notes').value = '';
+
+    if (ideaData) {
+        document.getElementById('v-title').value = ideaData.title;
+        document.getElementById('v-notes').value = ideaData.description;
+        document.getElementById('v-status').value = 'Planned';
+    }
 
     if (videoId) {
         const video = videos.find(v => v.id === videoId);
@@ -220,6 +247,7 @@ function openModal(channelId, videoId = null) {
             document.getElementById('v-type').value = video.type;
             document.getElementById('v-views').value = video.views;
             document.getElementById('v-status').value = video.status || 'Live';
+            document.getElementById('v-notes').value = video.notes || '';
 
             if (video.checklist) {
                 document.getElementById('check-seo').checked = video.checklist.seo;
@@ -243,6 +271,7 @@ function saveVideo() {
         type: document.getElementById('v-type').value,
         views: parseInt(document.getElementById('v-views').value) || 0,
         status: document.getElementById('v-status').value,
+        notes: document.getElementById('v-notes').value,
         thumbnail: 'https://via.placeholder.com/120x68?text=Planned',
         checklist: {
             seo: document.getElementById('check-seo').checked,
@@ -250,6 +279,8 @@ function saveVideo() {
             playlist: document.getElementById('check-playlist').checked,
             desc: document.getElementById('check-desc').checked
         },
+        likes: 0,
+        comments: 0,
         isApiData: false
     };
 
@@ -272,8 +303,46 @@ function deleteVideo(id) {
     }
 }
 
+// Idea Bank Logic
+function initIdeaBank() {
+    document.getElementById('add-idea-btn').addEventListener('click', () => {
+        const title = prompt('Idea Title:');
+        if (!title) return;
+        const desc = prompt('Short Description/Notes:');
+        const channelId = prompt('Channel (lpbz/ecq):', 'lpbz');
+
+        ideas.push({
+            id: Date.now().toString(),
+            title: title,
+            description: desc || '',
+            channelId: channelId === 'ecq' ? 'ecq' : 'lpbz',
+            date: new Date().toISOString().split('T')[0]
+        });
+        saveToLocal();
+        renderAll();
+    });
+}
+
+function promoteIdea(id) {
+    const idea = ideas.find(i => i.id === id);
+    if (idea) {
+        openModal(idea.channelId, null, idea);
+        // Remove idea after promotion (optional, or keep it until saved)
+        // ideas = ideas.filter(i => i.id !== id);
+    }
+}
+
+function deleteIdea(id) {
+    if (confirm('Delete this idea?')) {
+        ideas = ideas.filter(i => i.id !== id);
+        saveToLocal();
+        renderAll();
+    }
+}
+
 function saveToLocal() {
     localStorage.setItem('yt_tracker_videos', JSON.stringify(videos));
+    localStorage.setItem('yt_tracker_ideas', JSON.stringify(ideas));
 }
 
 // Settings Logic
@@ -302,6 +371,7 @@ function initSettings() {
 
 function renderSettings() {
     const list = document.getElementById('settings-channels-list');
+    if (!list) return;
     list.innerHTML = Object.entries(CHANNELS).map(([key, ch]) => `
         <div class="channel-setting-item">
             <div class="channel-setting-info">
@@ -329,6 +399,8 @@ function updateChannelId(key) {
 function exportData() {
     const data = {
         videos: videos,
+        ideas: ideas,
+        subsHistory: subsHistory,
         apiKey: API_KEY,
         settings: {
             lpbz_id: CHANNELS.lpbz.channelId,
@@ -341,7 +413,7 @@ function exportData() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `yt_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `yt_tracker_creator_backup_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -356,6 +428,8 @@ function importData(e) {
             const data = JSON.parse(event.target.result);
             if (data.videos) {
                 videos = data.videos;
+                ideas = data.ideas || [];
+                subsHistory = data.subsHistory || { lpbz: [], ecq: [] };
                 saveToLocal();
                 if (data.apiKey) {
                     API_KEY = data.apiKey;
@@ -405,7 +479,25 @@ function renderGlobalStats() {
 function renderDashboard() {
     renderChannelCard('lpbz', videos.filter(v => v.channelId === 'lpbz'));
     renderChannelCard('ecq', videos.filter(v => v.channelId === 'ecq'));
+
+    // Idea Bank
+    const ideaList = document.getElementById('idea-list');
+    ideaList.innerHTML = ideas.map(idea => `
+        <div class="idea-item idea-${idea.channelId}">
+            <div>
+                <span class="status-tag status-planned" style="margin-bottom:0.5rem">${CHANNELS[idea.channelId].name}</span>
+                <h4>${idea.title}</h4>
+                <p>${idea.description || 'No description provided.'}</p>
+            </div>
+            <div class="idea-actions">
+                <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
+                <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('') || '<p style="color:var(--text-muted); grid-column:1/-1">No ideas in the bank yet. Start brainstorming!</p>';
+
     updateBanner();
+    setTimeout(initComparisonChart, 0);
 }
 
 function renderChannelCard(channelId, channelVideos) {
@@ -468,12 +560,14 @@ function renderChannelView(channelId) {
             <td><span class="type-tag type-${v.type.toLowerCase().replace(' ', '-')}">${v.type}</span></td>
             <td>${v.views.toLocaleString()}</td>
             <td><span class="status-tag status-live">Live</span></td>
+            <td>${(v.likes || 0).toLocaleString()}</td>
+            <td>${(v.comments || 0).toLocaleString()}</td>
             <td>
                 <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
                 <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteVideo('${v.id}')">Delete</button>
             </td>
         </tr>
-    `).join('') || '<tr><td colspan="7" style="text-align:center">No live videos yet.</td></tr>';
+    `).join('') || '<tr><td colspan="9" style="text-align:center">No live videos yet.</td></tr>';
 
     if (channelId === 'lpbz') renderBreakdown(liveVideos);
     setTimeout(() => initChart(channelId, liveVideos), 0);
@@ -567,10 +661,61 @@ function initChart(channelId, liveVideos) {
     });
 }
 
+function initComparisonChart() {
+    const canvas = document.getElementById('comparison-chart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (charts['comparison']) charts['comparison'].destroy();
+
+    const isLight = document.body.classList.contains('light-theme');
+    const datasets = [];
+
+    for (const key in CHANNELS) {
+        const liveVids = videos.filter(v => v.channelId === key && v.status === 'Live').slice(0, 7).reverse();
+        if (liveVids.length > 0) {
+            datasets.push({
+                label: CHANNELS[key].name,
+                data: liveVids.map(v => v.views),
+                borderColor: CHANNELS[key].color,
+                backgroundColor: CHANNELS[key].color + '33',
+                tension: 0.4,
+                fill: false
+            });
+        }
+    }
+
+    charts['comparison'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 7 }, (_, i) => `Video ${i + 1}`),
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: isLight ? '#e2e8f0' : '#334155' },
+                    ticks: { color: isLight ? '#64748b' : '#94a3b8' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: isLight ? '#64748b' : '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { display: true, labels: { color: isLight ? '#1e293b' : '#f1f5f9' } }
+            }
+        }
+    });
+}
+
 function updateBanner() {
     const lOn = isOnSchedule('lpbz', videos.filter(v => v.channelId === 'lpbz' && v.status === 'Live'));
     const eOn = isOnSchedule('ecq', videos.filter(v => v.channelId === 'ecq' && v.status === 'Live'));
     const banner = document.getElementById('dashboard-banner');
+    if (!banner) return;
     if (lOn && eOn) {
         banner.innerHTML = `<p>🔥 <strong>Amazing!</strong> Both channels are on schedule.</p>`;
         banner.style.borderLeftColor = 'var(--success)';
@@ -613,3 +758,10 @@ function getNextUploadInfo(channelId) {
     const daysUntil = (nextDay + 7 - currentDay) % 7 || 7;
     return `In ${daysUntil} day${daysUntil > 1 ? 's' : ''}`;
 }
+
+// Global functions for inline Event Listeners
+window.deleteVideo = deleteVideo;
+window.openModal = openModal;
+window.updateChannelId = updateChannelId;
+window.promoteIdea = promoteIdea;
+window.deleteIdea = deleteIdea;
