@@ -13,84 +13,113 @@ const CHANNELS = {
         subscribers: 0,
         competitors: [
             {
-                name: "Quiet Stories",
-                note: "Peaceful reflection, Heartfelt prayers",
+                name: "Delafé Testimonies",
+                note: "Real-life Jesus stories, Powerful transformations",
                 topContent: [
-                    { title: "Quiet Time with God (Meditation)", views: "150K" },
-                    { title: "Evening Prayer for Clarity", views: "85K" },
-                    { title: "Timeless Stories from Scripture", views: "45K" }
+                    { title: "I Didn't Understand Why I Needed to Love JESUS...", views: "225K" },
+                    { title: "I Grew Up in Islam, Hated GOD, Until THIS Happened...", views: "191K" },
+                    { title: "I Had MONEY and FAME, But No PEACE Until JESUS...", views: "162K" },
+                    { title: "This Google Search About the DEVIL Led Me to JESUS!", views: "162K" },
+                    { title: "I Worshipped Rules Until JESUS Showed Me THIS...", views: "147K" }
                 ]
             },
             {
-                name: "Sacred Slumber",
-                note: "Scripture-based calm narratives",
+                name: "I Am Second",
+                note: "High-production personal faith stories",
                 topContent: [
-                    { title: "Old Testament Classics for Sleep", views: "2.1M" },
-                    { title: "Peaceful Psalms in the Rain", views: "850K" }
+                    { title: "Ryan Ries - White Chair Film - I Am Second®", views: "405K" },
+                    { title: "Kathy Ireland - Relying on Myself", views: "387K" },
+                    { title: "Alex Kendrick - White Chair Film - I Am Second®", views: "251K" },
+                    { title: "Jase Robertson - Answering the Call", views: "203K" },
+                    { title: "RA Dickey - Less Than Human", views: "193K" }
                 ]
             },
             {
-                name: "The AI Bible",
-                note: "Stunning AI art & narratives",
+                name: "700 Club Interactive",
+                note: "Daily faith testimonies & stories",
                 topContent: [
-                    { title: "Bible in a Year: Genesis", views: "500K" },
-                    { title: "Cinematic Retelling: The Prodigal Son", views: "1.2M" }
+                    { title: "Miracles Still Happen - August 12, 2013", views: "105K" },
+                    { title: "Angels All Around - October 13, 2014", views: "99K" },
+                    { title: "Angels Are Real - August 13, 2013", views: "88K" },
+                    { title: "Healed & Whole | Full Episode", views: "25K" },
+                    { title: "God the Healer - June 27, 2013", views: "22K" }
                 ]
             },
             {
-                name: "Chronicles of The Bible",
-                note: "Cinematic AI retellings",
+                name: "Allen Parr",
+                note: "Real-talk Christian life & apologetics",
                 topContent: [
-                    { title: "The Temptation of Jesus (AI)", views: "320K" },
-                    { title: "Faith Through the Storm", views: "115K" }
+                    { title: "If You're Doing this ONE Thing, You May Not Be Saved", views: "2.9M" },
+                    { title: "10 Signs Someone Isn't Really Christian", views: "530K" },
+                    { title: "How to Renew Your Mind (Philippians 4:8 Explained)", views: "543K" },
+                    { title: "Many Christians Won't Accept This Teaching on Tithing", views: "551K" },
+                    { title: "5 Bible Prophecies on Jesus' Second Coming", views: "622K" }
                 ]
             },
             {
-                name: "Faith Works Today",
-                note: "Faith guiding through struggle",
+                name: "Ordinary People (Podcast)",
+                note: "Intimate looks into transformed lives",
                 topContent: [
-                    { title: "Ordinary People, Extraordinary Faith", views: "450K" },
-                    { title: "The Story of Job (AI Animation)", views: "900K" }
+                    { title: "Beliefs Over Baseball (January 13th, 2026)", views: "320K" },
+                    { title: "G-d Chose Me to be Shot by a Terrorist", views: "115K" },
+                    { title: "Bringing Light to Alaska's Darkest Days", views: "95K" },
+                    { title: "I Was Barely 20, But the Rebbe Believed in Me.", views: "50K" },
+                    { title: "The Power Woman Behind 21 New Jewish Day Schools.", views: "27K" }
                 ]
             },
             {
-                name: "Daily Dose of Wisdom",
-                note: "Quiet scripture narratives",
+                name: "100 Huntley Street",
+                note: "Inspiring life encounters",
                 topContent: [
-                    { title: "Raised Christian, Questioned Everything", views: "30K" },
-                    { title: "Documentary for Struggling Faith", views: "10K" }
+                    { title: "My incredible journey to faith in Jesus", views: "34K" },
+                    { title: "Life-changing encounter with God (Testimony)", views: "20K" },
+                    { title: "Healing and Restoration Stories (Compilation)", views: "15K" },
+                    { title: "Overcoming Addiction through Faith", views: "12K" },
+                    { title: "The Power of Prayer (Personal Story)", views: "10K" }
                 ]
             },
             {
-                name: "Seeds Uniting",
-                note: "Everyday faith stories",
+                name: "Stories of Faith",
+                note: "Narrative-driven journeys",
                 topContent: [
-                    { title: "Seeds Church Story (Testimonies)", views: "5K" },
-                    { title: "Welcome Home Stories", views: "1.3K" }
+                    { title: "Miracles in Times of Need", views: "5.7K" },
+                    { title: "Six Stories about Faith, Love, Humanity", views: "1.8K" },
+                    { title: "Faith Through Crisis (Testimony)", views: "1K" },
+                    { title: "Journey of Grace (Personal Story)", views: "500" },
+                    { title: "Finding Peace in the Storm", views: "400" }
                 ]
             },
             {
-                name: "The Bible Character",
-                note: "Scripture-rooted storytelling",
+                name: "My Journey to Faith",
+                note: "Personal storytelling",
                 topContent: [
-                    { title: "Top 5 Famous Bible Stories", views: "100K" },
-                    { title: "Bible Heroes of Faith Series", views: "200K" }
+                    { title: "My Personal Faith Journey", views: "10K" },
+                    { title: "My Christian Testimony (My Journey to Faith)", views: "8K" },
+                    { title: "This Is My Testimony - My Spiritual Journey", views: "1.9K" },
+                    { title: "From Darkness to Light (Testimony)", views: "1.5K" },
+                    { title: "A Choice Amidst Crisis (Story)", views: "1K" }
                 ]
             },
             {
-                name: "Coffee & Bible Time",
-                note: "Personal journal style",
+                name: "The Normal Christian Life",
+                note: "Everyday faith narratives",
                 topContent: [
-                    { title: "How I Study My Bible", views: "2.2M" },
-                    { title: "Which Book Should You Read Next?", views: "117K" }
+                    { title: "50 Countries Sing Amazing Grace", views: "4.4M" },
+                    { title: "Man Was Dying of COVID 19, Then God Sent a Cleaner", views: "3.5M" },
+                    { title: "3 Circles In 3 Minutes That Could Change Your Life", views: "183K" },
+                    { title: "Could the World's Darkest Hour Become the Church?", views: "52K" },
+                    { title: "Fires Causing Non-Believers to Pray", views: "44K" }
                 ]
             },
             {
-                name: "GRACE FOR PURPOSE",
-                note: "Morning prayer as a lifeline",
+                name: "Living Waters",
+                note: "Evangelism & Gospel encounters",
                 topContent: [
-                    { title: "PRAYERS TO BREAK STRONGHOLDS", views: "2.8M" },
-                    { title: "Trust God More & Worry Less", views: "313K" }
+                    { title: "Christians, You MUST Know This About Trump and Biden", views: "2.2M" },
+                    { title: "Watch the Holy Spirit Work in Her Heart", views: "2.2M" },
+                    { title: "THIS Opens the Door to the Demonic World", views: "2.2M" },
+                    { title: "Christian stumps Jehovah's Witness with one question", views: "1M" },
+                    { title: "He's Been Seeking Jesus...Then Cries After This", views: "1M" }
                 ]
             }
         ]
@@ -107,84 +136,113 @@ const CHANNELS = {
         subscribers: 0,
         competitors: [
             {
-                name: "AI Dog World",
-                note: "Heartwarming AI animal journeys",
+                name: "The Dodo",
+                note: "World-class heartwarming animal stories",
                 topContent: [
-                    { title: "The Brave Dog's Treasure Quest", views: "1.1M" },
-                    { title: "Tiny Hero: A Hamster's Adventure", views: "850K" },
-                    { title: "Unlikely Animal Friendships (AI)", views: "2.3M" }
+                    { title: "Good Dogs Wait For Their Names To Be Called", views: "37M" },
+                    { title: "30 Minutes Of Our Littlest, Fiercest Friends", views: "4.2M" },
+                    { title: "30+ Minutes Of The Oddest Couples You've Ever Seen", views: "3M" },
+                    { title: "30 Minutes Of Our Favorite Feel-Good Animal Stories", views: "1.4M" },
+                    { title: "Marathon of The Happiest Dodo Stories EVER", views: "999K" }
                 ]
             },
             {
-                name: "Fluffy Animal Adventures",
-                note: "Funny AI pet stories & routine",
+                name: "Tucker Budzyn",
+                note: "Famous Golden Retriever adventures",
                 topContent: [
-                    { title: "Tiny Cat's Lazy Morning Routine", views: "650K" },
-                    { title: "Hamster Astronaut's Giant World", views: "420K" }
+                    { title: "My Dog Rents a Swimming Pool", views: "59M" },
+                    { title: "Hugging Another Dog Too Long | Jealous Dog Reaction", views: "53M" },
+                    { title: "My Dog Has a Beach House Vacation", views: "50M" },
+                    { title: "My Dog Becomes a Father | Part 1", views: "13M" },
+                    { title: "Dog Reviews Food With Puppy | Tucker Taste Test 15", views: "13M" }
                 ]
             },
             {
-                name: "PO AI Animals",
-                note: "Adorable AI-animated creatures",
+                name: "Hammy and Olivia",
+                note: "Talking pet skits & adventures",
                 topContent: [
-                    { title: "Magical Fluffy Hero Quest", views: "300K" },
-                    { title: "Hamster's First Snow (Epic)", views: "180K" }
+                    { title: "Try Not to Laugh - Funniest Talking Dog Videos!", views: "9M" },
+                    { title: "Talking Corgi Compilation | Dogs talking like humans!", views: "5.5M" },
+                    { title: "SUPER HERO DOG SAVES THE DAY", views: "5.2M" },
+                    { title: "Best of Hammy Being a Potato Compilation", views: "5M" },
+                    { title: "Talking Dogs Take on the EVIL Vacuum", views: "1.2M" }
                 ]
             },
             {
-                name: "AI Pet Adventures",
-                note: "Niche AI pet storytelling",
+                name: "Hope For Paws",
+                note: "High-stakes animal rescue stories",
                 topContent: [
-                    { title: "The Courage of a Tiny Hero", views: "250K" },
-                    { title: "Friends for Life: AI Pet Tails", views: "140K" }
+                    { title: "Saving five orphaned puppies", views: "13M" },
+                    { title: "Extremely matted homeless dog", views: "8.3M" },
+                    { title: "Pit Bull rescue like you have never seen before!", views: "6.4M" },
+                    { title: "Stray dog rescue - step by step", views: "2.6M" },
+                    { title: "Something EXTREME had to be done to save this dog", views: "1.9M" }
                 ]
             },
             {
-                name: "Pet Cartoon Shorts",
-                note: "Cute animated stories & escape",
+                name: "That Little Puff",
+                note: "Pet-led viral adventures & cooking",
                 topContent: [
-                    { title: "Island Escape: Hamster Edition", views: "410K" },
-                    { title: "Tiny Animals on Massive Journeys", views: "550K" }
+                    { title: "Puff joins the Squid Game craze!", views: "127M" },
+                    { title: "Puff joins the Squid Game craze! (Alt)", views: "108M" },
+                    { title: "Introducing the Puff Pillow", views: "2.6M" },
+                    { title: "New 30min Ultimate Cat Compilation!", views: "1.2M" },
+                    { title: "Cat Cooking Challenge (Epic)", views: "1M" }
                 ]
             },
             {
-                name: "EpicCatQuest",
-                note: "AI-assisted pet journeys",
+                name: "Wonder (Pet Heroes)",
+                note: "Extraordinary animal heroism",
                 topContent: [
-                    { title: "Romeo the Kitten: Golden Fish Quest", views: "337" },
-                    { title: "The Brave Quest (AI Cats)", views: "619" }
+                    { title: "Great Danes Rescue Drowning Baby", views: "475K" },
+                    { title: "Hero Dog Warns Family Of Deadly Threat", views: "272K" },
+                    { title: "Boy Survived Extreme Cold Because Of His Dogs", views: "241K" },
+                    { title: "Man's Life Was In Danger Until His Dog Saved Him", views: "200K" },
+                    { title: "Good Boye Saved A Man From Drowning", views: "169K" }
                 ]
             },
             {
-                name: "PawPrint AI",
-                note: "Wholesome pet escapism",
+                name: "That Good News Girl",
+                note: "Feel-good pet narratives",
                 topContent: [
-                    { title: "Mama Cat Cooks Pumpkin Dinner", views: "200K" },
-                    { title: "Cozy Kitten Tales: Blanket Fort", views: "150K" }
+                    { title: "Cat rejected for being 'too cuddly'", views: "1.6M" },
+                    { title: "Husky saves ENTIRE neighborhood!", views: "1.4M" },
+                    { title: "Stray dog tries to steal toy 5 TIMES", views: "1.1M" },
+                    { title: "Adorable or DANGEROUS Animal Encounters", views: "27K" },
+                    { title: "Something was trapped in this storm drain", views: "16K" }
                 ]
             },
             {
-                name: "TinyTriumphs",
-                note: "Feel-good animal stories",
+                name: "Crusoe the Dachshund",
+                note: "Themed pet journeys",
                 topContent: [
-                    { title: "Elephant with Kids: Big Adventure", views: "10K" },
-                    { title: "Zoo Animal Rescue Adventures", views: "6M" }
+                    { title: "Ep 8: Crusoe Saves Someone at the Beach!", views: "13M" },
+                    { title: "Ep 47: QUARANTINE LIFE", views: "10M" },
+                    { title: "Ep 44: Daphne Hosts a CRAZY TEA PARTY", views: "6.3M" },
+                    { title: "Ep 46: Daphne Gets a HAIRCUT!", views: "5.6M" },
+                    { title: "Ep 45: Daphne Has Surgery..", views: "5.4M" }
                 ]
             },
             {
-                name: "Adorable Dose",
-                note: "Heartwarming pet narrations",
+                name: "Maymo",
+                note: "Cute pet life stories",
                 topContent: [
-                    { title: "Wholesome Pet Escapism (Shorts)", views: "50K" },
-                    { title: "Heartwarming AI Pet Stories", views: "30K" }
+                    { title: "Dogs vs Meowing Cat Skeleton Prank", views: "15M" },
+                    { title: "Dogs Battle Evil Minions In Real Life!", views: "5.2M" },
+                    { title: "Chef Dog Makes Canned Food Casserole", views: "4.7M" },
+                    { title: "Dogs Murder Among Us Crewmates", views: "3.4M" },
+                    { title: "Dog Chases Laser, Finds Pot of Treats", views: "1.6M" }
                 ]
             },
             {
-                name: "Quest Hamsters",
-                note: "Specific animal adventures",
+                name: "Apollo and Frens",
+                note: "Daily pet antics & series",
                 topContent: [
-                    { title: "Hamster Explorer: Tiny World", views: "40K" },
-                    { title: "Hamster Treasure Hunt (AI)", views: "25K" }
+                    { title: "Talking Parrot's Learning Colors", views: "2M" },
+                    { title: "The Second Animal to EVER Ask a Question", views: "1M" },
+                    { title: "Apollo's 2022 Recap", views: "945K" },
+                    { title: "Apollo's 2024 Recap", views: "203K" },
+                    { title: "Apollo World Record Bird", views: "166K" }
                 ]
             }
         ]
