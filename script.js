@@ -53,11 +53,46 @@ const CHANNELS = {
                     { title: "The Story of Job (AI Animation)", views: "900K" }
                 ]
             },
-            { name: "Daily Dose of Wisdom", note: "Quiet scripture narratives" },
-            { name: "Seeds Uniting", note: "Everyday faith stories" },
-            { name: "The Bible Character", note: "Scripture-rooted storytelling" },
-            { name: "Coffee & Bible Time", note: "Personal journal style" },
-            { name: "GRACE FOR PURPOSE", note: "Morning prayer as a lifeline" }
+            {
+                name: "Daily Dose of Wisdom",
+                note: "Quiet scripture narratives",
+                topContent: [
+                    { title: "Raised Christian, Questioned Everything", views: "30K" },
+                    { title: "Documentary for Struggling Faith", views: "10K" }
+                ]
+            },
+            {
+                name: "Seeds Uniting",
+                note: "Everyday faith stories",
+                topContent: [
+                    { title: "Seeds Church Story (Testimonies)", views: "5K" },
+                    { title: "Welcome Home Stories", views: "1.3K" }
+                ]
+            },
+            {
+                name: "The Bible Character",
+                note: "Scripture-rooted storytelling",
+                topContent: [
+                    { title: "Top 5 Famous Bible Stories", views: "100K" },
+                    { title: "Bible Heroes of Faith Series", views: "200K" }
+                ]
+            },
+            {
+                name: "Coffee & Bible Time",
+                note: "Personal journal style",
+                topContent: [
+                    { title: "How I Study My Bible", views: "2.2M" },
+                    { title: "Which Book Should You Read Next?", views: "117K" }
+                ]
+            },
+            {
+                name: "GRACE FOR PURPOSE",
+                note: "Morning prayer as a lifeline",
+                topContent: [
+                    { title: "PRAYERS TO BREAK STRONGHOLDS", views: "2.8M" },
+                    { title: "Trust God More & Worry Less", views: "313K" }
+                ]
+            }
         ]
     },
     ecq: {
@@ -112,11 +147,46 @@ const CHANNELS = {
                     { title: "Tiny Animals on Massive Journeys", views: "550K" }
                 ]
             },
-            { name: "EpicCatQuest", note: "AI-assisted pet journeys" },
-            { name: "PawPrint AI", note: "Wholesome pet escapism" },
-            { name: "TinyTriumphs", note: "Feel-good animal stories" },
-            { name: "Adorable Dose", note: "Heartwarming pet narrations" },
-            { name: "Quest Hamsters", note: "Specific animal adventures" }
+            {
+                name: "EpicCatQuest",
+                note: "AI-assisted pet journeys",
+                topContent: [
+                    { title: "Romeo the Kitten: Golden Fish Quest", views: "337" },
+                    { title: "The Brave Quest (AI Cats)", views: "619" }
+                ]
+            },
+            {
+                name: "PawPrint AI",
+                note: "Wholesome pet escapism",
+                topContent: [
+                    { title: "Mama Cat Cooks Pumpkin Dinner", views: "200K" },
+                    { title: "Cozy Kitten Tales: Blanket Fort", views: "150K" }
+                ]
+            },
+            {
+                name: "TinyTriumphs",
+                note: "Feel-good animal stories",
+                topContent: [
+                    { title: "Elephant with Kids: Big Adventure", views: "10K" },
+                    { title: "Zoo Animal Rescue Adventures", views: "6M" }
+                ]
+            },
+            {
+                name: "Adorable Dose",
+                note: "Heartwarming pet narrations",
+                topContent: [
+                    { title: "Wholesome Pet Escapism (Shorts)", views: "50K" },
+                    { title: "Heartwarming AI Pet Stories", views: "30K" }
+                ]
+            },
+            {
+                name: "Quest Hamsters",
+                note: "Specific animal adventures",
+                topContent: [
+                    { title: "Hamster Explorer: Tiny World", views: "40K" },
+                    { title: "Hamster Treasure Hunt (AI)", views: "25K" }
+                ]
+            }
         ]
     }
 };
