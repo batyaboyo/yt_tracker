@@ -13,7 +13,7 @@ const CHANNELS = {
     },
     ecq: {
         id: 'ecq',
-        channelId: 'UCICJfsBh4-xIA57etZlEa2A', // Placeholder for Epic Cute Quests
+        channelId: 'UC9xco5rz9PCBTp8uEF7IbGg', // Correct ID for Epic Cute Quests
         name: 'Epic Cute Quests',
         targetPerWeek: 2,
         types: ['Short'],
@@ -81,6 +81,9 @@ async function fetchChannelVideos(channel) {
     const data = await response.json();
 
     if (data.items) {
+        // Clear old API data for THIS channel to remove any previous incorrect IDs
+        videos = videos.filter(v => v.channelId !== channel.id || !v.isApiData);
+
         // To get view counts, we need the "videos" endpoint
         const videoIds = data.items.map(item => item.id.videoId).join(',');
         const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${API_KEY}`;
@@ -88,26 +91,22 @@ async function fetchChannelVideos(channel) {
         const statsResponse = await fetch(statsUrl);
         const statsData = await statsResponse.json();
 
-        statsData.items.forEach(item => {
-            const videoData = {
-                id: item.id,
-                channelId: channel.id,
-                title: item.snippet.title,
-                date: item.snippet.publishedAt.split('T')[0],
-                // Detect type: common pattern for shorts is #shorts or duration < 60s
-                type: detectVideoType(channel.id, item),
-                views: parseInt(item.statistics.viewCount) || 0,
-                isApiData: true
-            };
+        if (statsData.items) {
+            statsData.items.forEach(item => {
+                const videoData = {
+                    id: item.id,
+                    channelId: channel.id,
+                    title: item.snippet.title,
+                    date: item.snippet.publishedAt.split('T')[0],
+                    // Detect type: common pattern for shorts is #shorts or duration < 60s
+                    type: detectVideoType(channel.id, item),
+                    views: parseInt(item.statistics.viewCount) || 0,
+                    isApiData: true
+                };
 
-            // Merge: update if exists, push if new
-            const existingIndex = videos.findIndex(v => v.id === videoData.id);
-            if (existingIndex > -1) {
-                videos[existingIndex] = videoData;
-            } else {
                 videos.push(videoData);
-            }
-        });
+            });
+        }
 
         saveToLocal();
     }
