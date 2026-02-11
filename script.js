@@ -12,26 +12,52 @@ const CHANNELS = {
         uploadDays: [0, 2, 4, 6],
         subscribers: 0,
         competitors: [
-            { name: "BibleProject", note: "High Authority, Animation" },
-            { name: "Coffee & Bible Time", note: "Lifestyle, Bible Study" },
-            { name: "Mike Winger", note: "Theology, Verse-by-Verse" },
-            { name: "Tony Evans", note: "Sermons, Motivation" },
-            { name: "The Bible Recap", note: "Scripture Reading" },
-            { name: "The Beat by Allen Parr", note: "Practical Faith" },
-            { name: "GRACE FOR PURPOSE", note: "High Gear Prayer/Audio" },
-            { name: "SOAKSTREAM", note: "Healing Scriptures" },
-            { name: "MightyCross", note: "Visual Prayers" },
-            { name: "Melody Alisa", note: "Personal Walk/Bible Study" },
-            { name: "World Video Bible School", note: "Education" },
-            { name: "The Bible Character", note: "Storytelling" },
-            { name: "Daily Bible Audio", note: "Sleep/Focus" },
-            { name: "Nick Jones", note: "Uplifting Devotionals" },
-            { name: "Bettye Nicole", note: "Vulnerable Testimony" },
-            { name: "Amani Talks", note: "Faith-based Relationships" },
-            { name: "Kylia Jackson", note: "Life Coach/Prayer" },
-            { name: "Sarah Jakes Roberts", note: "Empowering Ministry" },
-            { name: "Inspiring Philosophy", note: "Context/Apologetics" },
-            { name: "Cross Examined", note: "Faith Defense" }
+            {
+                name: "Quiet Stories",
+                note: "Peaceful reflection, Heartfelt prayers",
+                topContent: [
+                    { title: "Quiet Time with God (Meditation)", views: "150K" },
+                    { title: "Evening Prayer for Clarity", views: "85K" },
+                    { title: "Timeless Stories from Scripture", views: "45K" }
+                ]
+            },
+            {
+                name: "Sacred Slumber",
+                note: "Scripture-based calm narratives",
+                topContent: [
+                    { title: "Old Testament Classics for Sleep", views: "2.1M" },
+                    { title: "Peaceful Psalms in the Rain", views: "850K" }
+                ]
+            },
+            {
+                name: "The AI Bible",
+                note: "Stunning AI art & narratives",
+                topContent: [
+                    { title: "Bible in a Year: Genesis", views: "500K" },
+                    { title: "Cinematic Retelling: The Prodigal Son", views: "1.2M" }
+                ]
+            },
+            {
+                name: "Chronicles of The Bible",
+                note: "Cinematic AI retellings",
+                topContent: [
+                    { title: "The Temptation of Jesus (AI)", views: "320K" },
+                    { title: "Faith Through the Storm", views: "115K" }
+                ]
+            },
+            {
+                name: "Faith Works Today",
+                note: "Faith guiding through struggle",
+                topContent: [
+                    { title: "Ordinary People, Extraordinary Faith", views: "450K" },
+                    { title: "The Story of Job (AI Animation)", views: "900K" }
+                ]
+            },
+            { name: "Daily Dose of Wisdom", note: "Quiet scripture narratives" },
+            { name: "Seeds Uniting", note: "Everyday faith stories" },
+            { name: "The Bible Character", note: "Scripture-rooted storytelling" },
+            { name: "Coffee & Bible Time", note: "Personal journal style" },
+            { name: "GRACE FOR PURPOSE", note: "Morning prayer as a lifeline" }
         ]
     },
     ecq: {
@@ -45,26 +71,52 @@ const CHANNELS = {
         uploadDays: [1, 3],
         subscribers: 0,
         competitors: [
-            { name: "Gab Smolders", note: "The Queen of Cozy" },
-            { name: "Eeowna", note: "Switch/Cozy Recommendations" },
-            { name: "Cozy K", note: "Lifestyle Integration" },
-            { name: "Payton's Corner", note: "Adorable Content" },
-            { name: "Josh's Gaming Garden", note: "Reviews/Honest Feedback" },
-            { name: "The Cozy Gaming Club", note: "Community Hub" },
-            { name: "Evan and Katelyn", note: "Creative Fun" },
-            { name: "Kelsey Impicciche", note: "Sims/Life Sims" },
-            { name: "Nemui Atelier", note: "Kawaii/Pink Aesthetic" },
-            { name: "Maisyleigh", note: "Productivity x Cozy" },
-            { name: "DoctorDDub", note: "Farming Sims/Early Looks" },
-            { name: "Feebee", note: "Fairytale/Healing VTuber" },
-            { name: "Jupieverse", note: "Inclusive/Mental Health" },
-            { name: "NikkysCozyCove", note: "Backlog/Variety" },
-            { name: "The Pillow Fort Gaming", note: "RPG Life Sims" },
-            { name: "Ramen King", note: "Game Reviews" },
-            { name: "Hello Yinny", note: "Trend Research" },
-            { name: "A Casual Gamer", note: "Relaxed Playthroughs" },
-            { name: "Sarah Sunstone", note: "Specific Game Deep-Dives" },
-            { name: "Wholesome Gamer", note: "Positive Mindset/Guides" }
+            {
+                name: "AI Dog World",
+                note: "Heartwarming AI animal journeys",
+                topContent: [
+                    { title: "The Brave Dog's Treasure Quest", views: "1.1M" },
+                    { title: "Tiny Hero: A Hamster's Adventure", views: "850K" },
+                    { title: "Unlikely Animal Friendships (AI)", views: "2.3M" }
+                ]
+            },
+            {
+                name: "Fluffy Animal Adventures",
+                note: "Funny AI pet stories & routine",
+                topContent: [
+                    { title: "Tiny Cat's Lazy Morning Routine", views: "650K" },
+                    { title: "Hamster Astronaut's Giant World", views: "420K" }
+                ]
+            },
+            {
+                name: "PO AI Animals",
+                note: "Adorable AI-animated creatures",
+                topContent: [
+                    { title: "Magical Fluffy Hero Quest", views: "300K" },
+                    { title: "Hamster's First Snow (Epic)", views: "180K" }
+                ]
+            },
+            {
+                name: "AI Pet Adventures",
+                note: "Niche AI pet storytelling",
+                topContent: [
+                    { title: "The Courage of a Tiny Hero", views: "250K" },
+                    { title: "Friends for Life: AI Pet Tails", views: "140K" }
+                ]
+            },
+            {
+                name: "Pet Cartoon Shorts",
+                note: "Cute animated stories & escape",
+                topContent: [
+                    { title: "Island Escape: Hamster Edition", views: "410K" },
+                    { title: "Tiny Animals on Massive Journeys", views: "550K" }
+                ]
+            },
+            { name: "EpicCatQuest", note: "AI-assisted pet journeys" },
+            { name: "PawPrint AI", note: "Wholesome pet escapism" },
+            { name: "TinyTriumphs", note: "Feel-good animal stories" },
+            { name: "Adorable Dose", note: "Heartwarming pet narrations" },
+            { name: "Quest Hamsters", note: "Specific animal adventures" }
         ]
     }
 };
@@ -815,6 +867,8 @@ window.updateChannelId = updateChannelId;
 window.promoteIdea = promoteIdea;
 window.deleteIdea = deleteIdea;
 window.toggleInspiration = toggleInspiration;
+window.studyThumbnail = studyThumbnail;
+window.saveHookToIdea = saveHookToIdea;
 
 function renderCompetitors(channelId) {
     const channel = CHANNELS[channelId];
@@ -823,20 +877,57 @@ function renderCompetitors(channelId) {
 
     grid.innerHTML = (channel.competitors || []).map(comp => {
         const isInspired = inspirationSources.includes(comp.name);
+        const topContentHtml = comp.topContent ? `
+            <div class="content-hooks">
+                <span class="hook-label">High-Performance Hooks:</span>
+                ${comp.topContent.map(hook => `
+                    <div class="hook-item">
+                        <span class="hook-title">${hook.title}</span>
+                        <span class="hook-views">${hook.views} views</span>
+                        <button class="btn-hook-add" onclick="saveHookToIdea('${channelId}', '${hook.title}')" title="Save hook to Idea Bank">+</button>
+                    </div>
+                `).join('')}
+            </div>
+        ` : '';
+
         return `
-            <div class="competitor-item ${isInspired ? 'inspired' : ''}">
-                <div class="comp-info">
-                    <h4>${comp.name}</h4>
-                    <p>${comp.note}</p>
+            <div class="competitor-item ${isInspired ? 'inspired' : ''} ${comp.topContent ? 'has-content' : ''}">
+                <div class="comp-main">
+                    <div class="comp-info">
+                        <h4>${comp.name}</h4>
+                        <p>${comp.note}</p>
+                    </div>
+                    <div class="comp-actions">
+                        <button class="btn btn-sm btn-outline study-btn" onclick="studyThumbnail('${comp.name}')">Study Thumbnails</button>
+                        <button class="btn-icon" onclick="toggleInspiration('${comp.name}')" title="${isInspired ? 'Remove from Inspiration' : 'Add to Inspiration'}">
+                            <svg viewBox="0 0 24 24" fill="${isInspired ? 'var(--accent)' : 'none'}" stroke="currentColor" stroke-width="2">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <button class="btn-icon" onclick="toggleInspiration('${comp.name}')" title="${isInspired ? 'Remove from Inspiration' : 'Add to Inspiration'}">
-                    <svg viewBox="0 0 24 24" fill="${isInspired ? 'var(--accent)' : 'none'}" stroke="currentColor" stroke-width="2">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </button>
+                ${topContentHtml}
             </div>
         `;
     }).join('');
+}
+
+function studyThumbnail(name) {
+    window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+popular+videos`, '_blank');
+}
+
+function saveHookToIdea(channelId, title) {
+    const newIdea = {
+        id: 'idea-' + Date.now(),
+        channelId: channelId,
+        title: title,
+        description: 'Inspired by competitor performance. Adapt for your unique voice.',
+        date: new Date().toISOString()
+    };
+    ideas.unshift(newIdea);
+    saveToLocal();
+    renderAll();
+    alert('Hook saved to Idea Bank!');
 }
 
 function toggleInspiration(name) {
