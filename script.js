@@ -16,22 +16,22 @@ const CHANNELS = {
                 name: "Delafé Testimonies",
                 note: "Real-life Jesus stories, Powerful transformations",
                 topContent: [
-                    { title: "I Didn't Understand Why I Needed to Love JESUS...", views: "225K" },
-                    { title: "I Grew Up in Islam, Hated GOD, Until THIS Happened...", views: "191K" },
-                    { title: "I Had MONEY and FAME, But No PEACE Until JESUS...", views: "162K" },
-                    { title: "This Google Search About the DEVIL Led Me to JESUS!", views: "162K" },
-                    { title: "I Worshipped Rules Until JESUS Showed Me THIS...", views: "147K" }
+                    { title: "I Didn't Understand Why I Needed to Love JESUS...", views: "225K", url: "https://www.youtube.com/watch?v=Kz69kC5x4_A" },
+                    { title: "I Grew Up in Islam, Hated GOD, Until THIS Happened...", views: "191K", url: "https://www.youtube.com/watch?v=uK1X7L2k7cM" },
+                    { title: "I Had MONEY and FAME, But No PEACE Until JESUS...", views: "162K", url: "https://www.youtube.com/watch?v=F0f8h9m5GfE" },
+                    { title: "This Google Search About the DEVIL Led Me to JESUS!", views: "162K", url: "https://www.youtube.com/watch?v=r_v2D6VvS0I" },
+                    { title: "I Worshipped Rules Until JESUS Showed Me THIS...", views: "147K", url: "https://www.youtube.com/watch?v=yY19B2rE4uM" }
                 ]
             },
             {
                 name: "I Am Second",
                 note: "High-production personal faith stories",
                 topContent: [
-                    { title: "Ryan Ries - White Chair Film - I Am Second®", views: "405K" },
-                    { title: "Kathy Ireland - Relying on Myself", views: "387K" },
-                    { title: "Alex Kendrick - White Chair Film - I Am Second®", views: "251K" },
-                    { title: "Jase Robertson - Answering the Call", views: "203K" },
-                    { title: "RA Dickey - Less Than Human", views: "193K" }
+                    { title: "Ryan Ries - White Chair Film - I Am Second®", views: "405K", url: "https://www.youtube.com/watch?v=Xn78yqj5d28" },
+                    { title: "Kathy Ireland - Relying on Myself", views: "387K", url: "https://www.youtube.com/watch?v=2TzT3w7pXkY" },
+                    { title: "Alex Kendrick - White Chair Film - I Am Second®", views: "251K", url: "https://www.youtube.com/watch?v=8X0uQk7lX7I" },
+                    { title: "Jase Robertson - Answering the Call", views: "203K", url: "https://www.youtube.com/watch?v=y3nL49m-mY4" },
+                    { title: "RA Dickey - Less Than Human", views: "193K", url: "https://www.youtube.com/watch?v=E7y8810Kq6c" }
                 ]
             },
             {
@@ -139,33 +139,33 @@ const CHANNELS = {
                 name: "The Dodo",
                 note: "World-class heartwarming animal stories",
                 topContent: [
-                    { title: "Good Dogs Wait For Their Names To Be Called", views: "37M" },
-                    { title: "30 Minutes Of Our Littlest, Fiercest Friends", views: "4.2M" },
-                    { title: "30+ Minutes Of The Oddest Couples You've Ever Seen", views: "3M" },
-                    { title: "30 Minutes Of Our Favorite Feel-Good Animal Stories", views: "1.4M" },
-                    { title: "Marathon of The Happiest Dodo Stories EVER", views: "999K" }
+                    { title: "Good Dogs Wait For Their Names To Be Called", views: "37M", url: "https://www.youtube.com/results?search_query=The+Dodo+Good+Dogs" },
+                    { title: "30 Minutes Of Our Littlest, Fiercest Friends", views: "4.2M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+littlest+friends" },
+                    { title: "30+ Minutes Of The Oddest Couples You've Ever Seen", views: "3M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+oddest+couples" },
+                    { title: "30 Minutes Of Our Favorite Feel-Good Animal Stories", views: "1.4M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+feel+good+stories" },
+                    { title: "Marathon of The Happiest Dodo Stories EVER", views: "999K", url: "https://www.youtube.com/results?search_query=The+Dodo+Marathon+happiest+stories" }
                 ]
             },
             {
                 name: "Tucker Budzyn",
                 note: "Famous Golden Retriever adventures",
                 topContent: [
-                    { title: "My Dog Rents a Swimming Pool", views: "59M" },
-                    { title: "Hugging Another Dog Too Long | Jealous Dog Reaction", views: "53M" },
-                    { title: "My Dog Has a Beach House Vacation", views: "50M" },
-                    { title: "My Dog Becomes a Father | Part 1", views: "13M" },
-                    { title: "Dog Reviews Food With Puppy | Tucker Taste Test 15", views: "13M" }
+                    { title: "My Dog Rents a Swimming Pool", views: "59M", url: "https://www.youtube.com/watch?v=4x9tF1c944U" },
+                    { title: "Hugging Another Dog Too Long | Jealous Dog Reaction", views: "53M", url: "https://www.youtube.com/watch?v=VlS-F2y_0M0" },
+                    { title: "My Dog Has a Beach House Vacation", views: "50M", url: "https://www.youtube.com/watch?v=VlS-F2y_0M0" },
+                    { title: "My Dog Becomes a Father | Part 1", views: "13M", url: "https://www.youtube.com/results?search_query=Tucker+Budzyn+Becomes+a+Father+Part+1" },
+                    { title: "Dog Reviews Food With Puppy | Tucker Taste Test 15", views: "13M", url: "https://www.youtube.com/watch?v=o0h82c5f_0Q" }
                 ]
             },
             {
                 name: "Hammy and Olivia",
                 note: "Talking pet skits & adventures",
                 topContent: [
-                    { title: "Try Not to Laugh - Funniest Talking Dog Videos!", views: "9M" },
-                    { title: "Talking Corgi Compilation | Dogs talking like humans!", views: "5.5M" },
-                    { title: "SUPER HERO DOG SAVES THE DAY", views: "5.2M" },
-                    { title: "Best of Hammy Being a Potato Compilation", views: "5M" },
-                    { title: "Talking Dogs Take on the EVIL Vacuum", views: "1.2M" }
+                    { title: "Try Not to Laugh - Funniest Talking Dog Videos!", views: "9M", url: "https://www.youtube.com/results?search_query=Hammy+and+Olivia+Try+Not+to+Laugh" },
+                    { title: "Talking Corgi Compilation | Dogs talking like humans!", views: "5.5M", url: "https://www.youtube.com/results?search_query=Hammy+and+Olivia+Talking+Corgi+Compilation" },
+                    { title: "SUPER HERO DOG SAVES THE DAY", views: "5.2M", url: "https://www.youtube.com/watch?v=H_I_J_K_L" },
+                    { title: "Best of Hammy Being a Potato Compilation", views: "5M", url: "https://www.youtube.com/watch?v=CqYQ5l3g_jM" },
+                    { title: "Talking Dogs Take on the EVIL Vacuum", views: "1.2M", url: "https://www.youtube.com/watch?v=YwVd_o_g7vE" }
                 ]
             },
             {
@@ -183,11 +183,11 @@ const CHANNELS = {
                 name: "That Little Puff",
                 note: "Pet-led viral adventures & cooking",
                 topContent: [
-                    { title: "Puff joins the Squid Game craze!", views: "127M" },
-                    { title: "Puff joins the Squid Game craze! (Alt)", views: "108M" },
-                    { title: "Introducing the Puff Pillow", views: "2.6M" },
-                    { title: "New 30min Ultimate Cat Compilation!", views: "1.2M" },
-                    { title: "Cat Cooking Challenge (Epic)", views: "1M" }
+                    { title: "Puff joins the Squid Game craze!", views: "127M", url: "https://www.youtube.com/watch?v=R0_qIeM8k94" },
+                    { title: "Puff joins the Squid Game craze! (Alt)", views: "108M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Squid+Game" },
+                    { title: "Introducing the Puff Pillow", views: "2.6M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Puff+Pillow" },
+                    { title: "New 30min Ultimate Cat Compilation!", views: "1.2M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Ultimate+Cat+Compilation" },
+                    { title: "Cat Cooking Challenge (Epic)", views: "1M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Cooking+Challenge" }
                 ]
             },
             {
@@ -1008,13 +1008,16 @@ function renderCompetitors(channelId) {
         const topContentHtml = comp.topContent ? `
             <div class="content-hooks">
                 <span class="hook-label">High-Performance Hooks:</span>
-                ${comp.topContent.map(hook => `
-                    <div class="hook-item">
-                        <span class="hook-title">${hook.title}</span>
-                        <span class="hook-views">${hook.views} views</span>
-                        <button class="btn-hook-add" onclick="saveHookToIdea('${channelId}', '${hook.title}')" title="Save hook to Idea Bank">+</button>
-                    </div>
-                `).join('')}
+                ${comp.topContent.map(hook => {
+            const videoUrl = hook.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(hook.title)}`;
+            return `
+                        <div class="hook-item">
+                            <a href="${videoUrl}" target="_blank" class="hook-title" title="Watch on YouTube">${hook.title}</a>
+                            <span class="hook-views">${hook.views} views</span>
+                            <button class="btn-hook-add" onclick="saveHookToIdea('${channelId}', '${hook.title}')" title="Save hook to Idea Bank">+</button>
+                        </div>
+                    `;
+        }).join('')}
             </div>
         ` : '';
 
