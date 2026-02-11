@@ -103,6 +103,22 @@ h3 {
     }
 }
 
+/* Tab Management */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Layout */
+main {
+    padding-top: 1rem;
+    padding-bottom: 4rem;
+}
+
 .tab-content.active {
     display: block !important;
     animation: fadeIn 0.4s ease-out forwards;
@@ -865,6 +881,52 @@ textarea#v-notes:focus {
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 2rem;
+}
+
+/* Competitor Watch */
+.competitor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.competitor-item {
+    background: var(--bg-dark);
+    padding: 1.25rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.competitor-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.competitor-item.inspired {
+    border-color: var(--accent);
+    background: var(--accent-muted);
+}
+
+.competitor-item h4 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-main);
+}
+
+.competitor-item p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.competitor-item .btn-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
 }
 
 /* Responsive */

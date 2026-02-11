@@ -10,7 +10,29 @@ const CHANNELS = {
         schedule: '2 short prayers & 2 long-form videos per week',
         color: '#818cf8',
         uploadDays: [0, 2, 4, 6],
-        subscribers: 0
+        subscribers: 0,
+        competitors: [
+            { name: "BibleProject", note: "High Authority, Animation" },
+            { name: "Coffee & Bible Time", note: "Lifestyle, Bible Study" },
+            { name: "Mike Winger", note: "Theology, Verse-by-Verse" },
+            { name: "Tony Evans", note: "Sermons, Motivation" },
+            { name: "The Bible Recap", note: "Scripture Reading" },
+            { name: "The Beat by Allen Parr", note: "Practical Faith" },
+            { name: "GRACE FOR PURPOSE", note: "High Gear Prayer/Audio" },
+            { name: "SOAKSTREAM", note: "Healing Scriptures" },
+            { name: "MightyCross", note: "Visual Prayers" },
+            { name: "Melody Alisa", note: "Personal Walk/Bible Study" },
+            { name: "World Video Bible School", note: "Education" },
+            { name: "The Bible Character", note: "Storytelling" },
+            { name: "Daily Bible Audio", note: "Sleep/Focus" },
+            { name: "Nick Jones", note: "Uplifting Devotionals" },
+            { name: "Bettye Nicole", note: "Vulnerable Testimony" },
+            { name: "Amani Talks", note: "Faith-based Relationships" },
+            { name: "Kylia Jackson", note: "Life Coach/Prayer" },
+            { name: "Sarah Jakes Roberts", note: "Empowering Ministry" },
+            { name: "Inspiring Philosophy", note: "Context/Apologetics" },
+            { name: "Cross Examined", note: "Faith Defense" }
+        ]
     },
     ecq: {
         id: 'ecq',
@@ -21,7 +43,29 @@ const CHANNELS = {
         schedule: '2 shorts per week',
         color: '#f472b6',
         uploadDays: [1, 3],
-        subscribers: 0
+        subscribers: 0,
+        competitors: [
+            { name: "Gab Smolders", note: "The Queen of Cozy" },
+            { name: "Eeowna", note: "Switch/Cozy Recommendations" },
+            { name: "Cozy K", note: "Lifestyle Integration" },
+            { name: "Payton's Corner", note: "Adorable Content" },
+            { name: "Josh's Gaming Garden", note: "Reviews/Honest Feedback" },
+            { name: "The Cozy Gaming Club", note: "Community Hub" },
+            { name: "Evan and Katelyn", note: "Creative Fun" },
+            { name: "Kelsey Impicciche", note: "Sims/Life Sims" },
+            { name: "Nemui Atelier", note: "Kawaii/Pink Aesthetic" },
+            { name: "Maisyleigh", note: "Productivity x Cozy" },
+            { name: "DoctorDDub", note: "Farming Sims/Early Looks" },
+            { name: "Feebee", note: "Fairytale/Healing VTuber" },
+            { name: "Jupieverse", note: "Inclusive/Mental Health" },
+            { name: "NikkysCozyCove", note: "Backlog/Variety" },
+            { name: "The Pillow Fort Gaming", note: "RPG Life Sims" },
+            { name: "Ramen King", note: "Game Reviews" },
+            { name: "Hello Yinny", note: "Trend Research" },
+            { name: "A Casual Gamer", note: "Relaxed Playthroughs" },
+            { name: "Sarah Sunstone", note: "Specific Game Deep-Dives" },
+            { name: "Wholesome Gamer", note: "Positive Mindset/Guides" }
+        ]
     }
 };
 
@@ -31,6 +75,7 @@ let ideas = JSON.parse(localStorage.getItem('yt_tracker_ideas')) || [];
 let subsHistory = JSON.parse(localStorage.getItem('yt_tracker_subs_history')) || { lpbz: [], ecq: [] };
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
+let inspirationSources = JSON.parse(localStorage.getItem('yt_tracker_inspiration')) || [];
 let charts = {};
 
 // DOM Elements
@@ -453,14 +498,17 @@ function importData(e) {
 }
 
 // Rendering Logic
+// Rendering Logic
 function renderAll() {
     renderGlobalStats();
     if (activeTab === 'dashboard') {
         renderDashboard();
+    } else if (activeTab === 'idea-bank') {
+        renderIdeaBank();
     } else if (activeTab === 'settings') {
         renderSettings();
     } else {
-        renderChannelView(activeTab);
+        renderChannelView(activeTab.replace('tab-', ''));
     }
 }
 
@@ -550,6 +598,7 @@ function renderChannelView(channelId) {
     }).join('') || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
 
     renderIntelligence(channelId, liveVideos);
+    renderCompetitors(channelId);
 
     const tbody = document.querySelector(`#${channelId}-history tbody`);
     tbody.innerHTML = liveVideos.map(v => `
@@ -765,3 +814,43 @@ window.openModal = openModal;
 window.updateChannelId = updateChannelId;
 window.promoteIdea = promoteIdea;
 window.deleteIdea = deleteIdea;
+window.toggleInspiration = toggleInspiration;
+
+function renderCompetitors(channelId) {
+    const channel = CHANNELS[channelId];
+    const grid = document.getElementById(`${channelId}-competitors`);
+    if (!grid) return;
+
+    grid.innerHTML = (channel.competitors || []).map(comp => {
+        const isInspired = inspirationSources.includes(comp.name);
+        return `
+            <div class="competitor-item ${isInspired ? 'inspired' : ''}">
+                <div class="comp-info">
+                    <h4>${comp.name}</h4>
+                    <p>${comp.note}</p>
+                </div>
+                <button class="btn-icon" onclick="toggleInspiration('${comp.name}')" title="${isInspired ? 'Remove from Inspiration' : 'Add to Inspiration'}">
+                    <svg viewBox="0 0 24 24" fill="${isInspired ? 'var(--accent)' : 'none'}" stroke="currentColor" stroke-width="2">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleInspiration(name) {
+    const index = inspirationSources.indexOf(name);
+    if (index > -1) {
+        inspirationSources.splice(index, 1);
+    } else {
+        inspirationSources.push(name);
+    }
+    localStorage.setItem('yt_tracker_inspiration', JSON.stringify(inspirationSources));
+    renderAll();
+}
+
+// Initial Render handled by DOMContentLoaded listener at top of file.
+
+// Initial Render
+renderAll();
