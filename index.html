@@ -308,6 +308,26 @@
                     </div>
                 </div>
 
+                <div class="form-group" id="workflow-group" style="display:none">
+                    <label>Production Stage</label>
+                    <div class="workflow-stages">
+                        <input type="radio" name="w-stage" id="ws-idea" value="Idea" checked>
+                        <label for="ws-idea">Idea</label>
+
+                        <input type="radio" name="w-stage" id="ws-script" value="Scripting">
+                        <label for="ws-script">Script</label>
+
+                        <input type="radio" name="w-stage" id="ws-film" value="Filming">
+                        <label for="ws-film">Film</label>
+
+                        <input type="radio" name="w-stage" id="ws-edit" value="Editing">
+                        <label for="ws-edit">Edit</label>
+
+                        <input type="radio" name="w-stage" id="ws-ready" value="Ready">
+                        <label for="ws-ready">Ready</label>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="v-views">View Count</label>
                     <input type="number" id="v-views" required min="0" value="0">
@@ -320,6 +340,24 @@
                         <label class="check-item"><input type="checkbox" id="check-thumb"> Thumbnail</label>
                         <label class="check-item"><input type="checkbox" id="check-playlist"> Playlist</label>
                         <label class="check-item"><input type="checkbox" id="check-desc"> Description</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Content Strategy</label>
+                    <div class="strategy-grid">
+                        <div class="strategy-field">
+                            <label for="v-hook" style="font-size: 0.75rem">The Hook (First 3s)</label>
+                            <input type="text" id="v-hook" placeholder="Catch attention...">
+                        </div>
+                        <div class="strategy-field">
+                            <label for="v-value" style="font-size: 0.75rem">Value Prop</label>
+                            <input type="text" id="v-value" placeholder="Why watch?">
+                        </div>
+                        <div class="strategy-field">
+                            <label for="v-cta" style="font-size: 0.75rem">CTA</label>
+                            <input type="text" id="v-cta" placeholder="What to do?">
+                        </div>
                     </div>
                 </div>
 

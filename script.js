@@ -299,7 +299,16 @@ function initTheme() {
 // Sync Logic
 async function syncWithYouTube() {
     syncBtn.disabled = true;
-    syncBtn.innerText = 'Syncing...';
+    const originalText = syncBtn.innerText;
+    syncBtn.innerHTML = `<span class="syncing-icon">↻</span> Syncing...`;
+
+    // Optional: Add skeleton class to containers during sync
+    const containers = ['global-stats-summary', 'dashboard-banner', 'card-lpbz', 'card-ecq', 'idea-list'];
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('skeleton');
+    });
+
     try {
         for (const channelKey in CHANNELS) {
             const channel = CHANNELS[channelKey];
@@ -315,7 +324,11 @@ async function syncWithYouTube() {
         alert('YouTube Sync failed. Please check your API key or connection.');
     } finally {
         syncBtn.disabled = false;
-        syncBtn.innerText = 'Sync YouTube';
+        syncBtn.innerText = originalText;
+        containers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('skeleton');
+        });
         renderAll();
     }
 }
@@ -443,6 +456,12 @@ function initForms() {
         e.preventDefault();
         saveVideo();
     });
+
+    // Toggle workflow stages based on status
+    document.getElementById('v-status').addEventListener('change', (e) => {
+        const workflowGroup = document.getElementById('workflow-group');
+        workflowGroup.style.display = e.target.value === 'Planned' ? 'block' : 'none';
+    });
     resetBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
             videos = [];
@@ -467,6 +486,9 @@ function openModal(channelId, videoId = null, ideaData = null) {
     document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('v-type').innerHTML = channel.types.map(t => `<option value="${t}">${t}</option>`).join('');
     document.getElementById('v-notes').value = '';
+    document.getElementById('v-hook').value = '';
+    document.getElementById('v-value').value = '';
+    document.getElementById('v-cta').value = '';
 
     if (ideaData) {
         document.getElementById('v-title').value = ideaData.title;
@@ -482,6 +504,15 @@ function openModal(channelId, videoId = null, ideaData = null) {
             document.getElementById('v-type').value = video.type;
             document.getElementById('v-views').value = video.views;
             document.getElementById('v-status').value = video.status || 'Live';
+
+            // Trigger change to show/hide workflow
+            document.getElementById('v-status').dispatchEvent(new Event('change'));
+
+            if (video.workflowStage) {
+                const radio = document.querySelector(`input[name="w-stage"][value="${video.workflowStage}"]`);
+                if (radio) radio.checked = true;
+            }
+
             document.getElementById('v-notes').value = video.notes || '';
 
             if (video.checklist) {
@@ -489,6 +520,11 @@ function openModal(channelId, videoId = null, ideaData = null) {
                 document.getElementById('check-thumb').checked = video.checklist.thumb;
                 document.getElementById('check-playlist').checked = video.checklist.playlist;
                 document.getElementById('check-desc').checked = video.checklist.desc;
+            }
+            if (video.strategy) {
+                document.getElementById('v-hook').value = video.strategy.hook || '';
+                document.getElementById('v-value').value = video.strategy.value || '';
+                document.getElementById('v-cta').value = video.strategy.cta || '';
             }
         }
     }
@@ -504,8 +540,10 @@ function saveVideo() {
         title: document.getElementById('v-title').value,
         date: document.getElementById('v-date').value,
         type: document.getElementById('v-type').value,
+        type: document.getElementById('v-type').value,
         views: parseInt(document.getElementById('v-views').value) || 0,
         status: document.getElementById('v-status').value,
+        workflowStage: document.querySelector('input[name="w-stage"]:checked').value,
         notes: document.getElementById('v-notes').value,
         thumbnail: 'https://via.placeholder.com/120x68?text=Planned',
         checklist: {
@@ -513,6 +551,11 @@ function saveVideo() {
             thumb: document.getElementById('check-thumb').checked,
             playlist: document.getElementById('check-playlist').checked,
             desc: document.getElementById('check-desc').checked
+        },
+        strategy: {
+            hook: document.getElementById('v-hook').value,
+            value: document.getElementById('v-value').value,
+            cta: document.getElementById('v-cta').value
         },
         likes: 0,
         comments: 0,
@@ -780,8 +823,11 @@ function renderChannelView(channelId) {
                     <h4>${v.title}</h4>
                     <p>Planned for: ${new Date(v.date).toLocaleDateString()}</p>
                 </div>
+                </div>
                 <div class="production-actions">
-                    <span class="status-tag status-planned">${doneCount}/4 Ready</span>
+                    <div class="workflow-mini-steps">
+                        ${getWorkflowSteps(v.workflowStage)}
+                    </div>
                     <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
                 </div>
             </div>
@@ -835,10 +881,25 @@ function renderIntelligence(channelId, liveVideos) {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const bestDay = bIdx !== -1 ? days[bIdx] : 'N/A';
 
+    // Milestone Logic
+    const currentSubs = channel.subscribers;
+    const nextMilestone = currentSubs < 1000 ? 1000 : Math.ceil((currentSubs + 1) / 1000) * 1000;
+    const prevMilestone = nextMilestone - 1000;
+    const progress = Math.min(100, Math.max(0, ((currentSubs - prevMilestone) / (nextMilestone - prevMilestone)) * 100));
+    const toGo = nextMilestone - currentSubs;
+
     document.getElementById(`${channelId}-intelligence`).innerHTML = `
         <div class="intel-item"><span class="intel-value">${engagementScore}</span><span class="intel-label">Engagement Score</span></div>
         <div class="intel-item"><span class="intel-value" style="font-size: 1.1rem">${bestDay}</span><span class="intel-label">Best Upload Day</span></div>
-        <div class="intel-item"><span class="intel-value">${Math.max(0, 1000 - channel.subscribers % 1000)}</span><span class="intel-label">Next 1k Milestone</span></div>
+        <div class="intel-item" style="grid-column: span 2">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.2rem">
+                <span class="intel-label">Next Goal: ${nextMilestone.toLocaleString()}</span>
+                <span class="intel-label" style="color:var(--accent)">${toGo.toLocaleString()} to go</span>
+            </div>
+            <div style="height: 8px; background: var(--bg-card); border-radius: 4px; overflow:hidden">
+                <div style="height:100%; width: ${progress}%; background: linear-gradient(90deg, var(--accent), var(--secondary)); box-shadow: 0 0 10px var(--accent-muted)"></div>
+            </div>
+        </div>
     `;
 }
 
@@ -1009,6 +1070,15 @@ window.toggleInspiration = toggleInspiration;
 window.studyThumbnail = studyThumbnail;
 window.saveHookToIdea = saveHookToIdea;
 
+function getWorkflowSteps(currentStage) {
+    const stages = ['Idea', 'Scripting', 'Filming', 'Editing', 'Ready'];
+    const currentIndex = stages.indexOf(currentStage) > -1 ? stages.indexOf(currentStage) : 0;
+
+    return stages.map((stage, idx) => `
+        <div class="step-dot ${idx <= currentIndex ? 'active' : ''}" title="${stage}"></div>
+    `).join('');
+}
+
 function renderCompetitors(channelId) {
     const channel = CHANNELS[channelId];
     const grid = document.getElementById(`${channelId}-competitors`);
@@ -1049,6 +1119,74 @@ function renderCompetitors(channelId) {
                     </div>
                 </div>
                 ${topContentHtml}
+            </div>
+        `;
+    }).join('');
+}
+
+function initContentCalendar() {
+    const calendar = document.getElementById('content-calendar');
+    if (!calendar) return;
+
+    const now = new Date();
+    const dates = [];
+    for (let i = 0; i < 30; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() + i);
+        dates.push(d);
+    }
+
+    const scheduledVideos = videos.filter(v => v.status === 'Planned');
+
+    calendar.innerHTML = dates.map(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const dayVideos = scheduledVideos.filter(v => v.date === dateStr);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNum = date.getDate();
+
+        const dots = dayVideos.map(v => {
+            const color = v.channelId === 'lpbz' ? 'var(--lpbz-primary)' : 'var(--accent)';
+            return `<div class="calendar-dot" style="background:${color}" title="${v.title}"></div>`;
+        }).join('');
+
+        return `
+            <div class="calendar-day ${dayVideos.length ? 'has-content' : ''}">
+                <div class="day-header">${dayNum} <span style="font-size:0.7rem; color:var(--text-muted)">${dayName}</span></div>
+                <div class="day-dots">${dots}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function initContentCalendar() {
+    const calendar = document.getElementById('content-calendar');
+    if (!calendar) return;
+
+    const now = new Date();
+    const dates = [];
+    for (let i = 0; i < 30; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() + i);
+        dates.push(d);
+    }
+
+    const scheduledVideos = videos.filter(v => v.status === 'Planned');
+
+    calendar.innerHTML = dates.map(date => {
+        const dateStr = date.toISOString().split('T')[0];
+        const dayVideos = scheduledVideos.filter(v => v.date === dateStr);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNum = date.getDate();
+
+        const dots = dayVideos.map(v => {
+            const color = v.channelId === 'lpbz' ? 'var(--lpbz-primary)' : 'var(--accent)';
+            return `<div class="calendar-dot" style="background:${color}" title="${v.title}"></div>`;
+        }).join('');
+
+        return `
+            <div class="calendar-day ${dayVideos.length ? 'has-content' : ''}">
+                <div class="day-header">${dayNum} <span style="font-size:0.7rem; color:var(--text-muted)">${dayName}</span></div>
+                <div class="day-dots">${dots}</div>
             </div>
         `;
     }).join('');
