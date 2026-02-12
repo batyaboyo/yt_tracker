@@ -246,6 +246,17 @@ const CHANNELS = {
                     { title: "Apollo's 2024 Recap", views: "203K" },
                     { title: "Apollo World Record Bird", views: "166K" }
                 ]
+            },
+            {
+                name: "Pet Pop",
+                note: "Viral cute & funny pet compilations (@petpopz)",
+                topContent: [
+                    { title: "Try Not To Laugh - Funniest Pet Moments", views: "5M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+funny+pets" },
+                    { title: "Cutest Pets Doing Funny Things", views: "3.2M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+cutest+pets" },
+                    { title: "Animals That Will Make Your Day Better", views: "2.1M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+animals+make+day+better" },
+                    { title: "Funny Dogs And Cats - Best Of The Week", views: "1.8M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+funny+dogs+cats" },
+                    { title: "Adorable Pets You Need To See", views: "900K", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+adorable+pets" }
+                ]
             }
         ]
     }
