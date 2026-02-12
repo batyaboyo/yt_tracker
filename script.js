@@ -452,6 +452,13 @@ function initForms() {
             videoForm.reset();
         });
     });
+
+    window.onclick = (event) => {
+        if (event.target === videoModal) {
+            videoModal.classList.remove('active');
+            videoForm.reset();
+        }
+    };
     videoForm.addEventListener('submit', (e) => {
         e.preventDefault();
         saveVideo();
@@ -477,12 +484,26 @@ function initForms() {
     syncBtn.addEventListener('click', syncWithYouTube);
 }
 
-function openModal(channelId, videoId = null, ideaData = null) {
+function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = false) {
     const channel = CHANNELS[channelId];
     videoForm.reset();
-    document.getElementById('modal-title').innerText = videoId ? 'Edit Video' : (ideaData ? 'Promote Idea to Video' : 'Log New Video');
+
+    let titleText = 'Video Idea';
+    if (videoId) titleText = 'Edit Video';
+    else if (ideaData) titleText = 'Promote Idea to Video';
+    else if (isIdeaMode) titleText = 'New Idea (Bank)';
+
+    document.getElementById('modal-title').innerText = titleText;
     document.getElementById('video-channel').value = channelId;
     document.getElementById('video-id').value = videoId || '';
+    document.getElementById('original-idea-id').value = '';
+
+    // Set a hidden flag or class to differentiate Idea vs Video save
+    document.getElementById('video-form').dataset.mode = isIdeaMode ? 'idea' : 'video';
+
+    // If it's just an idea, we might want to hide some fields, but for now let's keep it simple
+    // and just save the relevant parts.
+
     document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('v-type').innerHTML = channel.types.map(t => `<option value="${t}">${t}</option>`).join('');
     document.getElementById('v-notes').value = '';
@@ -494,9 +515,12 @@ function openModal(channelId, videoId = null, ideaData = null) {
         document.getElementById('v-title').value = ideaData.title;
         document.getElementById('v-notes').value = ideaData.description;
         document.getElementById('v-status').value = 'Planned';
+        document.getElementById('original-idea-id').value = ideaData.id;
+        document.getElementById('v-status').dispatchEvent(new Event('change'));
     }
 
     if (videoId) {
+        document.getElementById('video-form').dataset.mode = 'video'; // Editing is always video mode
         const video = videos.find(v => v.id === videoId);
         if (video) {
             document.getElementById('v-title').value = video.title;
@@ -532,19 +556,48 @@ function openModal(channelId, videoId = null, ideaData = null) {
 }
 
 function saveVideo() {
+    const isIdeaMode = document.getElementById('video-form').dataset.mode === 'idea';
     const id = document.getElementById('video-id').value;
     const channelId = document.getElementById('video-channel').value;
+
+    const title = document.getElementById('v-title').value;
+    const notes = document.getElementById('v-notes').value;
+
+    if (isIdeaMode) {
+        // Saving as Idea
+        const newIdea = {
+            id: id || Date.now().toString(),
+            title: title,
+            description: notes,
+            channelId: channelId,
+            date: new Date().toISOString().split('T')[0],
+            // Optional: could save strategy fields here too if we update idea structure
+            strategy: {
+                hook: document.getElementById('v-hook').value,
+                value: document.getElementById('v-value').value,
+                cta: document.getElementById('v-cta').value
+            }
+        };
+        ideas.push(newIdea);
+        saveToLocal();
+        videoModal.classList.remove('active');
+        renderAll();
+        // Switch to Idea Bank tab to show the new idea
+        document.querySelector('.nav-btn[data-tab="idea-bank"]').click();
+        return;
+    }
+
+    // Saving as Video
     const videoData = {
         id: id || Date.now().toString(),
         channelId: channelId,
-        title: document.getElementById('v-title').value,
+        title: title,
         date: document.getElementById('v-date').value,
-        type: document.getElementById('v-type').value,
         type: document.getElementById('v-type').value,
         views: parseInt(document.getElementById('v-views').value) || 0,
         status: document.getElementById('v-status').value,
-        workflowStage: document.querySelector('input[name="w-stage"]:checked').value,
-        notes: document.getElementById('v-notes').value,
+        workflowStage: document.querySelector('input[name="w-stage"]:checked') ? document.querySelector('input[name="w-stage"]:checked').value : 'Idea',
+        notes: notes,
         thumbnail: 'https://via.placeholder.com/120x68?text=Planned',
         checklist: {
             seo: document.getElementById('check-seo').checked,
@@ -568,6 +621,13 @@ function saveVideo() {
     } else {
         videos.push(videoData);
     }
+
+    // Check if this was promoted from an idea
+    const originalIdeaId = document.getElementById('original-idea-id').value;
+    if (originalIdeaId) {
+        ideas = ideas.filter(i => i.id !== originalIdeaId);
+    }
+
     saveToLocal();
     videoModal.classList.remove('active');
     renderAll();
@@ -583,21 +643,43 @@ function deleteVideo(id) {
 
 // Idea Bank Logic
 function initIdeaBank() {
-    document.getElementById('add-idea-btn').addEventListener('click', () => {
-        const title = prompt('Idea Title:');
-        if (!title) return;
-        const desc = prompt('Short Description/Notes:');
-        const channelId = prompt('Channel (lpbz/ecq):', 'lpbz');
+    const channelPicker = document.getElementById('channel-picker');
 
-        ideas.push({
-            id: Date.now().toString(),
-            title: title,
-            description: desc || '',
-            channelId: channelId === 'ecq' ? 'ecq' : 'lpbz',
-            date: new Date().toISOString().split('T')[0]
+    function showChannelPicker() {
+        channelPicker.classList.add('active');
+    }
+
+    // Dashboard "New Idea" button
+    const dbBtn = document.getElementById('add-idea-btn');
+    if (dbBtn) {
+        dbBtn.addEventListener('click', showChannelPicker);
+    }
+
+    // Full Page "New Idea" button
+    const pageBtn = document.getElementById('add-idea-page-btn');
+    if (pageBtn) {
+        pageBtn.addEventListener('click', showChannelPicker);
+    }
+
+    // Channel pick buttons
+    document.querySelectorAll('.channel-pick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const channelId = btn.dataset.channel;
+            channelPicker.classList.remove('active');
+            openModal(channelId, null, null, true);
         });
-        saveToLocal();
-        renderAll();
+    });
+
+    // Cancel button
+    document.getElementById('cancel-channel-pick').addEventListener('click', () => {
+        channelPicker.classList.remove('active');
+    });
+
+    // Click outside to close
+    channelPicker.addEventListener('click', (e) => {
+        if (e.target === channelPicker) {
+            channelPicker.classList.remove('active');
+        }
     });
 }
 
@@ -747,8 +829,9 @@ function renderAll() {
 }
 
 function renderGlobalStats() {
-    const totalVideos = videos.length;
-    const totalViews = videos.reduce((sum, v) => sum + v.views, 0);
+    const liveVideos = videos.filter(v => v.status === 'Live');
+    const totalVideos = liveVideos.length;
+    const totalViews = liveVideos.reduce((sum, v) => sum + v.views, 0);
     const avgViews = totalVideos ? Math.round(totalViews / totalVideos) : 0;
     const container = document.getElementById('global-stats-summary');
     container.innerHTML = `
@@ -780,6 +863,53 @@ function renderDashboard() {
 
     updateBanner();
     setTimeout(initComparisonChart, 0);
+}
+
+function renderIdeaBank() {
+    const list = document.getElementById('full-idea-list');
+    if (!list) return;
+
+    const lpbzIdeas = ideas.filter(i => i.channelId === 'lpbz');
+    const ecqIdeas = ideas.filter(i => i.channelId === 'ecq');
+
+    const renderIdeaCard = (idea) => `
+        <div class="idea-item idea-${idea.channelId}">
+            <div>
+                <div style="display:flex; justify-content:flex-end; margin-bottom:0.5rem">
+                    <span style="font-size:0.8rem; color:var(--text-muted)">${new Date(idea.date).toLocaleDateString()}</span>
+                </div>
+                <h4>${idea.title}</h4>
+                <p>${idea.description || 'No description provided.'}</p>
+                ${idea.strategy ? `
+                    <div style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted)">
+                        <strong>Hook:</strong> ${idea.strategy.hook || 'N/A'} <br>
+                        <strong>Value:</strong> ${idea.strategy.value || 'N/A'}
+                    </div>
+                ` : ''}
+            </div>
+            <div class="idea-actions">
+                <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
+                <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
+            </div>
+        </div>
+    `;
+
+    list.innerHTML = `
+        <div class="idea-bank-grid">
+            <div class="idea-column">
+                <h3>Lets Pray & Bible Zone (${lpbzIdeas.length})</h3>
+                <div class="idea-list-column">
+                    ${lpbzIdeas.map(renderIdeaCard).join('') || '<p style="color:var(--text-muted)">No ideas yet. Start brainstorming!</p>'}
+                </div>
+            </div>
+            <div class="idea-column">
+                <h3>Epic Cute Quests (${ecqIdeas.length})</h3>
+                <div class="idea-list-column">
+                    ${ecqIdeas.map(renderIdeaCard).join('') || '<p style="color:var(--text-muted)">No ideas yet. Start brainstorming!</p>'}
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function renderChannelCard(channelId, channelVideos) {

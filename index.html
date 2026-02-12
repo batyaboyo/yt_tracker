@@ -54,6 +54,7 @@
             <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
             <button class="nav-btn" data-tab="lpbz">Lets Pray & Bible Zone</button>
             <button class="nav-btn" data-tab="ecq">Epic Cute Quests</button>
+            <button class="nav-btn" data-tab="idea-bank">Idea Bank</button>
             <button class="nav-btn" data-tab="settings">Settings</button>
         </div>
     </nav>
@@ -98,7 +99,7 @@
         <section id="tab-lpbz" class="tab-content channel-management lpbz-theme">
             <div class="management-header">
                 <h2>Lets Pray and Bible Zone</h2>
-                <button class="btn btn-primary add-video-btn" data-channel="lpbz">+ Log Video</button>
+                <button class="btn btn-primary add-video-btn" data-channel="lpbz">+ Video Idea</button>
             </div>
 
             <div class="stats-row" id="lpbz-stats">
@@ -174,7 +175,7 @@
         <section id="tab-ecq" class="tab-content channel-management ecq-theme">
             <div class="management-header">
                 <h2>Epic Cute Quests</h2>
-                <button class="btn btn-primary add-video-btn" data-channel="ecq">+ Log Video</button>
+                <button class="btn btn-primary add-video-btn" data-channel="ecq">+ Video Idea</button>
             </div>
 
             <div class="stats-row" id="ecq-stats">
@@ -241,6 +242,19 @@
             </div>
         </section>
 
+        <!-- Idea Bank View -->
+        <section id="tab-idea-bank" class="tab-content">
+            <div class="summary-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                    <h2>Idea Bank</h2>
+                    <button class="btn btn-primary" id="add-idea-page-btn">+ New Idea</button>
+                </div>
+                <div id="full-idea-list" class="idea-grid">
+                    <!-- Full Idea List injected by JS -->
+                </div>
+            </div>
+        </section>
+
         <!-- Settings View -->
         <section id="tab-settings" class="tab-content">
             <div class="settings-grid">
@@ -275,102 +289,134 @@
         </section>
     </main>
 
+    <!-- Channel Picker for New Ideas -->
+    <div id="channel-picker" class="modal">
+        <div class="channel-picker-content">
+            <h3>Which channel is this idea for?</h3>
+            <div class="channel-picker-options">
+                <button class="channel-pick-btn lpbz-pick" data-channel="lpbz">
+                    <span class="channel-pick-icon">🙏</span>
+                    <span>Lets Pray & Bible Zone</span>
+                </button>
+                <button class="channel-pick-btn ecq-pick" data-channel="ecq">
+                    <span class="channel-pick-icon">🎮</span>
+                    <span>Epic Cute Quests</span>
+                </button>
+            </div>
+            <button class="btn btn-outline btn-sm" id="cancel-channel-pick"
+                style="margin-top:1rem; width:100%">Cancel</button>
+        </div>
+    </div>
+
     <!-- Modal for Adding/Editing Video -->
     <div id="video-modal" class="modal">
         <div class="modal-content">
-            <h2 id="modal-title">Log New Video</h2>
-            <form id="video-form">
-                <input type="hidden" id="video-id">
-                <input type="hidden" id="video-channel">
+            <div class="modal-header">
+                <h2 id="modal-title">Video Idea</h2>
+                <button type="button" class="btn-icon close-modal"
+                    style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="video-form">
+                    <input type="hidden" id="video-id">
+                    <input type="hidden" id="video-channel">
+                    <input type="hidden" id="original-idea-id">
 
-                <div class="form-group-grid">
-                    <div class="form-group">
-                        <label for="v-title">Video Title</label>
-                        <input type="text" id="v-title" required placeholder="e.g., Sunday Prayer #42">
-                    </div>
-                    <div class="form-group">
-                        <label for="v-date">Upload Date</label>
-                        <input type="date" id="v-date" required>
-                    </div>
-                </div>
-
-                <div class="form-group-grid">
-                    <div class="form-group">
-                        <label for="v-type">Video Type</label>
-                        <select id="v-type" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="v-status">Status</label>
-                        <select id="v-status" required>
-                            <option value="Live">Live</option>
-                            <option value="Planned">Planned</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group" id="workflow-group" style="display:none">
-                    <label>Production Stage</label>
-                    <div class="workflow-stages">
-                        <input type="radio" name="w-stage" id="ws-idea" value="Idea" checked>
-                        <label for="ws-idea">Idea</label>
-
-                        <input type="radio" name="w-stage" id="ws-script" value="Scripting">
-                        <label for="ws-script">Script</label>
-
-                        <input type="radio" name="w-stage" id="ws-film" value="Filming">
-                        <label for="ws-film">Film</label>
-
-                        <input type="radio" name="w-stage" id="ws-edit" value="Editing">
-                        <label for="ws-edit">Edit</label>
-
-                        <input type="radio" name="w-stage" id="ws-ready" value="Ready">
-                        <label for="ws-ready">Ready</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="v-views">View Count</label>
-                    <input type="number" id="v-views" required min="0" value="0">
-                </div>
-
-                <div class="form-group">
-                    <label>Pre-Upload Checklist</label>
-                    <div class="checklist-grid">
-                        <label class="check-item"><input type="checkbox" id="check-seo"> SEO Tags</label>
-                        <label class="check-item"><input type="checkbox" id="check-thumb"> Thumbnail</label>
-                        <label class="check-item"><input type="checkbox" id="check-playlist"> Playlist</label>
-                        <label class="check-item"><input type="checkbox" id="check-desc"> Description</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Content Strategy</label>
-                    <div class="strategy-grid">
-                        <div class="strategy-field">
-                            <label for="v-hook" style="font-size: 0.75rem">The Hook (First 3s)</label>
-                            <input type="text" id="v-hook" placeholder="Catch attention...">
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="v-title">Video Title</label>
+                            <input type="text" id="v-title" required placeholder="e.g., Sunday Prayer #42">
                         </div>
-                        <div class="strategy-field">
-                            <label for="v-value" style="font-size: 0.75rem">Value Prop</label>
-                            <input type="text" id="v-value" placeholder="Why watch?">
-                        </div>
-                        <div class="strategy-field">
-                            <label for="v-cta" style="font-size: 0.75rem">CTA</label>
-                            <input type="text" id="v-cta" placeholder="What to do?">
+                        <div class="form-group">
+                            <label for="v-date">Upload Date</label>
+                            <input type="date" id="v-date" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="v-notes">Script / Notes</label>
-                    <textarea id="v-notes" rows="6" placeholder="Draft your script or main points here..."></textarea>
-                </div>
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="v-type">Video Type</label>
+                            <select id="v-type" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="v-status">Status</label>
+                            <select id="v-status" required>
+                                <option value="Live">Live</option>
+                                <option value="Planned">Planned</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="form-actions">
-                    <button type="button" class="btn btn-outline close-modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Video</button>
-                </div>
-            </form>
+                    <div class="form-group" id="workflow-group" style="display:none">
+                        <label>Production Stage</label>
+                        <div class="workflow-stages">
+                            <input type="radio" name="w-stage" id="ws-idea" value="Idea" checked>
+                            <label for="ws-idea">Idea</label>
+
+                            <input type="radio" name="w-stage" id="ws-script" value="Scripting">
+                            <label for="ws-script">Script</label>
+
+                            <input type="radio" name="w-stage" id="ws-film" value="Filming">
+                            <label for="ws-film">Film</label>
+
+                            <input type="radio" name="w-stage" id="ws-edit" value="Editing">
+                            <label for="ws-edit">Edit</label>
+
+                            <input type="radio" name="w-stage" id="ws-ready" value="Ready">
+                            <label for="ws-ready">Ready</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v-views">View Count</label>
+                        <input type="number" id="v-views" required min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pre-Upload Checklist</label>
+                        <div class="checklist-grid">
+                            <label class="check-item"><input type="checkbox" id="check-seo"> SEO Tags</label>
+                            <label class="check-item"><input type="checkbox" id="check-thumb"> Thumbnail</label>
+                            <label class="check-item"><input type="checkbox" id="check-playlist"> Playlist</label>
+                            <label class="check-item"><input type="checkbox" id="check-desc"> Description</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Content Strategy</label>
+                        <div class="strategy-grid">
+                            <div class="strategy-field">
+                                <label for="v-hook" style="font-size: 0.75rem">The Hook (First 3s)</label>
+                                <input type="text" id="v-hook" placeholder="Catch attention...">
+                            </div>
+                            <div class="strategy-field">
+                                <label for="v-value" style="font-size: 0.75rem">Value Prop</label>
+                                <input type="text" id="v-value" placeholder="Why watch?">
+                            </div>
+                            <div class="strategy-field">
+                                <label for="v-cta" style="font-size: 0.75rem">CTA</label>
+                                <input type="text" id="v-cta" placeholder="What to do?">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="v-notes">Script / Notes</label>
+                        <textarea id="v-notes" rows="6"
+                            placeholder="Draft your script or main points here..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline close-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Video</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

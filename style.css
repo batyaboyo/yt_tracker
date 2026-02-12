@@ -381,6 +381,18 @@ body.light-theme .moon-icon {
     }
 }
 
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
 .skeleton {
     background: linear-gradient(90deg, var(--bg-dark) 25%, var(--border) 50%, var(--bg-dark) 75%);
     background-size: 200% 100%;
@@ -920,8 +932,10 @@ textarea#v-notes:focus {
     padding: 2rem;
 }
 
-display: flex;
+.modal.active {
+    display: flex;
 }
+
 
 /* Workflow Visualization */
 .workflow-stages {
@@ -977,11 +991,46 @@ display: flex;
     background-image: radial-gradient(at 0% 0%, hsla(250, 80%, 20%, 0.1) 0px, transparent 50%);
     width: 100%;
     max-width: 600px;
-    padding: 3rem;
+    max-height: 90vh;
+    /* Limit height for scrolling */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    /* Clear padding for header/body */
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
-    animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(2, 6, 23, 0.95);
+    /* Semi-transparent background */
+    backdrop-filter: blur(8px);
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.form-group-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .modal-content h2 {
@@ -1172,4 +1221,79 @@ display: flex;
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+
+    .idea-bank-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Idea Bank Split View */
+.idea-bank-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.idea-column h3 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-main);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Channel Picker */
+.channel-picker-content {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.channel-picker-content h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+.channel-picker-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.channel-pick-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-dark);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.channel-pick-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.channel-pick-icon {
+    font-size: 1.5rem;
+}
+
+.idea-list-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
