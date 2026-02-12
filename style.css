@@ -750,6 +750,22 @@ tr:hover td {
     width: 250px !important;
 }
 
+.visit-channel-link {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.visit-channel-link:hover {
+    color: var(--secondary);
+    text-decoration: underline;
+    transform: translateX(2px);
+}
+
 /* Idea Bank */
 .idea-grid {
     display: grid;

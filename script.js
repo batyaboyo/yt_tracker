@@ -7,9 +7,9 @@ const CHANNELS = {
         name: 'Lets Pray and Bible Zone',
         targetPerWeek: 4,
         types: ['Short Prayer', 'Long-form'],
-        schedule: '2 short prayers & 2 long-form videos per week',
+        schedule: 'Mon, Fri (Shorts) | Wed, Sun (Long-form) @ 8pm EAT',
         color: '#818cf8',
-        uploadDays: [0, 2, 4, 6],
+        uploadDays: [1, 3, 5, 0],
         subscribers: 0,
         competitors: [
             {
@@ -130,9 +130,9 @@ const CHANNELS = {
         name: 'Epic Cute Quests',
         targetPerWeek: 2,
         types: ['Short'],
-        schedule: '2 shorts per week',
+        schedule: 'Tuesday & Friday @ 8pm EAT',
         color: '#f472b6',
-        uploadDays: [1, 3],
+        uploadDays: [2, 5],
         subscribers: 0,
         competitors: [
             {
@@ -602,6 +602,7 @@ function renderSettings() {
             <div class="channel-setting-info">
                 <strong>${ch.name}</strong>
                 <span>ID: ${ch.channelId}</span>
+                <a href="https://youtube.com/channel/${ch.channelId}" target="_blank" class="visit-channel-link">Visit Channel ↗</a>
             </div>
             <div style="display: flex; gap: 0.5rem">
                 <input type="text" class="channel-setting-input" value="${ch.channelId}" placeholder="New Channel ID" id="input-cid-${key}">
