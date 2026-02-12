@@ -416,6 +416,16 @@ function initTabs() {
             renderAll();
         });
     });
+
+    // Logo link to dashboard
+    const logoLink = document.getElementById('logo-link');
+    if (logoLink) {
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dashTab = document.querySelector('.nav-btn[data-tab="dashboard"]');
+            if (dashTab) dashTab.click();
+        });
+    }
 }
 
 // Form Logic

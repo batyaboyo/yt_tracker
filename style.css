@@ -148,6 +148,18 @@ main {
     flex-direction: column;
 }
 
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    display: inline-block;
+}
+
+.logo-link:hover {
+    transform: scale(1.02);
+    filter: brightness(1.2);
+}
+
 .header-content h1 span {
     font-size: 0.8rem;
     color: var(--text-muted);
