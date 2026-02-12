@@ -11,6 +11,7 @@ const CHANNELS = {
         color: '#818cf8',
         uploadDays: [1, 3, 5, 0],
         subscribers: 0,
+        searchFocus: 'real life christian stories testimony',
         competitors: [
             {
                 name: "Delafé Testimonies",
@@ -134,6 +135,7 @@ const CHANNELS = {
         color: '#f472b6',
         uploadDays: [2, 5],
         subscribers: 0,
+        searchFocus: 'cute animal videos pets',
         competitors: [
             {
                 name: "The Dodo",
@@ -277,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initForms();
     initSettings();
     initIdeaBank();
+    initInspirationFeed();
     updateSyncStatusDisplay();
     renderAll();
     checkAutoSync();
@@ -700,6 +703,194 @@ function deleteIdea(id) {
     }
 }
 
+// View Count Formatter
+function formatViews(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return num.toString();
+}
+
+// Inspiration Feed Logic
+function initInspirationFeed() {
+    const fetchBtn = document.getElementById('fetch-fresh-ideas');
+    const filter = document.getElementById('inspiration-channel-filter');
+
+    if (fetchBtn) {
+        fetchBtn.addEventListener('click', fetchFreshInspirations);
+    }
+    if (filter) {
+        filter.addEventListener('change', renderInspirationFeed);
+    }
+
+    renderInspirationFeed();
+}
+
+function renderInspirationFeed() {
+    const feed = document.getElementById('inspiration-feed');
+    if (!feed) return;
+
+    const channelFilter = document.getElementById('inspiration-channel-filter').value;
+    const channelKeys = channelFilter === 'all' ? ['lpbz', 'ecq'] : [channelFilter];
+
+    let html = '';
+    channelKeys.forEach(key => {
+        const channel = CHANNELS[key];
+        channel.competitors.forEach(comp => {
+            const items = comp.topContent.slice(0, 3); // Show top 3 per competitor
+            items.forEach(item => {
+                const videoUrl = item.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`;
+                html += `
+                    <div class="inspiration-card">
+                        <div class="inspiration-card-header">
+                            <h4>${item.title}</h4>
+                        </div>
+                        <div class="inspiration-card-meta">
+                            <span class="views-badge">${item.views} views</span>
+                            <span class="inspiration-source">${comp.name}</span>
+                            <span>→ ${channel.name}</span>
+                        </div>
+                        <div class="inspiration-card-actions">
+                            <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${key}', '${item.title.replace(/'/g, "\\'")}', '${comp.name.replace(/'/g, "\\'")}')">Save as Idea</button>
+                            <a href="${videoUrl}" target="_blank" class="btn btn-sm btn-outline">Watch ↗</a>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+    });
+
+    feed.innerHTML = html || '<p style="color:var(--text-muted); text-align:center; padding:2rem">No inspirations available.</p>';
+}
+
+async function fetchFreshInspirations() {
+    const btn = document.getElementById('fetch-fresh-ideas');
+    const feed = document.getElementById('inspiration-feed');
+    const channelFilter = document.getElementById('inspiration-channel-filter').value;
+    const channelKeys = channelFilter === 'all' ? ['lpbz', 'ecq'] : [channelFilter];
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Fetching...';
+    feed.innerHTML = '<div class="inspiration-loading"><p>Fetching trending videos from competitor channels...</p></div>';
+
+    try {
+        let allResults = [];
+
+        for (const key of channelKeys) {
+            const channel = CHANNELS[key];
+            // Pick a random subset of competitors to avoid too many API calls
+            const selectedComps = channel.competitors
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+
+            for (const comp of selectedComps) {
+                try {
+                    const focus = channel.searchFocus || '';
+                    const query = encodeURIComponent(`${comp.name} ${focus}`);
+                    const res = await fetch(
+                        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${API_KEY}`
+                    );
+                    const data = await res.json();
+
+                    if (data.items) {
+                        data.items.forEach(item => {
+                            allResults.push({
+                                title: item.snippet.title,
+                                channelTitle: item.snippet.channelTitle,
+                                thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+                                videoId: item.id.videoId,
+                                publishedAt: item.snippet.publishedAt,
+                                forChannel: key,
+                                source: comp.name
+                            });
+                        });
+                    }
+                } catch (err) {
+                    console.warn(`Failed to fetch for ${comp.name}:`, err);
+                }
+            }
+        }
+
+        // Fetch view counts for all results via videos.list
+        if (allResults.length > 0) {
+            try {
+                const videoIds = allResults.map(r => r.videoId).join(',');
+                const statsRes = await fetch(
+                    `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`
+                );
+                const statsData = await statsRes.json();
+                if (statsData.items) {
+                    const statsMap = {};
+                    statsData.items.forEach(item => {
+                        statsMap[item.id] = parseInt(item.statistics.viewCount) || 0;
+                    });
+                    allResults.forEach(r => {
+                        r.views = statsMap[r.videoId] || 0;
+                    });
+                    // Sort by views descending
+                    allResults.sort((a, b) => b.views - a.views);
+                }
+            } catch (err) {
+                console.warn('Failed to fetch video stats:', err);
+            }
+        }
+
+        // Render the fresh results
+        if (allResults.length > 0) {
+            feed.innerHTML = allResults.map(r => {
+                const viewsFormatted = r.views ? formatViews(r.views) : 'N/A';
+                return `
+                <div class="inspiration-card">
+                    <div class="inspiration-card-header">
+                        <img src="${r.thumbnail}" alt="" style="width:120px; height:68px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0">
+                        <h4>${r.title}</h4>
+                    </div>
+                    <div class="inspiration-card-meta">
+                        <span class="views-badge">${viewsFormatted} views</span>
+                        <span class="inspiration-source">${r.channelTitle}</span>
+                        <span>for ${CHANNELS[r.forChannel].name}</span>
+                        <span>${new Date(r.publishedAt).toLocaleDateString()}</span>
+                    </div>
+                    <div class="inspiration-card-actions">
+                        <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${r.forChannel}', '${r.title.replace(/'/g, "\\'")}', '${r.channelTitle.replace(/'/g, "\\'")}')">Save as Idea</button>
+                        <a href="https://www.youtube.com/watch?v=${r.videoId}" target="_blank" class="btn btn-sm btn-outline">Watch ↗</a>
+                    </div>
+                </div>
+            `}).join('');
+        } else {
+            feed.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:2rem">No results fetched. Check your API key in Settings.</p>';
+        }
+
+    } catch (err) {
+        feed.innerHTML = `<p style="color:var(--danger); text-align:center; padding:2rem">Error: ${err.message}. Check your API key.</p>`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Fetch Fresh Ideas';
+    }
+}
+
+function saveInspirationAsIdea(channelId, title, source) {
+    const newIdea = {
+        id: Date.now().toString(),
+        title: `[Inspired] ${title}`,
+        description: `Inspired by "${source}" — adapt this concept for your channel.`,
+        channelId: channelId,
+        date: new Date().toISOString().split('T')[0],
+        strategy: { hook: '', value: '', cta: '' }
+    };
+    ideas.push(newIdea);
+    saveToLocal();
+    renderAll();
+
+    // Quick feedback
+    const btn = event.target;
+    btn.textContent = '✓ Saved!';
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.textContent = 'Save as Idea';
+        btn.disabled = false;
+    }, 2000);
+}
+
 function saveToLocal() {
     localStorage.setItem('yt_tracker_videos', JSON.stringify(videos));
     localStorage.setItem('yt_tracker_ideas', JSON.stringify(ideas));
@@ -821,6 +1012,7 @@ function renderAll() {
         renderDashboard();
     } else if (activeTab === 'idea-bank') {
         renderIdeaBank();
+        renderInspirationFeed();
     } else if (activeTab === 'settings') {
         renderSettings();
     } else {

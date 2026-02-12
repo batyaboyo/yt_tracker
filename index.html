@@ -252,6 +252,28 @@
                 <div id="full-idea-list" class="idea-grid">
                     <!-- Full Idea List injected by JS -->
                 </div>
+
+                <!-- Inspiration Feed -->
+                <div class="inspiration-section" style="margin-top:2.5rem">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                        <h2>💡 Inspiration Feed</h2>
+                        <div style="display:flex; gap:0.5rem">
+                            <select id="inspiration-channel-filter" class="inspiration-filter">
+                                <option value="all">All Channels</option>
+                                <option value="lpbz">Lets Pray & Bible Zone</option>
+                                <option value="ecq">Epic Cute Quests</option>
+                            </select>
+                            <button id="fetch-fresh-ideas" class="btn btn-primary btn-sm">🔄 Fetch Fresh Ideas</button>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem">
+                        Trending videos from competitor channels — click <strong>"Save as Idea"</strong> to add to your
+                        bank.
+                    </p>
+                    <div id="inspiration-feed" class="inspiration-grid">
+                        <!-- Inspiration cards injected by JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
