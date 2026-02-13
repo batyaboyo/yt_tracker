@@ -1126,7 +1126,12 @@ function renderChannelCard(channelId, channelVideos) {
         <div class="channel-card-stat"><span>Weekly Goal</span><span>${channel.schedule}</span></div>
         <div class="channel-card-stat"><span>Status</span><span class="${schedStatus ? 'on-schedule' : 'off-schedule'}">${schedStatus ? '✓ On Schedule' : '○ Behind Schedule'}</span></div>
         <div class="channel-card-stat"><span>Next Upload</span><span>${nextUpload}</span></div>
+        <div class="countdown-row">
+            <span class="countdown-label">⏱ Countdown</span>
+            <span class="countdown-timer" id="countdown-${channelId}">--:--:--</span>
+        </div>
     `;
+    startCountdownTimers();
 }
 
 function renderChannelView(channelId) {
@@ -1359,12 +1364,36 @@ function updateBanner() {
     }
 }
 
-function isOnSchedule(channelId, channelVideos) {
+// Helper: get current time in EAT (UTC+3)
+function getEATDate() {
     const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - (now.getDay() === 0 ? 6 : now.getDay() - 1));
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utc + 3 * 3600000); // UTC+3
+}
+
+function isOnSchedule(channelId, channelVideos) {
+    const nowEAT = getEATDate();
+    const startOfWeek = new Date(nowEAT);
+    startOfWeek.setDate(nowEAT.getDate() - (nowEAT.getDay() === 0 ? 6 : nowEAT.getDay() - 1));
     startOfWeek.setHours(0, 0, 0, 0);
-    return channelVideos.filter(v => new Date(v.date) >= startOfWeek).length >= CHANNELS[channelId].targetPerWeek;
+
+    // Count upload days whose 8pm EAT deadline has already passed this week
+    // Convert JS day (Sun=0) to Monday-start numbering (Mon=1..Sun=7) for proper ordering
+    const ch = CHANNELS[channelId];
+    const currentDayMon = nowEAT.getDay() === 0 ? 7 : nowEAT.getDay();
+    const currentHour = nowEAT.getHours();
+
+    const passedDeadlines = ch.uploadDays.filter(d => {
+        const dMon = d === 0 ? 7 : d; // Convert Sunday
+        if (dMon > currentDayMon) return false;       // Future day this week
+        if (dMon === currentDayMon) return currentHour >= 20; // Today, but only if 8pm passed
+        return true;                                   // Past day this week
+    }).length;
+
+    if (passedDeadlines === 0) return true; // No deadlines passed yet — can't be behind
+
+    const uploadsThisWeek = channelVideos.filter(v => new Date(v.date) >= startOfWeek).length;
+    return uploadsThisWeek >= passedDeadlines;
 }
 
 function calculateStreak(channelId) {
@@ -1386,11 +1415,92 @@ function calculateStreak(channelId) {
     return streak;
 }
 
+// Returns the Date object for the next 8pm EAT upload deadline
+function getNextUploadDeadline(channelId) {
+    const ch = CHANNELS[channelId];
+    const nowEAT = getEATDate();
+    const currentDay = nowEAT.getDay();
+    const currentHour = nowEAT.getHours();
+
+    // Check if today is an upload day and 8pm hasn't passed
+    if (ch.uploadDays.includes(currentDay) && currentHour < 20) {
+        const deadline = new Date(nowEAT);
+        deadline.setHours(20, 0, 0, 0);
+        return deadline;
+    }
+
+    // Find nearest future upload day using Monday-start numbering
+    const currentDayMon = currentDay === 0 ? 7 : currentDay;
+    const uploadDaysMon = ch.uploadDays.map(d => d === 0 ? 7 : d).sort((a, b) => a - b);
+
+    // Find the next day strictly after today (or today if 8pm passed)
+    let nextDayMon = uploadDaysMon.find(d => d > currentDayMon);
+    if (nextDayMon === undefined) {
+        // Wrap to next week — pick the earliest upload day
+        nextDayMon = uploadDaysMon[0];
+    }
+
+    // Convert Monday-start day back to JS day for date calculation
+    const nextDayJS = nextDayMon === 7 ? 0 : nextDayMon;
+    const daysUntil = (nextDayJS + 7 - currentDay) % 7 || 7;
+
+    const deadline = new Date(nowEAT);
+    deadline.setDate(deadline.getDate() + daysUntil);
+    deadline.setHours(20, 0, 0, 0);
+    return deadline;
+}
+
 function getNextUploadInfo(channelId) {
-    const ch = CHANNELS[channelId], now = new Date(), currentDay = now.getDay();
-    const nextDay = ch.uploadDays.find(d => d > currentDay) ?? ch.uploadDays[0];
-    const daysUntil = (nextDay + 7 - currentDay) % 7 || 7;
-    return `In ${daysUntil} day${daysUntil > 1 ? 's' : ''}`;
+    const nowEAT = getEATDate();
+    const deadline = getNextUploadDeadline(channelId);
+    const diff = deadline - nowEAT;
+    const hours = Math.floor(diff / 3600000);
+
+    if (hours < 24) {
+        return 'Today @ 8pm EAT';
+    }
+    const days = Math.ceil(diff / 86400000);
+    return `In ${days} day${days > 1 ? 's' : ''}`;
+}
+
+// Live countdown timer
+let countdownInterval = null;
+function startCountdownTimers() {
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    function updateCountdowns() {
+        const nowEAT = getEATDate();
+        for (const channelId in CHANNELS) {
+            const el = document.getElementById(`countdown-${channelId}`);
+            if (!el) continue;
+
+            const deadline = getNextUploadDeadline(channelId);
+            let diff = deadline - nowEAT;
+            if (diff <= 0) {
+                el.textContent = '🔴 NOW!';
+                el.classList.add('countdown-urgent');
+                continue;
+            }
+
+            const h = Math.floor(diff / 3600000);
+            diff %= 3600000;
+            const m = Math.floor(diff / 60000);
+            diff %= 60000;
+            const s = Math.floor(diff / 1000);
+
+            el.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+            // Add urgency class if under 2 hours
+            if (h < 2) {
+                el.classList.add('countdown-urgent');
+            } else {
+                el.classList.remove('countdown-urgent');
+            }
+        }
+    }
+
+    updateCountdowns();
+    countdownInterval = setInterval(updateCountdowns, 1000);
 }
 
 // Global functions for inline Event Listeners
