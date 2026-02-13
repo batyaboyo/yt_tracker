@@ -1,5 +1,5 @@
 // Configuration & Constants
-let API_KEY = localStorage.getItem('yt_tracker_api_key') || '';
+let API_KEY = localStorage.getItem('yt_tracker_api_key') || 'AIzaSyDioQzo_L1ntXG43T4ADLUkslRhcmccf-A';
 const CHANNELS = {
     lpbz: {
         id: 'lpbz',
