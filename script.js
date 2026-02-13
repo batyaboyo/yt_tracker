@@ -1,5 +1,5 @@
 // Configuration & Constants
-let API_KEY = localStorage.getItem('yt_tracker_api_key') || 'AIzaSyDioQzo_L1ntXG43T4ADLUkslRhcmccf-A';
+let API_KEY = localStorage.getItem('yt_tracker_api_key') || '';
 const CHANNELS = {
     lpbz: {
         id: 'lpbz',
@@ -262,13 +262,24 @@ const CHANNELS = {
     }
 };
 
+// Helper for safe JSON parsing
+function safeJSONParse(key, fallback) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+    } catch (e) {
+        console.warn(`Error parsing ${key}`, e);
+        return fallback;
+    }
+}
+
 // State Management
-let videos = JSON.parse(localStorage.getItem('yt_tracker_videos')) || [];
-let ideas = JSON.parse(localStorage.getItem('yt_tracker_ideas')) || [];
-let subsHistory = JSON.parse(localStorage.getItem('yt_tracker_subs_history')) || { lpbz: [], ecq: [] };
+let videos = safeJSONParse('yt_tracker_videos', []);
+let ideas = safeJSONParse('yt_tracker_ideas', []);
+let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [] });
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
-let inspirationSources = JSON.parse(localStorage.getItem('yt_tracker_inspiration')) || [];
+let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
 let charts = {};
 
 // DOM Elements
@@ -893,13 +904,16 @@ function saveInspirationAsIdea(channelId, title, source) {
     renderAll();
 
     // Quick feedback
-    const btn = event.target;
-    btn.textContent = '✓ Saved!';
-    btn.disabled = true;
-    setTimeout(() => {
-        btn.textContent = 'Save as Idea';
-        btn.disabled = false;
-    }, 2000);
+    if (event && event.target) {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Saved!';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }, 2000);
+    }
 }
 
 function saveToLocal() {
@@ -1161,7 +1175,7 @@ function renderChannelView(channelId) {
                     <h4>${v.title}</h4>
                     <p>Planned for: ${new Date(v.date).toLocaleDateString()}</p>
                 </div>
-                </div>
+
                 <div class="production-actions">
                     <div class="workflow-mini-steps">
                         ${getWorkflowSteps(v.workflowStage)}
@@ -1567,73 +1581,9 @@ function renderCompetitors(channelId) {
     }).join('');
 }
 
-function initContentCalendar() {
-    const calendar = document.getElementById('content-calendar');
-    if (!calendar) return;
 
-    const now = new Date();
-    const dates = [];
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(now);
-        d.setDate(now.getDate() + i);
-        dates.push(d);
-    }
 
-    const scheduledVideos = videos.filter(v => v.status === 'Planned');
 
-    calendar.innerHTML = dates.map(date => {
-        const dateStr = date.toISOString().split('T')[0];
-        const dayVideos = scheduledVideos.filter(v => v.date === dateStr);
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const dayNum = date.getDate();
-
-        const dots = dayVideos.map(v => {
-            const color = v.channelId === 'lpbz' ? 'var(--lpbz-primary)' : 'var(--accent)';
-            return `<div class="calendar-dot" style="background:${color}" title="${v.title}"></div>`;
-        }).join('');
-
-        return `
-            <div class="calendar-day ${dayVideos.length ? 'has-content' : ''}">
-                <div class="day-header">${dayNum} <span style="font-size:0.7rem; color:var(--text-muted)">${dayName}</span></div>
-                <div class="day-dots">${dots}</div>
-            </div>
-        `;
-    }).join('');
-}
-
-function initContentCalendar() {
-    const calendar = document.getElementById('content-calendar');
-    if (!calendar) return;
-
-    const now = new Date();
-    const dates = [];
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(now);
-        d.setDate(now.getDate() + i);
-        dates.push(d);
-    }
-
-    const scheduledVideos = videos.filter(v => v.status === 'Planned');
-
-    calendar.innerHTML = dates.map(date => {
-        const dateStr = date.toISOString().split('T')[0];
-        const dayVideos = scheduledVideos.filter(v => v.date === dateStr);
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-        const dayNum = date.getDate();
-
-        const dots = dayVideos.map(v => {
-            const color = v.channelId === 'lpbz' ? 'var(--lpbz-primary)' : 'var(--accent)';
-            return `<div class="calendar-dot" style="background:${color}" title="${v.title}"></div>`;
-        }).join('');
-
-        return `
-            <div class="calendar-day ${dayVideos.length ? 'has-content' : ''}">
-                <div class="day-header">${dayNum} <span style="font-size:0.7rem; color:var(--text-muted)">${dayName}</span></div>
-                <div class="day-dots">${dots}</div>
-            </div>
-        `;
-    }).join('');
-}
 
 function studyThumbnail(name) {
     window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+popular+videos`, '_blank');
@@ -1666,5 +1616,4 @@ function toggleInspiration(name) {
 
 // Initial Render handled by DOMContentLoaded listener at top of file.
 
-// Initial Render
-renderAll();
+

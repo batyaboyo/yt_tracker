@@ -1052,7 +1052,7 @@ textarea#v-notes:focus {
 .modal-header {
     padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--border);
-    background: rgba(2, 6, 23, 0.95);
+    background: var(--bg-card);
     /* Semi-transparent background */
     backdrop-filter: blur(8px);
     flex-shrink: 0;
@@ -1073,11 +1073,7 @@ textarea#v-notes:focus {
     flex-grow: 1;
 }
 
-.form-group-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
+
 
 .modal-content h2 {
     margin-bottom: 2rem;
@@ -1179,10 +1175,11 @@ textarea#v-notes:focus {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-main);
     padding: 0.6rem 0.75rem;
     border-radius: 6px;
     font-size: 0.85rem;
+    border: 1px solid var(--border);
 }
 
 .hook-title {
