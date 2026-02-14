@@ -24,17 +24,7 @@ const CHANNELS = {
                     { title: "Power of a Calm Mind | A Powerful Life Lesson Story", views: "20K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Power+of+a+Calm+Mind" }
                 ]
             },
-            {
-                name: "The School of Life",
-                note: "Philosophy & emotional intelligence",
-                topContent: [
-                    { title: "Heal Your Inner Child", views: "5M+" },
-                    { title: "Why You Will Marry the Wrong Person", views: "20M+" },
-                    { title: "The Importance of a Breakdown", views: "8M+" },
-                    { title: "Unpicking Your Crush", views: "2M+" },
-                    { title: "On Melancholy", views: "1.5M" }
-                ]
-            },
+
             {
                 name: "Life Lessons Library",
                 note: "Powerful English stories that touch the soul",
@@ -102,17 +92,7 @@ const CHANNELS = {
                     { title: "Finding Meaning", views: "250K", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Finding+Meaning" }
                 ]
             },
-            {
-                name: "Daily Stoic",
-                note: "Ancient wisdom for modern struggles",
-                topContent: [
-                    { title: "The Best Stoic Quotes", views: "2M" },
-                    { title: "How To Be Invincible", views: "1.5M" },
-                    { title: "The Obstacle Is The Way", views: "1M" },
-                    { title: "Ryan Holiday on Ego", views: "800K" },
-                    { title: "Daily Stoic Rules", views: "500K" }
-                ]
-            },
+
 
         ]
     },
