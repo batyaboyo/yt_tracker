@@ -321,7 +321,6 @@ async function syncWithYouTube(retryCount = 0) {
 async function fetchChannelData(channel) {
     const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channel.channelId}&key=${getApiKey()}`;
     const response = await fetch(url);
-    const response = await fetch(url);
     if (!response.ok) {
         const err = await response.json();
         throw new Error(err.error?.message || 'Failed to fetch channel data');
