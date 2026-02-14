@@ -1,5 +1,19 @@
 // Configuration & Constants
-let API_KEY = localStorage.getItem('yt_tracker_api_key') || 'AIzaSyDioQzo_L1ntXG43T4ADLUkslRhcmccf-A';
+let API_KEYS = safeJSONParse('yt_tracker_api_keys', ['AIzaSyCxeLcxccx2O5ZZyIPszKM_egCVyZI6HhA']);
+let currentKeyIndex = 0;
+
+function getApiKey() {
+    return API_KEYS[currentKeyIndex] || '';
+}
+
+function rotateApiKey() {
+    if (API_KEYS.length > 1) {
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        console.log(`📡 Switched to API Key #${currentKeyIndex + 1}`);
+        return true;
+    }
+    return false;
+}
 const CHANNELS = {
     lpbz: {
         id: 'lpbz',
@@ -242,7 +256,7 @@ function initTheme() {
 }
 
 // Sync Logic
-async function syncWithYouTube() {
+async function syncWithYouTube(retryCount = 0) {
     // Check for quota backoff
     const quotaBlock = localStorage.getItem('yt_tracker_quota_blocked_until');
     if (quotaBlock && Date.now() < parseInt(quotaBlock)) {
@@ -280,12 +294,18 @@ async function syncWithYouTube() {
         console.error('Sync failed:', error);
 
         if (error.message.includes('quota')) {
-            // Block sync for 4 hours on quota error
+            // Try rotating key if we haven't tried all keys yet
+            if (retryCount < API_KEYS.length - 1 && rotateApiKey()) {
+                console.log('🔄 Quota exceeded. Rotating key and retrying...');
+                return await syncWithYouTube(retryCount + 1);
+            }
+
+            // All keys failed or only one key
             const blockUntil = Date.now() + (4 * 60 * 60 * 1000);
             localStorage.setItem('yt_tracker_quota_blocked_until', blockUntil.toString());
-            alert(`YouTube API Quota Exceeded. Syncing bloacked for 4 hours. Loading local data...`);
+            alert(`YouTube API Quota Exceeded on all keys. Syncing blocked for 4 hours. Loading local data...`);
         } else {
-            alert(`YouTube Sync failed: ${error.message}. Please check your API key or connection.`);
+            alert(`YouTube Sync failed: ${error.message}. Please check your API keys or connection.`);
         }
     } finally {
         syncBtn.disabled = false;
@@ -299,7 +319,8 @@ async function syncWithYouTube() {
 }
 
 async function fetchChannelData(channel) {
-    const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channel.channelId}&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channel.channelId}&key=${getApiKey()}`;
+    const response = await fetch(url);
     const response = await fetch(url);
     if (!response.ok) {
         const err = await response.json();
@@ -323,7 +344,7 @@ async function fetchChannelData(channel) {
 }
 
 async function fetchChannelVideos(channel) {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel.channelId}&maxResults=20&order=date&type=video&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel.channelId}&maxResults=20&order=date&type=video&key=${getApiKey()}`;
     const response = await fetch(url);
     if (!response.ok) {
         const err = await response.json();
@@ -334,7 +355,7 @@ async function fetchChannelVideos(channel) {
     if (data.items) {
         videos = videos.filter(v => v.channelId !== channel.id || !v.isApiData);
         const videoIds = data.items.map(item => item.id.videoId).join(',');
-        const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${API_KEY}`;
+        const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${getApiKey()}`;
         const statsResponse = await fetch(statsUrl);
         const statsData = await statsResponse.json();
 
@@ -811,7 +832,7 @@ async function fetchFreshInspirations() {
                     // Use quotes for exact channel name match if possible, or just the name
                     const query = encodeURIComponent(`"${comp.name}" ${focus}`);
                     const res = await fetch(
-                        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${API_KEY}`
+                        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${getApiKey()}`
                     );
                     const data = await res.json();
 
@@ -839,7 +860,7 @@ async function fetchFreshInspirations() {
             try {
                 const videoIds = allResults.map(r => r.videoId).join(',');
                 const statsRes = await fetch(
-                    `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`
+                    `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${getApiKey()}`
                 );
                 const statsData = await statsRes.json();
                 if (statsData.items) {
@@ -925,16 +946,11 @@ function saveToLocal() {
 
 // Settings Logic
 function initSettings() {
-    const apiKeyInput = document.getElementById('set-api-key');
-    apiKeyInput.value = API_KEY;
+    renderApiKeysList();
 
-    document.getElementById('save-api-key-btn').addEventListener('click', () => {
-        const newKey = apiKeyInput.value.trim();
-        if (newKey) {
-            API_KEY = newKey;
-            localStorage.setItem('yt_tracker_api_key', API_KEY);
-            alert('API Key saved successfully!');
-        }
+    document.getElementById('add-api-key-btn').addEventListener('click', addApiKey);
+    document.getElementById('new-api-key').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addApiKey();
     });
 
     document.getElementById('export-data-btn').addEventListener('click', exportData);
@@ -945,6 +961,47 @@ function initSettings() {
     document.getElementById('import-file-input').addEventListener('change', importData);
 
     renderSettings();
+}
+
+function renderApiKeysList() {
+    const list = document.getElementById('api-keys-list');
+    if (!list) return;
+
+    list.innerHTML = API_KEYS.map((key, index) => `
+        <div class="api-key-item ${index === currentKeyIndex ? 'active' : ''}">
+            <span>${'*'.repeat(10)}${key.slice(-4)}</span>
+            <button class="remove-key-btn" onclick="removeApiKey(${index})" title="Remove Key">&times;</button>
+        </div>
+    `).join('') || '<p style="color:var(--text-muted); font-size:0.85rem">No API keys added.</p>';
+}
+
+function addApiKey() {
+    const input = document.getElementById('new-api-key');
+    const newKey = input.value.trim();
+    if (newKey) {
+        if (API_KEYS.includes(newKey)) {
+            alert('This API key is already in the list.');
+            return;
+        }
+        API_KEYS.push(newKey);
+        localStorage.setItem('yt_tracker_api_keys', JSON.stringify(API_KEYS));
+        input.value = '';
+        renderApiKeysList();
+        alert('API Key added successfully!');
+    }
+}
+
+function removeApiKey(index) {
+    if (API_KEYS.length <= 1) {
+        alert('You must have at least one API key.');
+        return;
+    }
+    if (confirm('Are you sure you want to remove this API key?')) {
+        API_KEYS.splice(index, 1);
+        if (currentKeyIndex >= API_KEYS.length) currentKeyIndex = 0;
+        localStorage.setItem('yt_tracker_api_keys', JSON.stringify(API_KEYS));
+        renderApiKeysList();
+    }
 }
 
 function toggleDemoMode() {

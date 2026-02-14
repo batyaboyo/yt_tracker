@@ -284,11 +284,20 @@
             <div class="settings-grid">
                 <div class="settings-card card">
                     <h3>API Configuration</h3>
-                    <div class="form-group">
-                        <label for="set-api-key">YouTube Data API Key</label>
-                        <input type="password" id="set-api-key" placeholder="Enter API Key">
-                        <button id="save-api-key-btn" class="btn btn-primary btn-sm" style="margin-top: 1rem">Save
-                            Key</button>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem">
+                        Add multiple API keys to increase your daily quota limits. The dashboard will automatically
+                        rotate between them.
+                    </p>
+                    <div id="api-keys-list" class="api-keys-list">
+                        <!-- API keys injected by JS -->
+                    </div>
+                    <div class="form-group"
+                        style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem">
+                        <label for="new-api-key">Add New API Key</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
+                            <input type="password" id="new-api-key" placeholder="Enter API Key" style="flex: 1">
+                            <button id="add-api-key-btn" class="btn btn-primary btn-sm">Add Key</button>
+                        </div>
                     </div>
                 </div>
 
