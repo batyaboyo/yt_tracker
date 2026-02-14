@@ -11,17 +11,17 @@ const CHANNELS = {
         color: '#818cf8',
         uploadDays: [1, 3, 5, 0],
         subscribers: 0,
-        searchFocus: 'real life christian stories testimony',
+        searchFocus: '',
         competitors: [
             {
                 name: "Tales by Monisha",
                 note: "Cultural fables & moral stories",
                 topContent: [
-                    { title: "If You Think Love Fades with Time", views: "1M+" },
-                    { title: "Don't Fear the Impossible", views: "800K" },
-                    { title: "You're Not Less Than Anyone", views: "500K" },
-                    { title: "Calm Your Mind", views: "400K" },
-                    { title: "Loyalty Isn't Always Rewarded", views: "300K" }
+                    { title: "Don't Share Everything | A Deep Moral Story About Trust", views: "733K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Don%27t+Share+Everything" },
+                    { title: "You're Not Less Than Anyone | Life-Changing Moral Story", views: "37K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+You%27re+Not+Less+Than+Anyone" },
+                    { title: "Use Mind, Not Muscle | A Powerful Jungle Lesson", views: "25K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Use+Mind+Not+Muscle" },
+                    { title: "Never Lose Your Identity | A Powerful Life Lesson", views: "24K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Never+Lose+Your+Identity" },
+                    { title: "Power of a Calm Mind | A Powerful Life Lesson Story", views: "20K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Power+of+a+Calm+Mind" }
                 ]
             },
             {
@@ -39,11 +39,11 @@ const CHANNELS = {
                 name: "Life Lessons Library",
                 note: "Powerful English stories that touch the soul",
                 topContent: [
-                    { title: "Loyalty Isn't Always Rewarded", views: "20K" },
-                    { title: "The Wrong Door That Opened the Right Future", views: "15K" },
-                    { title: "Success Story of A Poor Women", views: "10K" },
-                    { title: "The Power of Silence", views: "50K" },
-                    { title: "Don't Judge a Book by Its Cover", views: "35K" }
+                    { title: "The Wrong Door That Opened the Right Future", views: "73K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+The+Wrong+Door" },
+                    { title: "7 Rules of Success and Wealth | Life-Changing Motivational", views: "26K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+7+Rules+of+Success" },
+                    { title: "Three Greatest Enemies of Success — A Zen Story", views: "18K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+Three+Greatest+Enemies" },
+                    { title: "Why God Took Everything From Him | Heart-Touching Story", views: "7.5K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+Why+God+Took+Everything" },
+                    { title: "You're Not Anxious, You're Awake — A Soul-Healing Story", views: "2.1K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+You%27re+Not+Anxious" }
                 ]
             },
 
@@ -62,44 +62,44 @@ const CHANNELS = {
                 name: "Living Life Tales",
                 note: "Daily inspiration & vocabulary",
                 topContent: [
-                    { title: "I use these WORDS every day", views: "644K" },
-                    { title: "Digital diaries | days in my life", views: "639K" },
-                    { title: "Interactive Speaking Course", views: "643K" },
-                    { title: "Morning Routine for Success", views: "200K" },
-                    { title: "How to stay motivated", views: "150K" }
+                    { title: "The Secret of 5 AM | One Habit That Changed a Poor Man's Life", views: "644K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+The+Secret+of+5+AM" },
+                    { title: "The Lazy Boy Story | Motivational video", views: "609K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+The+Lazy+Boy+Story" },
+                    { title: "You're Not Alone - A Beautiful Inspirational Short Story", views: "483K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+You%27re+Not+Alone" },
+                    { title: "A Story About Life (INSPIRATIONAL)", views: "446K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+A+Story+About+Life" },
+                    { title: "A SHORT STORY FULL OF WISDOM", views: "403K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+A+Short+Story+Full+of+Wisdom" }
                 ]
             },
             {
                 name: "Soft Life Family",
                 note: "Peaceful, Ghibli-style village life",
                 topContent: [
-                    { title: "A Calm Day in Village Life", views: "294K" },
-                    { title: "From Sunrise to Sunset", views: "194K" },
-                    { title: "A Beautiful Quiet Village", views: "174K" },
-                    { title: "Peaceful Village Lifestyle", views: "31K" },
-                    { title: "Peaceful Village Life Routine", views: "26K" }
+                    { title: "A Calm Day in Village Life || Ghibli Style", views: "294K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+A+Calm+Day+in+Village+Life" },
+                    { title: "From Sunrise to Sunset || Peaceful Village Life", views: "194K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+From+Sunrise+to+Sunset" },
+                    { title: "A Beautiful Quiet Village || Ghibli Style", views: "174K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+A+Beautiful+Quiet+Village" },
+                    { title: "Peaceful Village Lifestyle", views: "31K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+Peaceful+Village+Lifestyle" },
+                    { title: "Peaceful Village Life Routine", views: "26K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+Peaceful+Village+Life+Routine" }
                 ]
             },
             {
                 name: "Wisdom of Hope",
                 note: "Motivational & inspirational stories",
                 topContent: [
-                    { title: "How to Stay Positive in Tough Times", views: "71K" },
-                    { title: "Who Is Truly Happy?", views: "8.5K" },
-                    { title: "Everything You Do to Others… Comes Back", views: "3.5K" },
-                    { title: "The Value of Your Life", views: "1.3K" },
-                    { title: "Never Lose Hope", views: "5K" }
+                    { title: "How to Stay Positive in Tough Times | Power of Belief", views: "71K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+How+to+Stay+Positive" },
+                    { title: "Who Is Truly Happy? | Eye-Opening Story", views: "8.5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Who+Is+Truly+Happy" },
+                    { title: "Everything You Do to Others… Comes Back to You", views: "3.5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Everything+You+Do+to+Others" },
+                    { title: "The Value of Your Life – A Powerful Story on Self-Worth", views: "1.3K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+The+Value+of+Your+Life" },
+                    { title: "Never Lose Hope", views: "5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Never+Lose+Hope" }
                 ]
             },
             {
                 name: "Reflections of Life",
                 note: "Cinematic, high-quality short films",
                 topContent: [
-                    { title: "The Wait", views: "Unknown" },
-                    { title: "Connecting with Strangers", views: "Unknown" },
-                    { title: "The Beauty of Everyday", views: "Unknown" },
-                    { title: "Silence and Noise", views: "Unknown" },
-                    { title: "Finding Meaning", views: "Unknown" }
+                    { title: "96 Years of WISDOM: The 3 Lessons That Will Make You Feel Awe", views: "2.9M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+96+Years+of+WISDOM" },
+                    { title: "Our Island Life: Finding Peace & Freedom in Isolation", views: "2.5M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Our+Island+Life" },
+                    { title: "The Simple Life: How to Find Your 'ENOUGH'", views: "2.3M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+The+Simple+Life" },
+                    { title: "Silence and Noise", views: "500K", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Silence+and+Noise" },
+                    { title: "Finding Meaning", views: "250K", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Finding+Meaning" }
                 ]
             },
             {
@@ -128,6 +128,17 @@ const CHANNELS = {
         subscribers: 0,
         searchFocus: 'cute animal videos pets',
         competitors: [
+            {
+                name: "Pet Pop",
+                note: "Viral pet moments & compilations (@petpopz)",
+                topContent: [
+                    { title: "Funniest Pet Videos of the Year", views: "10M+" },
+                    { title: "Cute Animals That Will Melt Your Heart", views: "5M+" },
+                    { title: "Try Not To Laugh: Tik Tok Pets", views: "3M+" },
+                    { title: "Best Animal Fails & Wins", views: "2M+" },
+                    { title: "Ultimate Funny Dog Compilation", views: "1.5M+" }
+                ]
+            },
             {
                 name: "The Dodo",
                 note: "World-class heartwarming animal stories",
@@ -849,7 +860,8 @@ async function fetchFreshInspirations() {
             for (const comp of selectedComps) {
                 try {
                     const focus = channel.searchFocus || '';
-                    const query = encodeURIComponent(`${comp.name} ${focus}`);
+                    // Use quotes for exact channel name match if possible, or just the name
+                    const query = encodeURIComponent(`"${comp.name}" ${focus}`);
                     const res = await fetch(
                         `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${API_KEY}`
                     );
