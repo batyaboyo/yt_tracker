@@ -198,6 +198,7 @@ let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [] }
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
+let isDemoMode = localStorage.getItem('yt_tracker_demo_mode') === 'true';
 let charts = {};
 
 // DOM Elements
@@ -215,6 +216,7 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    if (isDemoMode) loadMockData();
     initTabs();
     initForms();
     initSettings();
@@ -241,6 +243,17 @@ function initTheme() {
 
 // Sync Logic
 async function syncWithYouTube() {
+    // Check for quota backoff
+    const quotaBlock = localStorage.getItem('yt_tracker_quota_blocked_until');
+    if (quotaBlock && Date.now() < parseInt(quotaBlock)) {
+        const remaining = Math.ceil((parseInt(quotaBlock) - Date.now()) / 60000);
+        console.warn(`Sync skipped: Quota blocked for another ${remaining} minutes.`);
+        if (!isDemoMode) {
+            alert(`API Quota exceeded. Using local data only. Retrying in ${remaining}m. (Enable Demo Mode in Settings for mock data!)`);
+        }
+        return;
+    }
+
     syncBtn.disabled = true;
     const originalText = syncBtn.innerText;
     syncBtn.innerHTML = `<span class="syncing-icon">↻</span> Syncing...`;
@@ -261,10 +274,19 @@ async function syncWithYouTube() {
         lastSync = new Date().toLocaleString();
         localStorage.setItem('yt_tracker_last_sync', lastSync);
         localStorage.setItem('yt_tracker_last_sync_timestamp', Date.now().toString());
+        localStorage.removeItem('yt_tracker_quota_blocked_until'); // Clear block on success
         updateSyncStatusDisplay();
     } catch (error) {
         console.error('Sync failed:', error);
-        alert('YouTube Sync failed. Please check your API key or connection.');
+
+        if (error.message.includes('quota')) {
+            // Block sync for 4 hours on quota error
+            const blockUntil = Date.now() + (4 * 60 * 60 * 1000);
+            localStorage.setItem('yt_tracker_quota_blocked_until', blockUntil.toString());
+            alert(`YouTube API Quota Exceeded. Syncing bloacked for 4 hours. Loading local data...`);
+        } else {
+            alert(`YouTube Sync failed: ${error.message}. Please check your API key or connection.`);
+        }
     } finally {
         syncBtn.disabled = false;
         syncBtn.innerText = originalText;
@@ -279,6 +301,10 @@ async function syncWithYouTube() {
 async function fetchChannelData(channel) {
     const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${channel.channelId}&key=${API_KEY}`;
     const response = await fetch(url);
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'Failed to fetch channel data');
+    }
     const data = await response.json();
     if (data.items && data.items.length > 0) {
         const subCount = parseInt(data.items[0].statistics.subscriberCount) || 0;
@@ -299,6 +325,10 @@ async function fetchChannelData(channel) {
 async function fetchChannelVideos(channel) {
     const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channel.channelId}&maxResults=20&order=date&type=video&key=${API_KEY}`;
     const response = await fetch(url);
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'Failed to fetch videos');
+    }
     const data = await response.json();
 
     if (data.items) {
@@ -351,8 +381,10 @@ function checkAutoSync() {
     for (const channelKey in CHANNELS) {
         CHANNELS[channelKey].subscribers = parseInt(localStorage.getItem(`yt_tracker_subs_${channelKey}`)) || 0;
     }
-    if (!lastSyncTime || now - parseInt(lastSyncTime) > 3600000) {
-        syncWithYouTube();
+
+    // Auto-sync every 6 hours instead of every hour to conserve quota
+    if (!lastSyncTime || now - parseInt(lastSyncTime) > 21600000) {
+        if (!isDemoMode) syncWithYouTube();
     }
 }
 
@@ -915,10 +947,85 @@ function initSettings() {
     renderSettings();
 }
 
+function toggleDemoMode() {
+    isDemoMode = !isDemoMode;
+    localStorage.setItem('yt_tracker_demo_mode', isDemoMode);
+    if (isDemoMode) {
+        loadMockData();
+    } else {
+        // Reload real data from local storage
+        videos = safeJSONParse('yt_tracker_videos', []);
+        for (const key in CHANNELS) {
+            CHANNELS[key].subscribers = parseInt(localStorage.getItem(`yt_tracker_subs_${key}`)) || 0;
+        }
+    }
+    renderAll();
+}
+
+function loadMockData() {
+    CHANNELS.lpbz.subscribers = 12500;
+    CHANNELS.ecq.subscribers = 4800;
+
+    const mockVideos = [];
+    const now = new Date();
+
+    // LPBZ Mock Videos
+    for (let i = 0; i < 15; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - (i * 2));
+        mockVideos.push({
+            id: `mock-lpbz-${i}`,
+            channelId: 'lpbz',
+            title: i % 2 === 0 ? `Morning Prayer: Strength #${i}` : `Bible Study: Chapter ${i}`,
+            date: d.toISOString().split('T')[0],
+            type: i % 2 === 0 ? 'Short Prayer' : 'Long-form',
+            views: 1200 + Math.floor(Math.random() * 5000),
+            likes: 120 + Math.floor(Math.random() * 300),
+            comments: 45 + Math.floor(Math.random() * 100),
+            thumbnail: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=120&q=80',
+            status: 'Live',
+            isApiData: true
+        });
+    }
+
+    // ECQ Mock Videos
+    for (let i = 0; i < 10; i++) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - (i * 3));
+        mockVideos.push({
+            id: `mock-ecq-${i}`,
+            channelId: 'ecq',
+            title: `Quest #${i}: Hamster vs The Labyrinth`,
+            date: d.toISOString().split('T')[0],
+            type: 'Short',
+            views: 8500 + Math.floor(Math.random() * 20000),
+            likes: 2400 + Math.floor(Math.random() * 5000),
+            comments: 110 + Math.floor(Math.random() * 500),
+            thumbnail: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=120&q=80',
+            status: 'Live',
+            isApiData: true
+        });
+    }
+
+    videos = mockVideos;
+}
+
 function renderSettings() {
     const list = document.getElementById('settings-channels-list');
     if (!list) return;
-    list.innerHTML = Object.entries(CHANNELS).map(([key, ch]) => `
+    list.innerHTML = `
+        <div class="settings-card" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <div>
+                    <strong>Demo Mode</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-muted)">Use mock data for testing UI when API quota is empty.</p>
+                </div>
+                <button class="btn btn-sm ${isDemoMode ? 'btn-primary' : 'btn-outline'}" onclick="toggleDemoMode()">
+                    ${isDemoMode ? 'Enabled' : 'Disabled'}
+                </button>
+            </div>
+        </div>
+    ` + Object.entries(CHANNELS).map(([key, ch]) => `
         <div class="channel-setting-item">
             <div class="channel-setting-info">
                 <strong>${ch.name}</strong>
@@ -1018,7 +1125,7 @@ function renderAll() {
 function renderGlobalStats() {
     const liveVideos = videos.filter(v => v.status === 'Live');
     const totalVideos = liveVideos.length;
-    const totalViews = liveVideos.reduce((sum, v) => sum + v.views, 0);
+    const totalViews = liveVideos.reduce((sum, v) => sum + parseViews(v.views), 0);
     const avgViews = totalVideos ? Math.round(totalViews / totalVideos) : 0;
     const container = document.getElementById('global-stats-summary');
     container.innerHTML = `
@@ -1125,14 +1232,27 @@ function renderChannelView(channelId) {
     const plannedVideos = channelVideos.filter(v => v.status === 'Planned');
 
     const totalVids = liveVideos.length;
-    const totalViews = liveVideos.reduce((sum, v) => sum + v.views, 0);
-    const avgViews = totalVids ? Math.round(totalViews / totalVids) : 0;
+    const totalViews = liveVideos.reduce((sum, v) => sum + parseViews(v.views), 0);
+    const avgViewsPerVid = totalVids ? Math.round(totalViews / totalVids) : 0;
+
+    // Calculate Avg Views Per Day
+    let avgDailyViews = 0;
+    if (liveVideos.length > 0) {
+        const lastVideo = liveVideos[liveVideos.length - 1];
+        const firstVideoDate = lastVideo.date ? new Date(lastVideo.date) : new Date();
+        const now = new Date();
+        const daysDiff = Math.max(1, Math.ceil((now - firstVideoDate) / (1000 * 60 * 60 * 24)));
+        avgDailyViews = Math.round(totalViews / daysDiff);
+    }
+
     const streak = calculateStreak(channelId);
 
     document.getElementById(`${channelId}-stats`).innerHTML = `
         <div class="stat-card"><span class="value">${channel.subscribers.toLocaleString()}</span><span class="label">Subscribers</span></div>
         <div class="stat-card"><span class="value">${totalVids}</span><span class="label">Total Videos</span></div>
-        <div class="stat-card"><span class="value">${avgViews.toLocaleString()}</span><span class="label">Avg Views</span></div>
+        <div class="stat-card"><span class="value">${totalViews.toLocaleString()}</span><span class="label">Total Views</span></div>
+        <div class="stat-card"><span class="value">${avgDailyViews.toLocaleString()}</span><span class="label">Avg Views/Day</span></div>
+        <div class="stat-card"><span class="value">${avgViewsPerVid.toLocaleString()}</span><span class="label">Avg Views/Vid</span></div>
         <div class="stat-card"><span class="value">${streak}</span><span class="label">Week Streak</span></div>
     `;
 
@@ -1160,6 +1280,7 @@ function renderChannelView(channelId) {
     renderCompetitors(channelId);
 
     const tbody = document.querySelector(`#${channelId}-history tbody`);
+    if (!tbody) return; // Defensive check
     tbody.innerHTML = liveVideos.map(v => `
         <tr>
             <td class="thumbnail-cell"><img src="${v.thumbnail || ''}" class="thumbnail-img"></td>
@@ -1376,7 +1497,7 @@ function isOnSchedule(channelId, channelVideos) {
 
     if (passedDeadlines === 0) return true; // No deadlines passed yet — can't be behind
 
-    const uploadsThisWeek = channelVideos.filter(v => new Date(v.date) >= startOfWeek).length;
+    const uploadsThisWeek = channelVideos.filter(v => new Date(v.date) >= startOfWeek && (v.status === 'Live' || v.status === 'Planned')).length;
     return uploadsThisWeek >= passedDeadlines;
 }
 
@@ -1443,8 +1564,8 @@ function getNextUploadInfo(channelId) {
     if (hours < 24) {
         return 'Today @ 8pm EAT';
     }
-    const days = Math.ceil(diff / 86400000);
-    return `In ${days} day${days > 1 ? 's' : ''}`;
+    const days = Math.round(diff / 86400000);
+    return `In ${days} day${days !== 1 ? 's' : ''}`;
 }
 
 // Live countdown timer
@@ -1584,6 +1705,13 @@ function toggleInspiration(name) {
     renderAll();
 }
 
-// Initial Render handled by DOMContentLoaded listener at top of file.
+function parseViews(val) {
+    if (typeof val === 'number') return val;
+    if (!val) return 0;
+    const str = String(val).toUpperCase().replace(/,/g, '').trim();
+    if (str.includes('M')) return parseFloat(str) * 1000000;
+    if (str.includes('K')) return parseFloat(str) * 1000;
+    return parseFloat(str) || 0;
+}
 
 
