@@ -108,125 +108,50 @@ const CHANNELS = {
         subscribers: 0,
         searchFocus: 'cute animal videos pets',
         competitors: [
+
+
             {
-                name: "Pet Pop",
-                note: "Viral pet moments & compilations (@petpopz)",
+                name: "The Secret Life of my Hamster",
+                note: "Epic hamster mazes & escapes",
                 topContent: [
-                    { title: "Funniest Pet Videos of the Year", views: "10M+" },
-                    { title: "Cute Animals That Will Melt Your Heart", views: "5M+" },
-                    { title: "Try Not To Laugh: Tik Tok Pets", views: "3M+" },
-                    { title: "Best Animal Fails & Wins", views: "2M+" },
-                    { title: "Ultimate Funny Dog Compilation", views: "1.5M+" }
+                    { title: "Hamster Ball pool Maze", views: "289M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Hamster+Ball+pool+Maze" },
+                    { title: "Hamster vs Pop It maze for pets Escape", views: "198M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Pop+It+maze" },
+                    { title: "Hamster Pop It Maze", views: "136M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Hamster+Pop+It+Maze" },
+                    { title: "The Best Hamster Challenges", views: "108M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Best+Hamster+Challenges" },
+                    { title: "Hamster Escapes the Pool Maze", views: "72M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Escapes+the+Pool+Maze" }
                 ]
             },
             {
-                name: "The Dodo",
-                note: "World-class heartwarming animal stories",
+                name: "Shadow the Rat",
+                note: "Incredible rat tricks & agility",
                 topContent: [
-                    { title: "Good Dogs Wait For Their Names To Be Called", views: "37M", url: "https://www.youtube.com/results?search_query=The+Dodo+Good+Dogs" },
-                    { title: "30 Minutes Of Our Littlest, Fiercest Friends", views: "4.2M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+littlest+friends" },
-                    { title: "30+ Minutes Of The Oddest Couples You've Ever Seen", views: "3M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+oddest+couples" },
-                    { title: "30 Minutes Of Our Favorite Feel-Good Animal Stories", views: "1.4M", url: "https://www.youtube.com/results?search_query=The+Dodo+30+minutes+feel+good+stories" },
-                    { title: "Marathon of The Happiest Dodo Stories EVER", views: "999K", url: "https://www.youtube.com/results?search_query=The+Dodo+Marathon+happiest+stories" }
+                    { title: "Shadow The Rat - Best Rat Tricks (Compilation)", views: "805K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Best+Rat+Tricks" },
+                    { title: "10 Weird Yet Totally Normal Behaviors from Pet Rats", views: "517K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+10+Weird+Yet+Totally+Normal+Behaviors" },
+                    { title: "Rats vs Boiled Egg Part 2 - Chill Out Bean!", views: "206K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Rats+vs+Boiled+Egg" },
+                    { title: "Latte's Epic Rat Tricks - Part 3!", views: "147K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Latte%27s+Epic+Rat+Tricks" },
+                    { title: "How I Introduced My 3 Younger Rats to My 2 Older Girls", views: "144K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+How+I+Introduced+My+3+Younger+Rats" }
                 ]
             },
             {
-                name: "Tucker Budzyn",
-                note: "Famous Golden Retriever adventures",
+                name: "Little Adventures",
+                note: "Cinematic guinea pig life",
                 topContent: [
-                    { title: "My Dog Rents a Swimming Pool", views: "59M", url: "https://www.youtube.com/watch?v=4x9tF1c944U" },
-                    { title: "Hugging Another Dog Too Long | Jealous Dog Reaction", views: "53M", url: "https://www.youtube.com/watch?v=VlS-F2y_0M0" },
-                    { title: "My Dog Has a Beach House Vacation", views: "50M", url: "https://www.youtube.com/watch?v=VlS-F2y_0M0" },
-                    { title: "My Dog Becomes a Father | Part 1", views: "13M", url: "https://www.youtube.com/results?search_query=Tucker+Budzyn+Becomes+a+Father+Part+1" },
-                    { title: "Dog Reviews Food With Puppy | Tucker Taste Test 15", views: "13M", url: "https://www.youtube.com/watch?v=o0h82c5f_0Q" }
+                    { title: "New Guinea Pig Introduction", views: "872K", url: "https://www.youtube.com/results?search_query=Little+Adventures+New+Guinea+Pig+Introduction" },
+                    { title: "I Bought My Guinea Pigs Everything They Asked For", views: "544K", url: "https://www.youtube.com/results?search_query=Little+Adventures+I+Bought+My+Guinea+Pigs+Everything" },
+                    { title: "My Instagram Followers Control My Life Guinea Pig Edition", views: "535K", url: "https://www.youtube.com/results?search_query=Little+Adventures+My+Instagram+Followers+Control+My+Life" },
+                    { title: "10 Strange But Common Guinea Pig Behaviors", views: "533K", url: "https://www.youtube.com/results?search_query=Little+Adventures+10+Strange+But+Common+Guinea+Pig+Behaviors" },
+                    { title: "Failed Guinea Pig Introduction", views: "518K", url: "https://www.youtube.com/results?search_query=Little+Adventures+Failed+Guinea+Pig+Introduction" }
                 ]
             },
             {
-                name: "Hammy and Olivia",
-                note: "Talking pet skits & adventures",
+                name: "The Modern Ferret",
+                note: "Funny ferret chaos & bonding",
                 topContent: [
-                    { title: "Try Not to Laugh - Funniest Talking Dog Videos!", views: "9M", url: "https://www.youtube.com/results?search_query=Hammy+and+Olivia+Try+Not+to+Laugh" },
-                    { title: "Talking Corgi Compilation | Dogs talking like humans!", views: "5.5M", url: "https://www.youtube.com/results?search_query=Hammy+and+Olivia+Talking+Corgi+Compilation" },
-                    { title: "SUPER HERO DOG SAVES THE DAY", views: "5.2M", url: "https://www.youtube.com/watch?v=H_I_J_K_L" },
-                    { title: "Best of Hammy Being a Potato Compilation", views: "5M", url: "https://www.youtube.com/watch?v=CqYQ5l3g_jM" },
-                    { title: "Talking Dogs Take on the EVIL Vacuum", views: "1.2M", url: "https://www.youtube.com/watch?v=YwVd_o_g7vE" }
-                ]
-            },
-            {
-                name: "Hope For Paws",
-                note: "High-stakes animal rescue stories",
-                topContent: [
-                    { title: "Saving five orphaned puppies", views: "13M" },
-                    { title: "Extremely matted homeless dog", views: "8.3M" },
-                    { title: "Pit Bull rescue like you have never seen before!", views: "6.4M" },
-                    { title: "Stray dog rescue - step by step", views: "2.6M" },
-                    { title: "Something EXTREME had to be done to save this dog", views: "1.9M" }
-                ]
-            },
-            {
-                name: "That Little Puff",
-                note: "Pet-led viral adventures & cooking",
-                topContent: [
-                    { title: "Puff joins the Squid Game craze!", views: "127M", url: "https://www.youtube.com/watch?v=R0_qIeM8k94" },
-                    { title: "Puff joins the Squid Game craze! (Alt)", views: "108M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Squid+Game" },
-                    { title: "Introducing the Puff Pillow", views: "2.6M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Puff+Pillow" },
-                    { title: "New 30min Ultimate Cat Compilation!", views: "1.2M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Ultimate+Cat+Compilation" },
-                    { title: "Cat Cooking Challenge (Epic)", views: "1M", url: "https://www.youtube.com/results?search_query=That+Little+Puff+Cooking+Challenge" }
-                ]
-            },
-            {
-                name: "Wonder (Pet Heroes)",
-                note: "Extraordinary animal heroism",
-                topContent: [
-                    { title: "Great Danes Rescue Drowning Baby", views: "475K" },
-                    { title: "Hero Dog Warns Family Of Deadly Threat", views: "272K" },
-                    { title: "Boy Survived Extreme Cold Because Of His Dogs", views: "241K" },
-                    { title: "Man's Life Was In Danger Until His Dog Saved Him", views: "200K" },
-                    { title: "Good Boye Saved A Man From Drowning", views: "169K" }
-                ]
-            },
-            {
-                name: "That Good News Girl",
-                note: "Feel-good pet narratives",
-                topContent: [
-                    { title: "Cat rejected for being 'too cuddly'", views: "1.6M" },
-                    { title: "Husky saves ENTIRE neighborhood!", views: "1.4M" },
-                    { title: "Stray dog tries to steal toy 5 TIMES", views: "1.1M" },
-                    { title: "Adorable or DANGEROUS Animal Encounters", views: "27K" },
-                    { title: "Something was trapped in this storm drain", views: "16K" }
-                ]
-            },
-            {
-                name: "Crusoe the Dachshund",
-                note: "Themed pet journeys",
-                topContent: [
-                    { title: "Ep 8: Crusoe Saves Someone at the Beach!", views: "13M" },
-                    { title: "Ep 47: QUARANTINE LIFE", views: "10M" },
-                    { title: "Ep 44: Daphne Hosts a CRAZY TEA PARTY", views: "6.3M" },
-                    { title: "Ep 46: Daphne Gets a HAIRCUT!", views: "5.6M" },
-                    { title: "Ep 45: Daphne Has Surgery..", views: "5.4M" }
-                ]
-            },
-            {
-                name: "Maymo",
-                note: "Cute pet life stories",
-                topContent: [
-                    { title: "Dogs vs Meowing Cat Skeleton Prank", views: "15M" },
-                    { title: "Dogs Battle Evil Minions In Real Life!", views: "5.2M" },
-                    { title: "Chef Dog Makes Canned Food Casserole", views: "4.7M" },
-                    { title: "Dogs Murder Among Us Crewmates", views: "3.4M" },
-                    { title: "Dog Chases Laser, Finds Pot of Treats", views: "1.6M" }
-                ]
-            },
-            {
-                name: "Apollo and Frens",
-                note: "Daily pet antics & series",
-                topContent: [
-                    { title: "Talking Parrot's Learning Colors", views: "2M" },
-                    { title: "The Second Animal to EVER Ask a Question", views: "1M" },
-                    { title: "Apollo's 2022 Recap", views: "945K" },
-                    { title: "Apollo's 2024 Recap", views: "203K" },
-                    { title: "Apollo World Record Bird", views: "166K" }
+                    { title: "FERRETS Taking Over TikTok | FUNNIEST Trending", views: "1.3M", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+FERRETS+Taking+Over+TikTok" },
+                    { title: "FERRETS Taking Over Tiktok | FUNNIEST Trending pt. 2", views: "797K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+Taking+Over+Tiktok+pt+2" },
+                    { title: "What is a Ferret? | Ferrets as Pets 101", views: "713K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+What+is+a+Ferret" },
+                    { title: "11 FUN Ways to Bond With Your Ferret", views: "411K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+11+FUN+Ways+to+Bond" },
+                    { title: "BEST FERRET Products | The Modern Ferret", views: "290K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+BEST+FERRET+Products" }
                 ]
             },
             {
