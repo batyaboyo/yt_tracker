@@ -60,14 +60,25 @@ const CHANNELS = {
                 ]
             },
             {
-                name: "Soft Life Family",
-                note: "Peaceful, Ghibli-style village life",
+                name: "Grace for Purpose",
+                note: "Morning prayers & motivation",
                 topContent: [
-                    { title: "A Calm Day in Village Life || Ghibli Style", views: "294K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+A+Calm+Day+in+Village+Life" },
-                    { title: "From Sunrise to Sunset || Peaceful Village Life", views: "194K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+From+Sunrise+to+Sunset" },
-                    { title: "A Beautiful Quiet Village || Ghibli Style", views: "174K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+A+Beautiful+Quiet+Village" },
-                    { title: "Peaceful Village Lifestyle", views: "31K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+Peaceful+Village+Lifestyle" },
-                    { title: "Peaceful Village Life Routine", views: "26K", url: "https://www.youtube.com/results?search_query=Soft+Life+Family+Peaceful+Village+Life+Routine" }
+                    { title: "Speak God's Blessing Over Your Mornings in 2026", views: "138K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Speak+God%27s+Blessing" },
+                    { title: "GOD IS NEAR To Those Who Call On Him", views: "127K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+GOD+IS+NEAR" },
+                    { title: "Start Your Morning with a Prayer That Carries Power", views: "112K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Start+Your+Morning+Prayer" },
+                    { title: "Be Still and Begin Your Day Rich In Spiritual Blessings", views: "100K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Be+Still+and+Begin+Your+Day" },
+                    { title: "Never Forget That Living For God Is Your MAIN Priority", views: "92K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Never+Forget+Living+For+God" }
+                ]
+            },
+            {
+                name: "Daily Jesus Prayers",
+                note: "Daily devotionals & prayers",
+                topContent: [
+                    { title: "PRAY THIS Powerful February 2026 Prayer for Blessing", views: "21K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+February+2026+Prayer" },
+                    { title: "Go Before Me & Guide Me For The Rest Of 2026", views: "15K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Go+Before+Me" },
+                    { title: "Guide My Steps in Peace and Strength", views: "13K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Guide+My+Steps" },
+                    { title: "Lord, Restore Me and Save Me", views: "11K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Lord+Restore+Me" },
+                    { title: "I Need You, Lord | Morning Prayer", views: "11K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+I+Need+You+Lord" }
                 ]
             },
             {
