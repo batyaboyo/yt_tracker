@@ -14,115 +14,106 @@ const CHANNELS = {
         searchFocus: 'real life christian stories testimony',
         competitors: [
             {
-                name: "Delafé Testimonies",
-                note: "Real-life Jesus stories, Powerful transformations",
+                name: "Tales by Monisha",
+                note: "Cultural fables & moral stories",
                 topContent: [
-                    { title: "I Didn't Understand Why I Needed to Love JESUS...", views: "225K", url: "https://www.youtube.com/watch?v=Kz69kC5x4_A" },
-                    { title: "I Grew Up in Islam, Hated GOD, Until THIS Happened...", views: "191K", url: "https://www.youtube.com/watch?v=uK1X7L2k7cM" },
-                    { title: "I Had MONEY and FAME, But No PEACE Until JESUS...", views: "162K", url: "https://www.youtube.com/watch?v=F0f8h9m5GfE" },
-                    { title: "This Google Search About the DEVIL Led Me to JESUS!", views: "162K", url: "https://www.youtube.com/watch?v=r_v2D6VvS0I" },
-                    { title: "I Worshipped Rules Until JESUS Showed Me THIS...", views: "147K", url: "https://www.youtube.com/watch?v=yY19B2rE4uM" }
+                    { title: "If You Think Love Fades with Time", views: "1M+" },
+                    { title: "Don't Fear the Impossible", views: "800K" },
+                    { title: "You're Not Less Than Anyone", views: "500K" },
+                    { title: "Calm Your Mind", views: "400K" },
+                    { title: "Loyalty Isn't Always Rewarded", views: "300K" }
                 ]
             },
             {
-                name: "I Am Second",
-                note: "High-production personal faith stories",
+                name: "The School of Life",
+                note: "Philosophy & emotional intelligence",
                 topContent: [
-                    { title: "Ryan Ries - White Chair Film - I Am Second®", views: "405K", url: "https://www.youtube.com/watch?v=Xn78yqj5d28" },
-                    { title: "Kathy Ireland - Relying on Myself", views: "387K", url: "https://www.youtube.com/watch?v=2TzT3w7pXkY" },
-                    { title: "Alex Kendrick - White Chair Film - I Am Second®", views: "251K", url: "https://www.youtube.com/watch?v=8X0uQk7lX7I" },
-                    { title: "Jase Robertson - Answering the Call", views: "203K", url: "https://www.youtube.com/watch?v=y3nL49m-mY4" },
-                    { title: "RA Dickey - Less Than Human", views: "193K", url: "https://www.youtube.com/watch?v=E7y8810Kq6c" }
+                    { title: "Heal Your Inner Child", views: "5M+" },
+                    { title: "Why You Will Marry the Wrong Person", views: "20M+" },
+                    { title: "The Importance of a Breakdown", views: "8M+" },
+                    { title: "Unpicking Your Crush", views: "2M+" },
+                    { title: "On Melancholy", views: "1.5M" }
                 ]
             },
             {
-                name: "700 Club Interactive",
-                note: "Daily faith testimonies & stories",
+                name: "Life Lessons Library",
+                note: "Powerful English stories that touch the soul",
                 topContent: [
-                    { title: "Miracles Still Happen - August 12, 2013", views: "105K" },
-                    { title: "Angels All Around - October 13, 2014", views: "99K" },
-                    { title: "Angels Are Real - August 13, 2013", views: "88K" },
-                    { title: "Healed & Whole | Full Episode", views: "25K" },
-                    { title: "God the Healer - June 27, 2013", views: "22K" }
+                    { title: "Loyalty Isn't Always Rewarded", views: "20K" },
+                    { title: "The Wrong Door That Opened the Right Future", views: "15K" },
+                    { title: "Success Story of A Poor Women", views: "10K" },
+                    { title: "The Power of Silence", views: "50K" },
+                    { title: "Don't Judge a Book by Its Cover", views: "35K" }
+                ]
+            },
+
+            {
+                name: "Einzelgänger",
+                note: "Stoic philosophy & calm wisdom",
+                topContent: [
+                    { title: "The Joys of Not Needing People", views: "2M" },
+                    { title: "Life Has No Meaning...", views: "3M" },
+                    { title: "Stop Letting the News Ruin Your Peace", views: "1.5M" },
+                    { title: "The Taoist Art of Non-Resistance", views: "1M" },
+                    { title: "Why Nothing Feels Exciting Anymore", views: "2.5M" }
                 ]
             },
             {
-                name: "Allen Parr",
-                note: "Real-talk Christian life & apologetics",
+                name: "Living Life Tales",
+                note: "Daily inspiration & vocabulary",
                 topContent: [
-                    { title: "If You're Doing this ONE Thing, You May Not Be Saved", views: "2.9M" },
-                    { title: "10 Signs Someone Isn't Really Christian", views: "530K" },
-                    { title: "How to Renew Your Mind (Philippians 4:8 Explained)", views: "543K" },
-                    { title: "Many Christians Won't Accept This Teaching on Tithing", views: "551K" },
-                    { title: "5 Bible Prophecies on Jesus' Second Coming", views: "622K" }
+                    { title: "I use these WORDS every day", views: "644K" },
+                    { title: "Digital diaries | days in my life", views: "639K" },
+                    { title: "Interactive Speaking Course", views: "643K" },
+                    { title: "Morning Routine for Success", views: "200K" },
+                    { title: "How to stay motivated", views: "150K" }
                 ]
             },
             {
-                name: "Ordinary People (Podcast)",
-                note: "Intimate looks into transformed lives",
+                name: "Soft Life Family",
+                note: "Peaceful, Ghibli-style village life",
                 topContent: [
-                    { title: "Beliefs Over Baseball (January 13th, 2026)", views: "320K" },
-                    { title: "G-d Chose Me to be Shot by a Terrorist", views: "115K" },
-                    { title: "Bringing Light to Alaska's Darkest Days", views: "95K" },
-                    { title: "I Was Barely 20, But the Rebbe Believed in Me.", views: "50K" },
-                    { title: "The Power Woman Behind 21 New Jewish Day Schools.", views: "27K" }
+                    { title: "A Calm Day in Village Life", views: "294K" },
+                    { title: "From Sunrise to Sunset", views: "194K" },
+                    { title: "A Beautiful Quiet Village", views: "174K" },
+                    { title: "Peaceful Village Lifestyle", views: "31K" },
+                    { title: "Peaceful Village Life Routine", views: "26K" }
                 ]
             },
             {
-                name: "100 Huntley Street",
-                note: "Inspiring life encounters",
+                name: "Wisdom of Hope",
+                note: "Motivational & inspirational stories",
                 topContent: [
-                    { title: "My incredible journey to faith in Jesus", views: "34K" },
-                    { title: "Life-changing encounter with God (Testimony)", views: "20K" },
-                    { title: "Healing and Restoration Stories (Compilation)", views: "15K" },
-                    { title: "Overcoming Addiction through Faith", views: "12K" },
-                    { title: "The Power of Prayer (Personal Story)", views: "10K" }
+                    { title: "How to Stay Positive in Tough Times", views: "71K" },
+                    { title: "Who Is Truly Happy?", views: "8.5K" },
+                    { title: "Everything You Do to Others… Comes Back", views: "3.5K" },
+                    { title: "The Value of Your Life", views: "1.3K" },
+                    { title: "Never Lose Hope", views: "5K" }
                 ]
             },
             {
-                name: "Stories of Faith",
-                note: "Narrative-driven journeys",
+                name: "Reflections of Life",
+                note: "Cinematic, high-quality short films",
                 topContent: [
-                    { title: "Miracles in Times of Need", views: "5.7K" },
-                    { title: "Six Stories about Faith, Love, Humanity", views: "1.8K" },
-                    { title: "Faith Through Crisis (Testimony)", views: "1K" },
-                    { title: "Journey of Grace (Personal Story)", views: "500" },
-                    { title: "Finding Peace in the Storm", views: "400" }
+                    { title: "The Wait", views: "Unknown" },
+                    { title: "Connecting with Strangers", views: "Unknown" },
+                    { title: "The Beauty of Everyday", views: "Unknown" },
+                    { title: "Silence and Noise", views: "Unknown" },
+                    { title: "Finding Meaning", views: "Unknown" }
                 ]
             },
             {
-                name: "My Journey to Faith",
-                note: "Personal storytelling",
+                name: "Daily Stoic",
+                note: "Ancient wisdom for modern struggles",
                 topContent: [
-                    { title: "My Personal Faith Journey", views: "10K" },
-                    { title: "My Christian Testimony (My Journey to Faith)", views: "8K" },
-                    { title: "This Is My Testimony - My Spiritual Journey", views: "1.9K" },
-                    { title: "From Darkness to Light (Testimony)", views: "1.5K" },
-                    { title: "A Choice Amidst Crisis (Story)", views: "1K" }
+                    { title: "The Best Stoic Quotes", views: "2M" },
+                    { title: "How To Be Invincible", views: "1.5M" },
+                    { title: "The Obstacle Is The Way", views: "1M" },
+                    { title: "Ryan Holiday on Ego", views: "800K" },
+                    { title: "Daily Stoic Rules", views: "500K" }
                 ]
             },
-            {
-                name: "The Normal Christian Life",
-                note: "Everyday faith narratives",
-                topContent: [
-                    { title: "50 Countries Sing Amazing Grace", views: "4.4M" },
-                    { title: "Man Was Dying of COVID 19, Then God Sent a Cleaner", views: "3.5M" },
-                    { title: "3 Circles In 3 Minutes That Could Change Your Life", views: "183K" },
-                    { title: "Could the World's Darkest Hour Become the Church?", views: "52K" },
-                    { title: "Fires Causing Non-Believers to Pray", views: "44K" }
-                ]
-            },
-            {
-                name: "Living Waters",
-                note: "Evangelism & Gospel encounters",
-                topContent: [
-                    { title: "Christians, You MUST Know This About Trump and Biden", views: "2.2M" },
-                    { title: "Watch the Holy Spirit Work in Her Heart", views: "2.2M" },
-                    { title: "THIS Opens the Door to the Demonic World", views: "2.2M" },
-                    { title: "Christian stumps Jehovah's Witness with one question", views: "1M" },
-                    { title: "He's Been Seeking Jesus...Then Cries After This", views: "1M" }
-                ]
-            }
+
         ]
     },
     ecq: {
@@ -737,28 +728,63 @@ function initInspirationFeed() {
     const fetchBtn = document.getElementById('fetch-fresh-ideas');
     const filter = document.getElementById('inspiration-channel-filter');
 
+    if (filter) {
+        populateInspirationFilter();
+        filter.addEventListener('change', renderInspirationFeed);
+    }
     if (fetchBtn) {
         fetchBtn.addEventListener('click', fetchFreshInspirations);
     }
-    if (filter) {
-        filter.addEventListener('change', renderInspirationFeed);
-    }
 
     renderInspirationFeed();
+}
+
+function populateInspirationFilter() {
+    const filter = document.getElementById('inspiration-channel-filter');
+    if (!filter) return;
+
+    let html = '<option value="all">All Channels</option>';
+
+    for (const [key, channel] of Object.entries(CHANNELS)) {
+        html += `<optgroup label="${channel.name}">`;
+        html += `<option value="${key}">${channel.name} (All)</option>`;
+        if (channel.competitors) {
+            channel.competitors.forEach(comp => {
+                html += `<option value="comp:${key}:${comp.name}">${comp.name}</option>`;
+            });
+        }
+        html += `</optgroup>`;
+    }
+
+    filter.innerHTML = html;
 }
 
 function renderInspirationFeed() {
     const feed = document.getElementById('inspiration-feed');
     if (!feed) return;
 
-    const channelFilter = document.getElementById('inspiration-channel-filter').value;
-    const channelKeys = channelFilter === 'all' ? ['lpbz', 'ecq'] : [channelFilter];
+    const filterVal = document.getElementById('inspiration-channel-filter').value;
+
+    let targets = [];
+    if (filterVal === 'all') {
+        targets = Object.keys(CHANNELS).map(key => ({ key, compName: null }));
+    } else if (filterVal.startsWith('comp:')) {
+        const [_, key, compName] = filterVal.split(':');
+        targets = [{ key, compName }];
+    } else {
+        targets = [{ key: filterVal, compName: null }];
+    }
 
     let html = '';
-    channelKeys.forEach(key => {
+    targets.forEach(({ key, compName }) => {
         const channel = CHANNELS[key];
-        channel.competitors.forEach(comp => {
-            const items = comp.topContent.slice(0, 3); // Show top 3 per competitor
+        const competitors = compName
+            ? channel.competitors.filter(c => c.name === compName)
+            : channel.competitors;
+
+        competitors.forEach(comp => {
+            if (!comp.topContent) return;
+            const items = comp.topContent.slice(0, 3);
             items.forEach(item => {
                 const videoUrl = item.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`;
                 html += `
@@ -787,8 +813,17 @@ function renderInspirationFeed() {
 async function fetchFreshInspirations() {
     const btn = document.getElementById('fetch-fresh-ideas');
     const feed = document.getElementById('inspiration-feed');
-    const channelFilter = document.getElementById('inspiration-channel-filter').value;
-    const channelKeys = channelFilter === 'all' ? ['lpbz', 'ecq'] : [channelFilter];
+    const filterVal = document.getElementById('inspiration-channel-filter').value;
+
+    let targets = [];
+    if (filterVal === 'all') {
+        targets = Object.keys(CHANNELS).map(key => ({ key, compName: null }));
+    } else if (filterVal.startsWith('comp:')) {
+        const [_, key, compName] = filterVal.split(':');
+        targets = [{ key, compName }];
+    } else {
+        targets = [{ key: filterVal, compName: null }];
+    }
 
     btn.disabled = true;
     btn.textContent = '⏳ Fetching...';
@@ -797,12 +832,19 @@ async function fetchFreshInspirations() {
     try {
         let allResults = [];
 
-        for (const key of channelKeys) {
+        for (const { key, compName } of targets) {
             const channel = CHANNELS[key];
-            // Pick a random subset of competitors to avoid too many API calls
-            const selectedComps = channel.competitors
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 3);
+            let selectedComps = [];
+
+            if (compName) {
+                // If specific competitor selected, ONLY fetch that one (and maybe more results?)
+                selectedComps = channel.competitors.filter(c => c.name === compName);
+            } else {
+                // Pick a random subset of competitors to avoid too many API calls
+                selectedComps = channel.competitors
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 3);
+            }
 
             for (const comp of selectedComps) {
                 try {
