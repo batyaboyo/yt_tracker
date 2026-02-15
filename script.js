@@ -196,14 +196,50 @@ const CHANNELS = {
         id: 'tj',
         channelId: localStorage.getItem('yt_tracker_cid_tj') || 'UCtIova4flqS4LBtA5hQ8o5w',
         name: 'Tozz Jerry',
-        targetPerWeek: 3, // Defaulting to 3
+        targetPerWeek: 2,
         types: ['Short', 'Long-form'],
-        schedule: 'TBD',
-        color: '#10b981', // Success green for now
-        uploadDays: [1, 3, 5], // Defaulting to Mon, Wed, Fri
+        schedule: 'Wednesday (Shorts) & Friday (Long-form) @ 8pm EAT',
+        color: '#10b981',
+        uploadDays: [3, 5],
         subscribers: 0,
-        searchFocus: '',
-        competitors: []
+        searchFocus: 'AI reconstructions African cities historical architecture',
+        competitors: [
+            {
+                name: "SeeNew Africa",
+                note: "AI Visualization of precolonial African Architecture",
+                topContent: [
+                    { title: "AI: Bringing precolonial African Architecture to life", views: "15K", url: "https://www.youtube.com/results?search_query=SeeNew+Africa+AI+African+Architecture" }
+                ]
+            },
+            {
+                name: "African History Fountain",
+                note: "Digital reconstructions of ancient history",
+                topContent: [
+                    { title: "The Algorithm Remembers: AI Says I Know Africa's History", views: "45K", url: "https://www.youtube.com/results?search_query=African+History+Fountain+AI+History" }
+                ]
+            },
+            {
+                name: "Pan-African History",
+                note: "Urban history and civilization depth",
+                topContent: [
+                    { title: "Lost Cities of Ancient Africa", views: "120K", url: "https://www.youtube.com/results?search_query=Pan+African+History+Lost+Cities" }
+                ]
+            },
+            {
+                name: "Ancient African Viz",
+                note: "3D renders of lost African empires",
+                topContent: [
+                    { title: "Timbuktu: A 3D Reconstruction", views: "30K", url: "https://www.youtube.com/results?search_query=Ancient+African+Viz+Timbuktu" }
+                ]
+            },
+            {
+                name: "Historical Africa AI",
+                note: "AI-driven historical face and city reconstructions",
+                topContent: [
+                    { title: "Faces of Ancient African Kings (AI)", views: "200K", url: "https://www.youtube.com/results?search_query=Historical+Africa+AI+Reconstruction" }
+                ]
+            }
+        ]
     }
 };
 
@@ -342,6 +378,7 @@ async function fetchChannelData(channel) {
 
         // Log history
         const today = new Date().toISOString().split('T')[0];
+        if (!subsHistory[channel.id]) subsHistory[channel.id] = [];
         const lastEntry = subsHistory[channel.id][subsHistory[channel.id].length - 1];
         if (!lastEntry || lastEntry.date !== today) {
             subsHistory[channel.id].push({ date: today, count: subCount });
@@ -394,6 +431,15 @@ function detectVideoType(channelKey, item) {
     const title = item.snippet.title.toLowerCase();
     if (channelKey === 'lpbz') {
         if (title.includes('prayer') || title.includes('short')) return 'Short Prayer';
+        return 'Long-form';
+    } else if (channelKey === 'tj') {
+        const duration = item.contentDetails?.duration || '';
+        // Heuristics: Shorts are < 60s. YouTube ISO 8601 duration
+        if (duration.includes('S') && !duration.includes('M') && !duration.includes('H')) {
+            const seconds = parseInt(duration.match(/PT(\d+)S/)?.[1] || 0);
+            if (seconds < 60) return 'Short';
+        }
+        if (title.includes('#shorts') || title.includes('short')) return 'Short';
         return 'Long-form';
     } else {
         return 'Short';
