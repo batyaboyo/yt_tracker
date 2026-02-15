@@ -516,10 +516,17 @@ body.light-theme .moon-icon {
 
 .on-schedule {
     color: var(--success);
+    font-weight: 600;
 }
 
 .off-schedule {
     color: var(--danger);
+    font-weight: 600;
+}
+
+.warning-schedule {
+    color: var(--warning);
+    font-weight: 600;
 }
 
 /* Countdown Timer */

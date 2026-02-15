@@ -1265,20 +1265,43 @@ function renderIdeaBank() {
 function renderChannelCard(channelId, channelVideos) {
     const channel = CHANNELS[channelId];
     const card = document.getElementById(`card-${channelId}`);
-    const nextUpload = getNextUploadInfo(channelId);
+    const nextUploadDate = getNextUploadDeadline(channelId);
+    const nextUploadText = getNextUploadInfo(channelId);
     const schedStatus = isOnSchedule(channelId, channelVideos);
+
+    // Check if there's a planned video for this specific deadline
+    const isIdeaPlanned = hasPlannedVideoForDeadline(channelId, nextUploadDate);
+
+    let statusClass = schedStatus ? 'on-schedule' : 'off-schedule';
+    let statusText = schedStatus ? '✓ On Schedule' : '○ Behind Schedule';
+
+    if (schedStatus && !isIdeaPlanned) {
+        statusClass = 'warning-schedule';
+        statusText = '⚠️ Missing Idea';
+    }
+
     card.innerHTML = `
         <h3>${channel.name}</h3>
         <div class="channel-card-stat"><span>Subscribers</span><span>${channel.subscribers.toLocaleString()}</span></div>
         <div class="channel-card-stat"><span>Weekly Goal</span><span>${channel.schedule}</span></div>
-        <div class="channel-card-stat"><span>Status</span><span class="${schedStatus ? 'on-schedule' : 'off-schedule'}">${schedStatus ? '✓ On Schedule' : '○ Behind Schedule'}</span></div>
-        <div class="channel-card-stat"><span>Next Upload</span><span>${nextUpload}</span></div>
+        <div class="channel-card-stat"><span>Status</span><span class="${statusClass}">${statusText}</span></div>
+        <div class="channel-card-stat"><span>Next Upload</span><span>${nextUploadText}</span></div>
         <div class="countdown-row">
             <span class="countdown-label">⏱ Countdown</span>
             <span class="countdown-timer" id="countdown-${channelId}">--:--:--</span>
         </div>
+        ${!isIdeaPlanned ? `
+            <button class="btn btn-sm btn-primary" style="width:100%; margin-top:1rem" onclick="openModal('${channelId}', null, null, true)">
+                Plan Idea for ${nextUploadDate.toLocaleDateString()}
+            </button>
+        ` : ''}
     `;
     startCountdownTimers();
+}
+
+function hasPlannedVideoForDeadline(channelId, deadlineDate) {
+    const deadlineStr = deadlineDate.toISOString().split('T')[0];
+    return videos.some(v => v.channelId === channelId && v.date === deadlineStr && v.status === 'Planned');
 }
 
 function renderChannelView(channelId) {
