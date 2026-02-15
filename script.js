@@ -893,10 +893,8 @@ async function fetchFreshInspirations() {
             let selectedComps = [];
 
             if (compName) {
-                // If specific competitor selected, ONLY fetch that one (and maybe more results?)
                 selectedComps = channel.competitors.filter(c => c.name === compName);
             } else {
-                // Pick a random subset of competitors to avoid too many API calls
                 selectedComps = channel.competitors
                     .sort(() => Math.random() - 0.5)
                     .slice(0, 3);
@@ -904,13 +902,18 @@ async function fetchFreshInspirations() {
 
             for (const comp of selectedComps) {
                 try {
-                    const focus = channel.searchFocus || '';
-                    // Use quotes for exact channel name match if possible, or just the name
-                    const query = encodeURIComponent(`"${comp.name}" ${focus}`);
+                    // Fix: If specific competitor, prioritize their name over searchFocus for broader results
+                    const queryStr = compName ? comp.name : `${comp.name} ${channel.searchFocus || ''}`;
+                    const query = encodeURIComponent(queryStr);
+
                     const res = await fetch(
                         `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${getApiKey()}`
                     );
                     const data = await res.json();
+
+                    if (data.error) {
+                        throw new Error(data.error.message || 'YouTube API error');
+                    }
 
                     if (data.items) {
                         data.items.forEach(item => {
@@ -927,11 +930,13 @@ async function fetchFreshInspirations() {
                     }
                 } catch (err) {
                     console.warn(`Failed to fetch for ${comp.name}:`, err);
+                    if (err.message.includes('quota') || err.message.includes('key')) {
+                        throw err; // Escalate quota/key errors
+                    }
                 }
             }
         }
 
-        // Fetch view counts for all results via videos.list
         if (allResults.length > 0) {
             try {
                 const videoIds = allResults.map(r => r.videoId).join(',');
@@ -939,6 +944,9 @@ async function fetchFreshInspirations() {
                     `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${getApiKey()}`
                 );
                 const statsData = await statsRes.json();
+
+                if (statsData.error) throw new Error(statsData.error.message);
+
                 if (statsData.items) {
                     const statsMap = {};
                     statsData.items.forEach(item => {
@@ -947,7 +955,6 @@ async function fetchFreshInspirations() {
                     allResults.forEach(r => {
                         r.views = statsMap[r.videoId] || 0;
                     });
-                    // Sort by views descending
                     allResults.sort((a, b) => b.views - a.views);
                 }
             } catch (err) {
@@ -955,7 +962,6 @@ async function fetchFreshInspirations() {
             }
         }
 
-        // Render the fresh results
         if (allResults.length > 0) {
             feed.innerHTML = allResults.map(r => {
                 const viewsFormatted = r.views ? formatViews(r.views) : 'N/A';
@@ -978,11 +984,15 @@ async function fetchFreshInspirations() {
                 </div>
             `}).join('');
         } else {
-            feed.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:2rem">No results fetched. Check your API key in Settings.</p>';
+            feed.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:2rem">No results found for these competitors. Try another filter.</p>';
         }
 
     } catch (err) {
-        feed.innerHTML = `<p style="color:var(--danger); text-align:center; padding:2rem">Error: ${err.message}. Check your API key.</p>`;
+        let msg = `Error: ${err.message}`;
+        if (err.message.includes('quota')) msg = 'API Quota Exceeded. Please add/rotate keys in Settings.';
+        if (err.message.includes('key')) msg = 'Invalid API Key. Please check Settings.';
+
+        feed.innerHTML = `<p style="color:var(--danger); text-align:center; padding:2rem">${msg}</p>`;
     } finally {
         btn.disabled = false;
         btn.textContent = '🔄 Fetch Fresh Ideas';
@@ -1327,30 +1337,33 @@ function renderChannelView(channelId) {
         <div class="stat-card"><span class="value">${streak}</span><span class="label">Week Streak</span></div>
     `;
 
+    const productionList = document.getElementById(`${channelId}-production`);
     const stages = ['Idea', 'Scripting', 'Filming', 'Editing', 'Ready'];
-    productionList.innerHTML = `
-        <div class="kanban-board">
-            ${stages.map(stage => `
-                <div class="kanban-column">
-                    <h4>${stage}</h4>
-                    <div class="kanban-cards">
-                        ${plannedVideos.filter(v => (v.workflowStage || 'Idea') === stage).map(v => `
-                            <div class="kanban-card">
-                                <div onclick="openModal('${channelId}', '${v.id}')" style="cursor:pointer">
-                                    <h5>${v.title}</h5>
-                                    <p>${new Date(v.date).toLocaleDateString()}</p>
+    if (productionList) {
+        productionList.innerHTML = `
+            <div class="kanban-board">
+                ${stages.map((stage, idx) => `
+                    <div class="kanban-column">
+                        <h4>${stage}</h4>
+                        <div class="kanban-cards">
+                            ${plannedVideos.filter(v => (v.workflowStage || 'Idea') === stage).map(v => `
+                                <div class="kanban-card">
+                                    <div onclick="openModal('${channelId}', '${v.id}')" style="cursor:pointer">
+                                        <h5>${v.title}</h5>
+                                        <p>${new Date(v.date).toLocaleDateString()}</p>
+                                    </div>
+                                    <div class="kanban-move-actions">
+                                        ${idx > 0 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx - 1]}')" title="Move back">←</button>` : '<span></span>'}
+                                        ${idx < stages.length - 1 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx + 1]}')" title="Move forward">→</button>` : '<span></span>'}
+                                    </div>
                                 </div>
-                                <div class="kanban-move-actions">
-                                    ${idx > 0 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx - 1]}')" title="Move back">←</button>` : '<span></span>'}
-                                    ${idx < stages.length - 1 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx + 1]}')" title="Move forward">→</button>` : '<span></span>'}
-                                </div>
-                            </div>
-                        `).join('')}
+                            `).join('')}
+                        </div>
                     </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+                `).join('')}
+            </div>
+        `;
+    }
 
     renderIntelligence(channelId, liveVideos);
     renderAIStrategist(channelId);

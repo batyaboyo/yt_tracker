@@ -91,6 +91,12 @@ h3 {
     padding: 0 2rem;
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {
@@ -231,6 +237,22 @@ body.light-theme .moon-icon {
 .global-stats {
     display: flex;
     gap: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+    .global-stats {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .global-stats {
+        gap: 0.75rem;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
 }
 
 .stat-item {
@@ -461,9 +483,15 @@ body.light-theme .moon-icon {
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 3rem;
+}
+
+@media (max-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .channel-card {
@@ -571,9 +599,15 @@ body.light-theme .moon-icon {
 
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
     margin-bottom: 2rem;
+}
+
+@media (max-width: 480px) {
+    .stats-row {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .stat-card {
@@ -612,6 +646,12 @@ body.light-theme .moon-icon {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .management-grid.single-col {
@@ -795,8 +835,8 @@ tr:hover td {
 
 .intelligence-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem;
     margin-top: 1rem;
 }
 
@@ -875,7 +915,7 @@ tr:hover td {
 /* Idea Bank */
 .idea-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
     gap: 1.5rem;
 }
 
@@ -919,13 +959,13 @@ tr:hover td {
 /* Form Helper */
 .form-group-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
 
 .strategy-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 0.75rem;
     background: var(--bg-dark);
     padding: 1rem;
@@ -1035,15 +1075,28 @@ textarea#v-notes:focus {
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
-    /* Limit height for scrolling */
     display: flex;
     flex-direction: column;
     padding: 0;
-    /* Clear padding for header/body */
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 768px) {
+    .modal {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+        border-radius: var(--radius-md);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
 }
 
 .modal-header {
@@ -1109,7 +1162,7 @@ textarea#v-notes:focus {
 /* Competitor Watch */
 .competitor-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
     gap: 1.25rem;
 }
 
@@ -1251,7 +1304,8 @@ textarea#v-notes:focus {
     }
 
     .nav-container {
-        flex-direction: column;
+        padding: 0.5rem 1rem;
+        -webkit-overflow-scrolling: touch;
     }
 
     .management-grid {
@@ -1261,16 +1315,12 @@ textarea#v-notes:focus {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-
-    .idea-bank-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Idea Bank Split View */
 .idea-bank-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
 }
 
@@ -1391,19 +1441,22 @@ textarea#v-notes:focus {
 
 /* Kanban Board */
 .kanban-board {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1.5rem;
+    display: flex;
     overflow-x: auto;
-    padding-bottom: 1rem;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
 }
 
 .kanban-column {
     background: var(--bg-dark);
     border-radius: var(--radius-md);
-    padding: 1rem;
-    min-width: 200px;
+    padding: 1.25rem;
+    min-width: 280px;
+    flex: 0 0 280px;
     border: 1px solid var(--border);
+    scroll-snap-align: start;
 }
 
 .kanban-column h4 {
@@ -1475,12 +1528,12 @@ textarea#v-notes:focus {
 /* Calendar View */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(120px, 1fr));
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 .calendar-day-header {
@@ -1538,11 +1591,6 @@ textarea#v-notes:focus {
     font-weight: 600;
 }
 
-@media (max-width: 1024px) {
-    .kanban-board {
-        grid-template-columns: repeat(5, 200px);
-    }
-}
 
 /* AI Strategist Styles */
 .strategy-list {
