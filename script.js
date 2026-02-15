@@ -212,7 +212,6 @@ let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [] }
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
-let isDemoMode = localStorage.getItem('yt_tracker_demo_mode') === 'true';
 let charts = {};
 
 // DOM Elements
@@ -230,7 +229,6 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    if (isDemoMode) loadMockData();
     initTabs();
     initForms();
     initSettings();
@@ -262,9 +260,7 @@ async function syncWithYouTube(retryCount = 0) {
     if (quotaBlock && Date.now() < parseInt(quotaBlock)) {
         const remaining = Math.ceil((parseInt(quotaBlock) - Date.now()) / 60000);
         console.warn(`Sync skipped: Quota blocked for another ${remaining} minutes.`);
-        if (!isDemoMode) {
-            alert(`API Quota exceeded. Using local data only. Retrying in ${remaining}m. (Enable Demo Mode in Settings for mock data!)`);
-        }
+        alert(`API Quota exceeded. Using local data only. Retrying in ${remaining}m.`);
         return;
     }
 
@@ -404,7 +400,7 @@ function checkAutoSync() {
 
     // Auto-sync every 6 hours instead of every hour to conserve quota
     if (!lastSyncTime || now - parseInt(lastSyncTime) > 21600000) {
-        if (!isDemoMode) syncWithYouTube();
+        syncWithYouTube();
     }
 }
 
@@ -479,7 +475,7 @@ function initForms() {
     syncBtn.addEventListener('click', syncWithYouTube);
 }
 
-function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = false) {
+function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = false, prefillDate = null) {
     const channel = CHANNELS[channelId];
     videoForm.reset();
 
@@ -496,15 +492,21 @@ function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = fals
     // Set a hidden flag or class to differentiate Idea vs Video save
     document.getElementById('video-form').dataset.mode = isIdeaMode ? 'idea' : 'video';
 
-    // If it's just an idea, we might want to hide some fields, but for now let's keep it simple
-    // and just save the relevant parts.
+    // Date Logic: Prefill > Idea Data > Today
+    const dateToSet = prefillDate || (ideaData ? ideaData.date : new Date().toISOString().split('T')[0]);
+    document.getElementById('v-date').value = dateToSet;
 
-    document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('v-type').innerHTML = channel.types.map(t => `<option value="${t}">${t}</option>`).join('');
     document.getElementById('v-notes').value = '';
     document.getElementById('v-hook').value = '';
     document.getElementById('v-value').value = '';
     document.getElementById('v-cta').value = '';
+
+    // Default status to Planned for new planned videos
+    if (!videoId && !ideaData && !isIdeaMode) {
+        document.getElementById('v-status').value = 'Planned';
+        document.getElementById('v-status').dispatchEvent(new Event('change'));
+    }
 
     if (ideaData) {
         document.getElementById('v-title').value = ideaData.title;
@@ -1003,85 +1005,14 @@ function removeApiKey(index) {
     }
 }
 
-function toggleDemoMode() {
-    isDemoMode = !isDemoMode;
-    localStorage.setItem('yt_tracker_demo_mode', isDemoMode);
-    if (isDemoMode) {
-        loadMockData();
-    } else {
-        // Reload real data from local storage
-        videos = safeJSONParse('yt_tracker_videos', []);
-        for (const key in CHANNELS) {
-            CHANNELS[key].subscribers = parseInt(localStorage.getItem(`yt_tracker_subs_${key}`)) || 0;
-        }
-    }
-    renderAll();
-}
+// No more demo mode
 
-function loadMockData() {
-    CHANNELS.lpbz.subscribers = 12500;
-    CHANNELS.ecq.subscribers = 4800;
-
-    const mockVideos = [];
-    const now = new Date();
-
-    // LPBZ Mock Videos
-    for (let i = 0; i < 15; i++) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (i * 2));
-        mockVideos.push({
-            id: `mock-lpbz-${i}`,
-            channelId: 'lpbz',
-            title: i % 2 === 0 ? `Morning Prayer: Strength #${i}` : `Bible Study: Chapter ${i}`,
-            date: d.toISOString().split('T')[0],
-            type: i % 2 === 0 ? 'Short Prayer' : 'Long-form',
-            views: 1200 + Math.floor(Math.random() * 5000),
-            likes: 120 + Math.floor(Math.random() * 300),
-            comments: 45 + Math.floor(Math.random() * 100),
-            thumbnail: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=120&q=80',
-            status: 'Live',
-            isApiData: true
-        });
-    }
-
-    // ECQ Mock Videos
-    for (let i = 0; i < 10; i++) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (i * 3));
-        mockVideos.push({
-            id: `mock-ecq-${i}`,
-            channelId: 'ecq',
-            title: `Quest #${i}: Hamster vs The Labyrinth`,
-            date: d.toISOString().split('T')[0],
-            type: 'Short',
-            views: 8500 + Math.floor(Math.random() * 20000),
-            likes: 2400 + Math.floor(Math.random() * 5000),
-            comments: 110 + Math.floor(Math.random() * 500),
-            thumbnail: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=120&q=80',
-            status: 'Live',
-            isApiData: true
-        });
-    }
-
-    videos = mockVideos;
-}
+// Mock data logic removed
 
 function renderSettings() {
     const list = document.getElementById('settings-channels-list');
     if (!list) return;
-    list.innerHTML = `
-        <div class="settings-card" style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem">
-            <div style="display:flex; justify-content:space-between; align-items:center">
-                <div>
-                    <strong>Demo Mode</strong>
-                    <p style="font-size: 0.8rem; color: var(--text-muted)">Use mock data for testing UI when API quota is empty.</p>
-                </div>
-                <button class="btn btn-sm ${isDemoMode ? 'btn-primary' : 'btn-outline'}" onclick="toggleDemoMode()">
-                    ${isDemoMode ? 'Enabled' : 'Disabled'}
-                </button>
-            </div>
-        </div>
-    ` + Object.entries(CHANNELS).map(([key, ch]) => `
+    list.innerHTML = Object.entries(CHANNELS).map(([key, ch]) => `
         <div class="channel-setting-item">
             <div class="channel-setting-info">
                 <strong>${ch.name}</strong>
@@ -1269,7 +1200,7 @@ function renderChannelCard(channelId, channelVideos) {
     const nextUploadText = getNextUploadInfo(channelId);
     const schedStatus = isOnSchedule(channelId, channelVideos);
 
-    // Check if there's a planned video for this specific deadline
+    // Check if there's a planned or live video for this specific deadline
     const isIdeaPlanned = hasPlannedVideoForDeadline(channelId, nextUploadDate);
 
     let statusClass = schedStatus ? 'on-schedule' : 'off-schedule';
@@ -1279,6 +1210,8 @@ function renderChannelCard(channelId, channelVideos) {
         statusClass = 'warning-schedule';
         statusText = '⚠️ Missing Idea';
     }
+
+    const deadlineStr = nextUploadDate.toISOString().split('T')[0];
 
     card.innerHTML = `
         <h3>${channel.name}</h3>
@@ -1291,7 +1224,7 @@ function renderChannelCard(channelId, channelVideos) {
             <span class="countdown-timer" id="countdown-${channelId}">--:--:--</span>
         </div>
         ${!isIdeaPlanned ? `
-            <button class="btn btn-sm btn-primary" style="width:100%; margin-top:1rem" onclick="openModal('${channelId}', null, null, true)">
+            <button class="btn btn-sm btn-primary" style="width:100%; margin-top:1rem" onclick="openModal('${channelId}', null, null, false, '${deadlineStr}')">
                 Plan Idea for ${nextUploadDate.toLocaleDateString()}
             </button>
         ` : ''}
@@ -1300,8 +1233,11 @@ function renderChannelCard(channelId, channelVideos) {
 }
 
 function hasPlannedVideoForDeadline(channelId, deadlineDate) {
-    const deadlineStr = deadlineDate.toISOString().split('T')[0];
-    return videos.some(v => v.channelId === channelId && v.date === deadlineStr && v.status === 'Planned');
+    // Robust date matching: parse v.date and deadlineDate and compare YYYY-MM-DD
+    const dStr = deadlineDate.toISOString().split('T')[0];
+    const match = videos.find(v => v.channelId === channelId && v.date === dStr && (v.status === 'Planned' || v.status === 'Live'));
+    if (match) console.log(`🎯 Match found for ${channelId} on ${dStr}:`, match.title);
+    return !!match;
 }
 
 function renderChannelView(channelId) {
@@ -1336,7 +1272,10 @@ function renderChannelView(channelId) {
     `;
 
     const productionList = document.getElementById(`${channelId}-production`);
-    productionList.innerHTML = plannedVideos.map(v => {
+    const nextDeadline = getNextUploadDeadline(channelId);
+    const hasNextPlanned = hasPlannedVideoForDeadline(channelId, nextDeadline);
+
+    let productionHtml = plannedVideos.map(v => {
         const doneCount = Object.values(v.checklist || {}).filter(Boolean).length;
         return `
             <div class="production-item">
@@ -1353,7 +1292,24 @@ function renderChannelView(channelId) {
                 </div>
             </div>
         `;
-    }).join('') || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
+    }).join('');
+
+    if (!hasNextPlanned) {
+        const deadlineStr = nextDeadline.toISOString().split('T')[0];
+        productionHtml = `
+            <div class="production-item warning-item" style="border-left: 4px solid var(--warning); background: var(--bg-dark)">
+                <div class="production-info">
+                    <h4 style="color:var(--warning)">⚠️ Missing Idea for Next Slot</h4>
+                    <p>Next scheduled upload: ${nextDeadline.toLocaleDateString()}</p>
+                </div>
+                <div class="production-actions">
+                    <button class="btn btn-sm btn-primary" onclick="openModal('${channelId}', null, null, false, '${deadlineStr}')">Plan Idea Now</button>
+                </div>
+            </div>
+        ` + productionHtml;
+    }
+
+    productionList.innerHTML = productionHtml || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
 
     renderIntelligence(channelId, liveVideos);
     renderCompetitors(channelId);
@@ -1537,13 +1493,21 @@ function initComparisonChart() {
 function updateBanner() {
     const lOn = isOnSchedule('lpbz', videos.filter(v => v.channelId === 'lpbz' && v.status === 'Live'));
     const eOn = isOnSchedule('ecq', videos.filter(v => v.channelId === 'ecq' && v.status === 'Live'));
+
+    const lIdeaPlanned = hasPlannedVideoForDeadline('lpbz', getNextUploadDeadline('lpbz'));
+    const eIdeaPlanned = hasPlannedVideoForDeadline('ecq', getNextUploadDeadline('ecq'));
+
     const banner = document.getElementById('dashboard-banner');
     if (!banner) return;
-    if (lOn && eOn) {
-        banner.innerHTML = `<p>🔥 <strong>Amazing!</strong> Both channels are on schedule.</p>`;
+
+    if (lOn && eOn && lIdeaPlanned && eIdeaPlanned) {
+        banner.innerHTML = `<p>🔥 <strong>Amazing!</strong> Both channels are on schedule and planned.</p>`;
         banner.style.borderLeftColor = 'var(--success)';
-    } else {
+    } else if (!lOn || !eOn) {
         banner.innerHTML = `<p>✨ Keep it up! Consistency is key to growing your audience.</p>`;
+        banner.style.borderLeftColor = 'var(--warning)';
+    } else {
+        banner.innerHTML = `<p>⚠️ <strong>Action Needed:</strong> You have upcoming slots without planned video ideas.</p>`;
         banner.style.borderLeftColor = 'var(--warning)';
     }
 }
