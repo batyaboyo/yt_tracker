@@ -58,6 +58,7 @@
             <button class="nav-btn" data-tab="ecq">Epic Cute Quests</button>
             <button class="nav-btn" data-tab="tj">Tozz Jerry</button>
             <button class="nav-btn" data-tab="idea-bank">Idea Bank</button>
+            <button class="nav-btn" data-tab="calendar">Calendar</button>
             <button class="nav-btn" data-tab="settings">Settings</button>
         </div>
     </nav>
@@ -116,6 +117,13 @@
                 </div>
             </div>
 
+            <div class="chart-section card">
+                <h3>Subscriber Trend</h3>
+                <div class="chart-container">
+                    <canvas id="lpbz-subs-chart"></canvas>
+                </div>
+            </div>
+
             <div class="production-section card">
                 <h3>In Production (Planned)</h3>
                 <div id="lpbz-production" class="production-list">
@@ -127,6 +135,16 @@
                 <h3>Creator Intelligence</h3>
                 <div id="lpbz-intelligence" class="intelligence-grid">
                     <!-- Intelligence injected by JS -->
+                </div>
+            </div>
+
+            <div class="strategy-section card lpbz-theme">
+                <div class="management-header">
+                    <h3>AI Content Strategist</h3>
+                    <span class="status-tag status-live">Active Analysis</span>
+                </div>
+                <div id="lpbz-strategy" class="strategy-content">
+                    <!-- Advice injected by JS -->
                 </div>
             </div>
 
@@ -192,6 +210,13 @@
                 </div>
             </div>
 
+            <div class="chart-section card">
+                <h3>Subscriber Trend</h3>
+                <div class="chart-container">
+                    <canvas id="ecq-subs-chart"></canvas>
+                </div>
+            </div>
+
             <div class="production-section card">
                 <h3>In Production (Planned)</h3>
                 <div id="ecq-production" class="production-list">
@@ -201,8 +226,18 @@
 
             <div class="intelligence-section card">
                 <h3>Creator Intelligence</h3>
-                <div id="ecq-intelligence" class="intelligence-grid">
+                <div id="lpbz-intelligence" class="intelligence-grid">
                     <!-- Intelligence injected by JS -->
+                </div>
+            </div>
+
+            <div class="strategy-section card ecq-theme">
+                <div class="management-header">
+                    <h3>AI Content Strategist</h3>
+                    <span class="status-tag status-live">Active Analysis</span>
+                </div>
+                <div id="ecq-strategy" class="strategy-content">
+                    <!-- Advice injected by JS -->
                 </div>
             </div>
 
@@ -262,6 +297,13 @@
                 </div>
             </div>
 
+            <div class="chart-section card">
+                <h3>Subscriber Trend</h3>
+                <div class="chart-container">
+                    <canvas id="tj-subs-chart"></canvas>
+                </div>
+            </div>
+
             <div class="production-section card">
                 <h3>In Production (Planned)</h3>
                 <div id="tj-production" class="production-list">
@@ -273,6 +315,16 @@
                 <h3>Creator Intelligence</h3>
                 <div id="tj-intelligence" class="intelligence-grid">
                     <!-- Intelligence injected by JS -->
+                </div>
+            </div>
+
+            <div class="strategy-section card tj-theme">
+                <div class="management-header">
+                    <h3>AI Content Strategist</h3>
+                    <span class="status-tag status-live">Active Analysis</span>
+                </div>
+                <div id="tj-strategy" class="strategy-content">
+                    <!-- Advice injected by JS -->
                 </div>
             </div>
 
@@ -398,6 +450,22 @@
                 </div>
             </div>
         </section>
+        <!-- Calendar View -->
+        <section id="tab-calendar" class="tab-content">
+            <div class="summary-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                    <h2>Content Calendar</h2>
+                    <div style="display:flex; gap:0.5rem">
+                        <button id="prev-month" class="btn btn-outline btn-sm">&lt;</button>
+                        <h3 id="calendar-month-year" style="margin:0; min-width:150px; text-align:center"></h3>
+                        <button id="next-month" class="btn btn-outline btn-sm">&gt;</button>
+                    </div>
+                </div>
+                <div id="calendar-grid" class="calendar-grid">
+                    <!-- Calendar days injected by JS -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer
@@ -455,6 +523,10 @@
                         <div class="form-group">
                             <label for="v-date">Upload Date</label>
                             <input type="date" id="v-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="v-series">Series Tag</label>
+                            <input type="text" id="v-series" placeholder="e.g., Ancient Lagos">
                         </div>
                     </div>
 

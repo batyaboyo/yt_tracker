@@ -262,6 +262,8 @@ let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
 let charts = {};
+let subsCharts = {}; // Track sub growth charts
+let calendarDate = new Date();
 
 // DOM Elements
 const tabs = document.querySelectorAll('.nav-btn');
@@ -286,6 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSyncStatusDisplay();
     renderAll();
     checkAutoSync();
+
+    // Calendar listeners
+    document.getElementById('prev-month')?.addEventListener('click', () => {
+        calendarDate.setMonth(calendarDate.getMonth() - 1);
+        renderCalendar();
+    });
+    document.getElementById('next-month')?.addEventListener('click', () => {
+        calendarDate.setMonth(calendarDate.getMonth() + 1);
+        renderCalendar();
+    });
 });
 
 // Theme Logic
@@ -523,7 +535,8 @@ function initForms() {
         if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
             videos = [];
             ideas = [];
-            subsHistory = { lpbz: [], ecq: [] };
+            subsHistory = {};
+            Object.keys(CHANNELS).forEach(id => subsHistory[id] = []);
             lastSync = 'Never';
             localStorage.clear();
             saveToLocal();
@@ -560,6 +573,7 @@ function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = fals
     document.getElementById('v-hook').value = '';
     document.getElementById('v-value').value = '';
     document.getElementById('v-cta').value = '';
+    document.getElementById('v-series').value = '';
 
     // Default status to Planned for new planned videos
     if (!videoId && !ideaData && !isIdeaMode) {
@@ -606,6 +620,7 @@ function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = fals
                 document.getElementById('v-value').value = video.strategy.value || '';
                 document.getElementById('v-cta').value = video.strategy.cta || '';
             }
+            document.getElementById('v-series').value = video.series || '';
         }
     }
     videoModal.classList.add('active');
@@ -666,6 +681,7 @@ function saveVideo() {
             value: document.getElementById('v-value').value,
             cta: document.getElementById('v-cta').value
         },
+        series: document.getElementById('v-series').value,
         likes: 0,
         comments: 0,
         isApiData: false
@@ -1161,6 +1177,8 @@ function renderAll() {
     } else if (activeTab === 'idea-bank') {
         renderIdeaBank();
         renderInspirationFeed();
+    } else if (activeTab === 'calendar') {
+        renderCalendar();
     } else if (activeTab === 'settings') {
         renderSettings();
     } else {
@@ -1211,45 +1229,49 @@ function renderIdeaBank() {
     const list = document.getElementById('full-idea-list');
     if (!list) return;
 
-    const lpbzIdeas = ideas.filter(i => i.channelId === 'lpbz');
-    const ecqIdeas = ideas.filter(i => i.channelId === 'ecq');
+    // Smart Ranking: Rank ideas higher if their channel has a high-performing series
+    const getIdeaScore = (idea) => {
+        const channelVids = videos.filter(v => v.channelId === idea.channelId && v.status === 'Live');
+        if (channelVids.length === 0) return 0;
 
-    const renderIdeaCard = (idea) => `
-        <div class="idea-item idea-${idea.channelId}">
-            <div>
-                <div style="display:flex; justify-content:flex-end; margin-bottom:0.5rem">
-                    <span style="font-size:0.8rem; color:var(--text-muted)">${new Date(idea.date).toLocaleDateString()}</span>
-                </div>
-                <h4>${idea.title}</h4>
-                <p>${idea.description || 'No description provided.'}</p>
-                ${idea.strategy ? `
-                    <div style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted)">
-                        <strong>Hook:</strong> ${idea.strategy.hook || 'N/A'} <br>
-                        <strong>Value:</strong> ${idea.strategy.value || 'N/A'}
+        // Match idea title keywords against high-performing series
+        const avgViews = channelVids.reduce((s, v) => s + parseViews(v.views), 0) / channelVids.length;
+        const matchingSeries = channelVids.find(v => (v.series && idea.title.includes(v.series)) && parseViews(v.views) > avgViews);
+        return matchingSeries ? 10 : 0;
+    };
+
+    const sortedIdeas = [...ideas].sort((a, b) => getIdeaScore(b) - getIdeaScore(a));
+
+    const renderIdeaCard = (idea) => {
+        const score = getIdeaScore(idea);
+        return `
+            <div class="idea-item idea-${idea.channelId} ${score > 0 ? 'high-potential' : ''}">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
+                        <span style="font-size:0.8rem; color:var(--text-muted)">${new Date(idea.date).toLocaleDateString()}</span>
+                        ${score > 0 ? '<span class="status-tag status-live" style="font-size:0.6rem">High Potential</span>' : ''}
                     </div>
-                ` : ''}
+                    <h4>${idea.title}</h4>
+                    <p>${idea.description || 'No description provided.'}</p>
+                </div>
+                <div class="idea-actions">
+                    <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
+                    <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
+                </div>
             </div>
-            <div class="idea-actions">
-                <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
-                <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
-            </div>
-        </div>
-    `;
+        `;
+    };
 
     list.innerHTML = `
         <div class="idea-bank-grid">
-            <div class="idea-column">
-                <h3>Lets Pray & Bible Zone (${lpbzIdeas.length})</h3>
-                <div class="idea-list-column">
-                    ${lpbzIdeas.map(renderIdeaCard).join('') || '<p style="color:var(--text-muted)">No ideas yet. Start brainstorming!</p>'}
+            ${Object.keys(CHANNELS).map(cid => `
+                <div class="idea-column">
+                    <h3>${CHANNELS[cid].name} (${ideas.filter(i => i.channelId === cid).length})</h3>
+                    <div class="idea-list-column">
+                        ${sortedIdeas.filter(i => i.channelId === cid).map(renderIdeaCard).join('') || '<p style="color:var(--text-muted); font-size:0.8rem">No ideas yet. Start brainstorming!</p>'}
+                    </div>
                 </div>
-            </div>
-            <div class="idea-column">
-                <h3>Epic Cute Quests (${ecqIdeas.length})</h3>
-                <div class="idea-list-column">
-                    ${ecqIdeas.map(renderIdeaCard).join('') || '<p style="color:var(--text-muted)">No ideas yet. Start brainstorming!</p>'}
-                </div>
-            </div>
+            `).join('')}
         </div>
     `;
 }
@@ -1305,28 +1327,35 @@ function renderChannelView(channelId) {
         <div class="stat-card"><span class="value">${streak}</span><span class="label">Week Streak</span></div>
     `;
 
-    const productionList = document.getElementById(`${channelId}-production`);
-    productionList.innerHTML = plannedVideos.map(v => {
-        const doneCount = Object.values(v.checklist || {}).filter(Boolean).length;
-        return `
-            <div class="production-item">
-                <div class="production-info">
-                    <h4>${v.title}</h4>
-                    <p>Planned for: ${new Date(v.date).toLocaleDateString()}</p>
-                </div>
-
-                <div class="production-actions">
-                    <div class="workflow-mini-steps">
-                        ${getWorkflowSteps(v.workflowStage)}
+    const stages = ['Idea', 'Scripting', 'Filming', 'Editing', 'Ready'];
+    productionList.innerHTML = `
+        <div class="kanban-board">
+            ${stages.map(stage => `
+                <div class="kanban-column">
+                    <h4>${stage}</h4>
+                    <div class="kanban-cards">
+                        ${plannedVideos.filter(v => (v.workflowStage || 'Idea') === stage).map(v => `
+                            <div class="kanban-card">
+                                <div onclick="openModal('${channelId}', '${v.id}')" style="cursor:pointer">
+                                    <h5>${v.title}</h5>
+                                    <p>${new Date(v.date).toLocaleDateString()}</p>
+                                </div>
+                                <div class="kanban-move-actions">
+                                    ${idx > 0 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx - 1]}')" title="Move back">←</button>` : '<span></span>'}
+                                    ${idx < stages.length - 1 ? `<button onclick="moveWorkflowStage('${v.id}', '${stages[idx + 1]}')" title="Move forward">→</button>` : '<span></span>'}
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
-                    <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
                 </div>
-            </div>
-        `;
-    }).join('') || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
+            `).join('')}
+        </div>
+    `;
 
     renderIntelligence(channelId, liveVideos);
+    renderAIStrategist(channelId);
     renderCompetitors(channelId);
+    renderSeriesStats(channelId, liveVideos);
 
     const tbody = document.querySelector(`#${channelId}-history tbody`);
     if (!tbody) return; // Defensive check
@@ -1349,7 +1378,10 @@ function renderChannelView(channelId) {
 
     const breakdownEl = document.getElementById(`${channelId}-breakdown`);
     if (breakdownEl) renderBreakdown(channelId, liveVideos);
-    setTimeout(() => initChart(channelId, liveVideos), 0);
+    setTimeout(() => {
+        initChart(channelId, liveVideos);
+        initSubsChart(channelId);
+    }, 0);
 }
 
 function renderIntelligence(channelId, liveVideos) {
@@ -1460,6 +1492,84 @@ function initChart(channelId, liveVideos) {
             }
         }
     });
+}
+
+function initSubsChart(channelId) {
+    const canvas = document.getElementById(`${channelId}-subs-chart`);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (subsCharts[channelId]) subsCharts[channelId].destroy();
+
+    const history = subsHistory[channelId] || [];
+    if (history.length === 0) return;
+
+    const isLight = document.body.classList.contains('light-theme');
+
+    subsCharts[channelId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.map(h => h.date),
+            datasets: [{
+                label: 'Subscribers',
+                data: history.map(h => h.count),
+                borderColor: '#10b981',
+                backgroundColor: '#10b98133',
+                tension: 0.1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: { color: isLight ? '#e2e8f0' : '#334155' },
+                    ticks: { color: isLight ? '#64748b' : '#94a3b8' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: isLight ? '#64748b' : '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
+
+function renderSeriesStats(channelId, channelVideos) {
+    const seriesData = {};
+    channelVideos.forEach(v => {
+        const series = v.series || 'No Series';
+        if (!seriesData[series]) seriesData[series] = { count: 0, views: 0 };
+        seriesData[series].count++;
+        seriesData[series].views += parseViews(v.views);
+    });
+
+    const breakdownEl = document.getElementById(`${channelId}-breakdown`);
+    if (!breakdownEl) return;
+
+    const sortedSeries = Object.entries(seriesData).sort((a, b) => b[1].views - a[1].views);
+
+    const seriesHtml = `
+        <div class="series-stats">
+            <h4>Series Performance</h4>
+            ${sortedSeries.map(([name, data]) => `
+                <div class="stat-row">
+                    <span>${name}</span>
+                    <span>${Math.round(data.views / data.count).toLocaleString()} avg</span>
+                </div>
+            `).join('')}
+        </div>
+        <hr style="border:0; border-top:1px solid var(--border); margin:1rem 0">
+    `;
+
+    const existingHtml = breakdownEl.innerHTML;
+    if (!existingHtml.includes('series-stats')) {
+        breakdownEl.innerHTML = seriesHtml + existingHtml;
+    }
 }
 
 function initComparisonChart() {
@@ -1727,6 +1837,18 @@ function toggleInspiration(name) {
     renderAll();
 }
 
+function moveWorkflowStage(videoId, nextStage) {
+    const video = videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    video.workflowStage = nextStage;
+
+    // If moving to "Ready" or past "Ready", we might mark it status ready/live if needed, 
+    // but for now let's just update the stage.
+    saveToLocal();
+    renderAll();
+}
+
 function parseViews(val) {
     if (typeof val === 'number') return val;
     if (!val) return 0;
@@ -1734,6 +1856,156 @@ function parseViews(val) {
     if (str.includes('M')) return parseFloat(str) * 1000000;
     if (str.includes('K')) return parseFloat(str) * 1000;
     return parseFloat(str) || 0;
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    const title = document.getElementById('calendar-month-year');
+    if (!grid || !title) return;
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    title.innerText = calendarDate.toLocaleDateString('default', { month: 'long', year: 'numeric' });
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0(Sun) - 6(Sat)
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevDays = new Date(year, month, 0).getDate();
+
+    let html = `
+        <div class="calendar-day-header">Sun</div>
+        <div class="calendar-day-header">Mon</div>
+        <div class="calendar-day-header">Tue</div>
+        <div class="calendar-day-header">Wed</div>
+        <div class="calendar-day-header">Thu</div>
+        <div class="calendar-day-header">Fri</div>
+        <div class="calendar-day-header">Sat</div>
+    `;
+
+    // Empty days from prev month
+    for (let i = firstDay - 1; i >= 0; i--) {
+        html += `<div class="calendar-day other-month"><span class="day-number">${prevDays - i}</span></div>`;
+    }
+
+    // Days of current month
+    const today = new Date();
+    for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = today.getDate() === d && today.getMonth() === month && today.getFullYear() === year;
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+        const dayVideos = videos.filter(v => v.date === dateStr);
+
+        html += `
+            <div class="calendar-day ${isToday ? 'today' : ''}">
+                <span class="day-number">${d}</span>
+                <div class="calendar-events">
+                    ${dayVideos.map(v => `
+                        <div class="calendar-event event-${v.status.toLowerCase()}" 
+                             style="background-color: ${CHANNELS[v.channelId].color}"
+                             onclick="openModal('${v.channelId}', '${v.id}')">
+                            ${v.title}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    grid.innerHTML = html;
+}
+
+function generateStrategicAdvice(channelId) {
+    const channelVids = videos.filter(v => v.channelId === channelId && v.status === 'Live');
+    if (channelVids.length < 3) return ["Continue uploading to gather more data for strategic analysis."];
+
+    const advice = [];
+    const avgViews = channelVids.reduce((s, v) => s + parseViews(v.views), 0) / channelVids.length;
+
+    // Performance Analysis
+    const highPerformers = channelVids.filter(v => parseViews(v.views) > avgViews * 1.5);
+    if (highPerformers.length > 0) {
+        const topSeries = highPerformers[0].series;
+        if (topSeries) {
+            advice.push(`The series <strong>"${topSeries}"</strong> is outperforming your average by ${Math.round((parseViews(highPerformers[0].views) / avgViews - 1) * 100)}%. Double down on this hook.`);
+        }
+    }
+
+    // Engagement score check
+    const engagementScores = channelVids.map(v => ({
+        title: v.title,
+        score: ((v.likes || 0) + (v.comments || 0)) / (parseViews(v.views) || 1)
+    }));
+    const avgEngagement = engagementScores.reduce((s, e) => s + e.score, 0) / engagementScores.length;
+    if (avgEngagement < 0.02) {
+        advice.push("Your engagement rate is lower than optimal. Use a stronger <strong>direct CTA</strong> in the first 30 seconds.");
+    }
+
+    // Best Upload Day logic
+    const dayPerformance = {}; // 0-6
+    channelVids.forEach(v => {
+        const day = new Date(v.date).getDay();
+        if (!dayPerformance[day]) dayPerformance[day] = { views: 0, count: 0 };
+        dayPerformance[day].views += parseViews(v.views);
+        dayPerformance[day].count++;
+    });
+    const bestDay = Object.entries(dayPerformance).sort((a, b) => (b[1].views / b[1].count) - (a[1].views / a[1].count))[0];
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    if (bestDay && bestDay[1].count >= 2) {
+        advice.push(`Historically, <strong>${days[bestDay[0]]}</strong> is your strongest day. Consider moving high-effort uploads here.`);
+    }
+
+    // Idea cross-reference
+    const relevantIdeas = ideas.filter(i => i.channelId === channelId);
+    if (relevantIdeas.length > 0) {
+        advice.push(`You have ${relevantIdeas.length} ideas in the bank. <strong>"${relevantIdeas[0].title}"</strong> matches your current high-performance growth pattern.`);
+    }
+
+    return advice.length > 0 ? advice : ["Keep consistent with your current schedule; your stability is your strength."];
+}
+
+function renderAIStrategist(channelId) {
+    const advice = generateStrategicAdvice(channelId);
+    const container = document.getElementById(`${channelId}-strategy`);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="strategy-list">
+            ${advice.map(a => `
+                <div class="strategy-item">
+                    <div class="strategy-icon">💡</div>
+                    <div class="strategy-text">${a}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderSeriesStats(channelId, channelVideos) {
+    const container = document.getElementById(`${channelId}-intelligence`);
+    if (!container) return;
+
+    const seriesData = {};
+    channelVideos.forEach(v => {
+        if (!v.series) return;
+        if (!seriesData[v.series]) seriesData[v.series] = { views: 0, count: 0 };
+        seriesData[v.series].views += parseViews(v.views);
+        seriesData[v.series].count++;
+    });
+
+    const statsHtml = Object.entries(seriesData).map(([name, data]) => {
+        const avg = Math.round(data.views / data.count);
+        return `
+            <div class="intel-item">
+                <span class="intel-value">${avg.toLocaleString()}</span>
+                <span class="intel-label">${name} (Avg)</span>
+            </div>
+        `;
+    }).join('');
+
+    // Append to existing intelligence or replace if specialized
+    if (statsHtml) {
+        container.innerHTML += statsHtml;
+    }
 }
 
 
