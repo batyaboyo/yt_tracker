@@ -191,6 +191,19 @@ const CHANNELS = {
                 ]
             }
         ]
+    },
+    tj: {
+        id: 'tj',
+        channelId: localStorage.getItem('yt_tracker_cid_tj') || 'UCtIova4flqS4LBtA5hQ8o5w',
+        name: 'Tozz Jerry',
+        targetPerWeek: 3, // Defaulting to 3
+        types: ['Short', 'Long-form'],
+        schedule: 'TBD',
+        color: '#10b981', // Success green for now
+        uploadDays: [1, 3, 5], // Defaulting to Mon, Wed, Fri
+        subscribers: 0,
+        searchFocus: '',
+        competitors: []
     }
 };
 
@@ -208,7 +221,7 @@ function safeJSONParse(key, fallback) {
 // State Management
 let videos = safeJSONParse('yt_tracker_videos', []);
 let ideas = safeJSONParse('yt_tracker_ideas', []);
-let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [] });
+let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [], tj: [] });
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
@@ -269,7 +282,7 @@ async function syncWithYouTube(retryCount = 0) {
     syncBtn.innerHTML = `<span class="syncing-icon">↻</span> Syncing...`;
 
     // Optional: Add skeleton class to containers during sync
-    const containers = ['global-stats-summary', 'dashboard-banner', 'card-lpbz', 'card-ecq', 'idea-list'];
+    const containers = ['global-stats-summary', 'idea-list', ...Object.keys(CHANNELS).map(id => `card-${id}`)];
     containers.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('skeleton');
@@ -1123,26 +1136,28 @@ function renderGlobalStats() {
 }
 
 function renderDashboard() {
-    renderChannelCard('lpbz', videos.filter(v => v.channelId === 'lpbz'));
-    renderChannelCard('ecq', videos.filter(v => v.channelId === 'ecq'));
+    Object.keys(CHANNELS).forEach(channelId => {
+        renderChannelCard(channelId, videos.filter(v => v.channelId === channelId));
+    });
 
     // Idea Bank
     const ideaList = document.getElementById('idea-list');
-    ideaList.innerHTML = ideas.map(idea => `
-        <div class="idea-item idea-${idea.channelId}">
-            <div>
-                <span class="status-tag status-planned" style="margin-bottom:0.5rem">${CHANNELS[idea.channelId].name}</span>
-                <h4>${idea.title}</h4>
-                <p>${idea.description || 'No description provided.'}</p>
+    if (ideaList) {
+        ideaList.innerHTML = ideas.map(idea => `
+            <div class="idea-item idea-${idea.channelId}">
+                <div>
+                    <span class="status-tag status-planned" style="margin-bottom:0.5rem">${CHANNELS[idea.channelId].name}</span>
+                    <h4>${idea.title}</h4>
+                    <p>${idea.description || 'No description provided.'}</p>
+                </div>
+                <div class="idea-actions">
+                    <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
+                    <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
+                </div>
             </div>
-            <div class="idea-actions">
-                <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
-                <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
-            </div>
-        </div>
-    `).join('') || '<p style="color:var(--text-muted); grid-column:1/-1">No ideas in the bank yet. Start brainstorming!</p>';
+        `).join('') || '<p style="color:var(--text-muted); grid-column:1/-1">No ideas in the bank yet. Start brainstorming!</p>';
+    }
 
-    updateBanner();
     setTimeout(initComparisonChart, 0);
 }
 
@@ -1196,49 +1211,22 @@ function renderIdeaBank() {
 function renderChannelCard(channelId, channelVideos) {
     const channel = CHANNELS[channelId];
     const card = document.getElementById(`card-${channelId}`);
-    const nextUploadDate = getNextUploadDeadline(channelId);
     const nextUploadText = getNextUploadInfo(channelId);
-    const schedStatus = isOnSchedule(channelId, channelVideos);
-
-    // Check if there's a planned or live video for this specific deadline
-    const isIdeaPlanned = hasPlannedVideoForDeadline(channelId, nextUploadDate);
-
-    let statusClass = schedStatus ? 'on-schedule' : 'off-schedule';
-    let statusText = schedStatus ? '✓ On Schedule' : '○ Behind Schedule';
-
-    if (schedStatus && !isIdeaPlanned) {
-        statusClass = 'warning-schedule';
-        statusText = '⚠️ Missing Idea';
-    }
-
-    const deadlineStr = nextUploadDate.toISOString().split('T')[0];
 
     card.innerHTML = `
         <h3>${channel.name}</h3>
         <div class="channel-card-stat"><span>Subscribers</span><span>${channel.subscribers.toLocaleString()}</span></div>
         <div class="channel-card-stat"><span>Weekly Goal</span><span>${channel.schedule}</span></div>
-        <div class="channel-card-stat"><span>Status</span><span class="${statusClass}">${statusText}</span></div>
         <div class="channel-card-stat"><span>Next Upload</span><span>${nextUploadText}</span></div>
         <div class="countdown-row">
             <span class="countdown-label">⏱ Countdown</span>
             <span class="countdown-timer" id="countdown-${channelId}">--:--:--</span>
         </div>
-        ${!isIdeaPlanned ? `
-            <button class="btn btn-sm btn-primary" style="width:100%; margin-top:1rem" onclick="openModal('${channelId}', null, null, false, '${deadlineStr}')">
-                Plan Idea for ${nextUploadDate.toLocaleDateString()}
-            </button>
-        ` : ''}
     `;
     startCountdownTimers();
 }
 
-function hasPlannedVideoForDeadline(channelId, deadlineDate) {
-    // Robust date matching: parse v.date and deadlineDate and compare YYYY-MM-DD
-    const dStr = deadlineDate.toISOString().split('T')[0];
-    const match = videos.find(v => v.channelId === channelId && v.date === dStr && (v.status === 'Planned' || v.status === 'Live'));
-    if (match) console.log(`🎯 Match found for ${channelId} on ${dStr}:`, match.title);
-    return !!match;
-}
+// Status check logic removed
 
 function renderChannelView(channelId) {
     const channel = CHANNELS[channelId];
@@ -1272,10 +1260,7 @@ function renderChannelView(channelId) {
     `;
 
     const productionList = document.getElementById(`${channelId}-production`);
-    const nextDeadline = getNextUploadDeadline(channelId);
-    const hasNextPlanned = hasPlannedVideoForDeadline(channelId, nextDeadline);
-
-    let productionHtml = plannedVideos.map(v => {
+    productionList.innerHTML = plannedVideos.map(v => {
         const doneCount = Object.values(v.checklist || {}).filter(Boolean).length;
         return `
             <div class="production-item">
@@ -1292,24 +1277,7 @@ function renderChannelView(channelId) {
                 </div>
             </div>
         `;
-    }).join('');
-
-    if (!hasNextPlanned) {
-        const deadlineStr = nextDeadline.toISOString().split('T')[0];
-        productionHtml = `
-            <div class="production-item warning-item" style="border-left: 4px solid var(--warning); background: var(--bg-dark)">
-                <div class="production-info">
-                    <h4 style="color:var(--warning)">⚠️ Missing Idea for Next Slot</h4>
-                    <p>Next scheduled upload: ${nextDeadline.toLocaleDateString()}</p>
-                </div>
-                <div class="production-actions">
-                    <button class="btn btn-sm btn-primary" onclick="openModal('${channelId}', null, null, false, '${deadlineStr}')">Plan Idea Now</button>
-                </div>
-            </div>
-        ` + productionHtml;
-    }
-
-    productionList.innerHTML = productionHtml || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
+    }).join('') || '<p style="color:var(--text-muted); font-size:0.85rem">No planned videos.</p>';
 
     renderIntelligence(channelId, liveVideos);
     renderCompetitors(channelId);
@@ -1333,7 +1301,8 @@ function renderChannelView(channelId) {
         </tr>
     `).join('') || '<tr><td colspan="9" style="text-align:center">No live videos yet.</td></tr>';
 
-    if (channelId === 'lpbz') renderBreakdown(liveVideos);
+    const breakdownEl = document.getElementById(`${channelId}-breakdown`);
+    if (breakdownEl) renderBreakdown(channelId, liveVideos);
     setTimeout(() => initChart(channelId, liveVideos), 0);
 }
 
@@ -1381,15 +1350,22 @@ function renderIntelligence(channelId, liveVideos) {
     `;
 }
 
-function renderBreakdown(channelVideos) {
+function renderBreakdown(channelId, channelVideos) {
+    const channel = CHANNELS[channelId];
+    if (!channel || !channel.types) return;
+
     const counts = {};
-    CHANNELS.lpbz.types.forEach(t => counts[t] = channelVideos.filter(v => v.type === t).length);
+    channel.types.forEach(t => counts[t] = channelVideos.filter(v => v.type === t).length);
     const total = channelVideos.length;
-    document.getElementById('lpbz-breakdown').innerHTML = Object.entries(counts).map(([type, count]) => `
+
+    const el = document.getElementById(`${channelId}-breakdown`);
+    if (!el) return;
+
+    el.innerHTML = Object.entries(counts).map(([type, count]) => `
         <div class="breakdown-item" style="margin-bottom: 1rem">
             <div style="display:flex; justify-content:space-between; margin-bottom: 0.2rem"><span>${type}</span><span>${count}</span></div>
             <div style="height: 8px; background: var(--bg-dark); border-radius: 4px; overflow:hidden">
-                <div style="height:100%; width: ${total ? (count / total) * 100 : 0}%; background: ${type === 'Short Prayer' ? 'var(--lpbz-primary)' : 'var(--accent)'}"></div>
+                <div style="height:100%; width: ${total ? (count / total) * 100 : 0}%; background: var(--tj-primary)"></div>
             </div>
         </div>
     `).join('');
@@ -1490,27 +1466,7 @@ function initComparisonChart() {
     });
 }
 
-function updateBanner() {
-    const lOn = isOnSchedule('lpbz', videos.filter(v => v.channelId === 'lpbz' && v.status === 'Live'));
-    const eOn = isOnSchedule('ecq', videos.filter(v => v.channelId === 'ecq' && v.status === 'Live'));
 
-    const lIdeaPlanned = hasPlannedVideoForDeadline('lpbz', getNextUploadDeadline('lpbz'));
-    const eIdeaPlanned = hasPlannedVideoForDeadline('ecq', getNextUploadDeadline('ecq'));
-
-    const banner = document.getElementById('dashboard-banner');
-    if (!banner) return;
-
-    if (lOn && eOn && lIdeaPlanned && eIdeaPlanned) {
-        banner.innerHTML = `<p>🔥 <strong>Amazing!</strong> Both channels are on schedule and planned.</p>`;
-        banner.style.borderLeftColor = 'var(--success)';
-    } else if (!lOn || !eOn) {
-        banner.innerHTML = `<p>✨ Keep it up! Consistency is key to growing your audience.</p>`;
-        banner.style.borderLeftColor = 'var(--warning)';
-    } else {
-        banner.innerHTML = `<p>⚠️ <strong>Action Needed:</strong> You have upcoming slots without planned video ideas.</p>`;
-        banner.style.borderLeftColor = 'var(--warning)';
-    }
-}
 
 // Helper: get current time in EAT (UTC+3)
 function getEATDate() {
@@ -1519,30 +1475,7 @@ function getEATDate() {
     return new Date(utc + 3 * 3600000); // UTC+3
 }
 
-function isOnSchedule(channelId, channelVideos) {
-    const nowEAT = getEATDate();
-    const startOfWeek = new Date(nowEAT);
-    startOfWeek.setDate(nowEAT.getDate() - (nowEAT.getDay() === 0 ? 6 : nowEAT.getDay() - 1));
-    startOfWeek.setHours(0, 0, 0, 0);
 
-    // Count upload days whose 8pm EAT deadline has already passed this week
-    // Convert JS day (Sun=0) to Monday-start numbering (Mon=1..Sun=7) for proper ordering
-    const ch = CHANNELS[channelId];
-    const currentDayMon = nowEAT.getDay() === 0 ? 7 : nowEAT.getDay();
-    const currentHour = nowEAT.getHours();
-
-    const passedDeadlines = ch.uploadDays.filter(d => {
-        const dMon = d === 0 ? 7 : d; // Convert Sunday
-        if (dMon > currentDayMon) return false;       // Future day this week
-        if (dMon === currentDayMon) return currentHour >= 20; // Today, but only if 8pm passed
-        return true;                                   // Past day this week
-    }).length;
-
-    if (passedDeadlines === 0) return true; // No deadlines passed yet — can't be behind
-
-    const uploadsThisWeek = channelVideos.filter(v => new Date(v.date) >= startOfWeek && (v.status === 'Live' || v.status === 'Planned')).length;
-    return uploadsThisWeek >= passedDeadlines;
-}
 
 function calculateStreak(channelId) {
     const liveVids = videos.filter(v => v.channelId === channelId && v.status === 'Live');

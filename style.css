@@ -26,6 +26,7 @@
 
     --lpbz-primary: #818cf8;
     --ecq-primary: #f472b6;
+    --tj-primary: #10b981;
 
     --radius-sm: 8px;
     --radius-md: 16px;
@@ -456,13 +457,7 @@ body.light-theme .moon-icon {
     margin-bottom: 1.5rem;
 }
 
-.schedule-status-banner {
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    background: var(--bg-card);
-    border-left: 4px solid var(--accent);
-    margin-bottom: 2rem;
-}
+
 
 .dashboard-grid {
     display: grid;
@@ -494,6 +489,10 @@ body.light-theme .moon-icon {
     border-left: 5px solid var(--ecq-primary);
 }
 
+.channel-card.tj-theme {
+    border-left: 5px solid var(--tj-primary);
+}
+
 .channel-card h3 {
     margin-bottom: 1rem;
     font-size: 1.5rem;
@@ -514,20 +513,7 @@ body.light-theme .moon-icon {
     font-weight: 600;
 }
 
-.on-schedule {
-    color: var(--success);
-    font-weight: 600;
-}
 
-.off-schedule {
-    color: var(--danger);
-    font-weight: 600;
-}
-
-.warning-schedule {
-    color: var(--warning);
-    font-weight: 600;
-}
 
 /* Countdown Timer */
 .countdown-row {
@@ -616,6 +602,10 @@ body.light-theme .moon-icon {
 
 .ecq-theme .value {
     color: var(--ecq-primary);
+}
+
+.tj-theme .value {
+    color: var(--tj-primary);
 }
 
 .management-grid {
