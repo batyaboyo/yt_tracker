@@ -19,11 +19,16 @@ const CHANNELS = {
         id: 'lpbz',
         channelId: localStorage.getItem('yt_tracker_cid_lpbz') || 'UCScdEW9zdV25rmeMFm-DzRw',
         name: 'Lets Pray and Bible Zone',
-        targetPerWeek: 4,
+        targetPerWeek: 3,
         types: ['Short Prayer', 'Long-form'],
-        schedule: 'Mon, Fri (Shorts) | Wed, Sun (Long-form) @ 8pm EAT',
+        schedule: 'Tue, Thu (Shorts) @ 9pm | Sun (Long-form) @ 5pm EAT',
         color: '#818cf8',
-        uploadDays: [1, 3, 5, 0],
+        uploadDays: [2, 4, 0],
+        scheduleDetails: {
+            2: 21, // Tuesday @ 9pm
+            4: 21, // Thursday @ 9pm
+            0: 17  // Sunday @ 5pm
+        },
         subscribers: 0,
         searchFocus: '',
         competitors: [
@@ -1255,18 +1260,18 @@ function renderIdeaBank() {
     const renderIdeaCard = (idea) => {
         const score = getIdeaScore(idea);
         return `
-            <div class="idea-item idea-${idea.channelId} ${score > 0 ? 'high-potential' : ''}">
+            <div class="idea-item ${score > 0 ? 'high-potential' : ''}">
                 <div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
-                        <span style="font-size:0.8rem; color:var(--text-muted)">${new Date(idea.date).toLocaleDateString()}</span>
-                        ${score > 0 ? '<span class="status-tag status-live" style="font-size:0.6rem">High Potential</span>' : ''}
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem">
+                        <span style="font-size:0.75rem; color:var(--text-muted)">${new Date(idea.date).toLocaleDateString()}</span>
+                        ${score > 0 ? '<span class="status-tag status-live" style="font-size:0.6rem; padding: 0.1rem 0.4rem">🔥 High Growth</span>' : ''}
                     </div>
                     <h4>${idea.title}</h4>
                     <p>${idea.description || 'No description provided.'}</p>
                 </div>
                 <div class="idea-actions">
                     <button class="btn btn-sm btn-outline" onclick="promoteIdea('${idea.id}')">Promote</button>
-                    <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
+                    <button class="btn btn-sm btn-outline btn-danger" style="color:var(--danger)" onclick="deleteIdea('${idea.id}')">Delete</button>
                 </div>
             </div>
         `;
@@ -1275,10 +1280,10 @@ function renderIdeaBank() {
     list.innerHTML = `
         <div class="idea-bank-grid">
             ${Object.keys(CHANNELS).map(cid => `
-                <div class="idea-column">
+                <div class="idea-column idea-column-${cid}">
                     <h3>${CHANNELS[cid].name} (${ideas.filter(i => i.channelId === cid).length})</h3>
                     <div class="idea-list-column">
-                        ${sortedIdeas.filter(i => i.channelId === cid).map(renderIdeaCard).join('') || '<p style="color:var(--text-muted); font-size:0.8rem">No ideas yet. Start brainstorming!</p>'}
+                        ${sortedIdeas.filter(i => i.channelId === cid).map(renderIdeaCard).join('') || '<p style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:1.5rem; background:var(--bg-dark); border-radius:var(--radius-sm)">No ideas yet.</p>'}
                     </div>
                 </div>
             `).join('')}
@@ -1672,10 +1677,11 @@ function getNextUploadDeadline(channelId) {
     const currentDay = nowEAT.getDay();
     const currentHour = nowEAT.getHours();
 
-    // Check if today is an upload day and 8pm hasn't passed
-    if (ch.uploadDays.includes(currentDay) && currentHour < 20) {
+    // Check if today is an upload day and the deadline hasn't passed
+    const deadlineHour = ch.scheduleDetails ? (ch.scheduleDetails[currentDay] || 20) : 20;
+    if (ch.uploadDays.includes(currentDay) && currentHour < deadlineHour) {
         const deadline = new Date(nowEAT);
-        deadline.setHours(20, 0, 0, 0);
+        deadline.setHours(deadlineHour, 0, 0, 0);
         return deadline;
     }
 
@@ -1696,7 +1702,8 @@ function getNextUploadDeadline(channelId) {
 
     const deadline = new Date(nowEAT);
     deadline.setDate(deadline.getDate() + daysUntil);
-    deadline.setHours(20, 0, 0, 0);
+    const futureDeadlineHour = ch.scheduleDetails ? (ch.scheduleDetails[nextDayJS] || 20) : 20;
+    deadline.setHours(futureDeadlineHour, 0, 0, 0);
     return deadline;
 }
 
@@ -1707,7 +1714,10 @@ function getNextUploadInfo(channelId) {
     const hours = Math.floor(diff / 3600000);
 
     if (hours < 24) {
-        return 'Today @ 8pm EAT';
+        const deadlineHour = deadline.getHours();
+        const displayHour = deadlineHour > 12 ? deadlineHour - 12 : deadlineHour;
+        const ampm = deadlineHour >= 12 ? 'pm' : 'am';
+        return `Today @ ${displayHour}${ampm} EAT`;
     }
     const days = Math.round(diff / 86400000);
     return `In ${days} day${days !== 1 ? 's' : ''}`;
