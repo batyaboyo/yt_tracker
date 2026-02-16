@@ -19,15 +19,16 @@ const CHANNELS = {
         id: 'lpbz',
         channelId: localStorage.getItem('yt_tracker_cid_lpbz') || 'UCScdEW9zdV25rmeMFm-DzRw',
         name: 'Lets Pray and Bible Zone',
-        targetPerWeek: 3,
+        targetPerWeek: 4,
         types: ['Short Prayer', 'Long-form'],
-        schedule: 'Tue, Thu (Shorts) @ 9pm | Sun (Long-form) @ 5pm EAT',
+        schedule: 'Sun, Tue (Shorts) @ 7am | Wed (Long-form) @ 8pm, Sat @ 5pm EAT',
         color: '#818cf8',
-        uploadDays: [2, 4, 0],
+        uploadDays: [0, 2, 3, 6],
         scheduleDetails: {
-            2: 21, // Tuesday @ 9pm
-            4: 21, // Thursday @ 9pm
-            0: 17  // Sunday @ 5pm
+            0: 7,  // Sunday @ 7am (Short)
+            2: 7,  // Tuesday @ 7am (Short)
+            3: 20, // Wednesday @ 8pm (Long-form)
+            6: 17  // Saturday @ 5pm (Long-form)
         },
         subscribers: 0,
         searchFocus: '',
