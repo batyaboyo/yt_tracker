@@ -1714,11 +1714,25 @@ function getNextUploadInfo(channelId) {
     const diff = deadline - nowEAT;
     const hours = Math.floor(diff / 3600000);
 
-    if (hours < 24) {
-        const deadlineHour = deadline.getHours();
-        const displayHour = deadlineHour > 12 ? deadlineHour - 12 : deadlineHour;
-        const ampm = deadlineHour >= 12 ? 'pm' : 'am';
+    const deadlineHour = deadline.getHours();
+    const displayHour = deadlineHour > 12 ? deadlineHour - 12 : (deadlineHour === 0 ? 12 : deadlineHour);
+    const ampm = deadlineHour >= 12 ? 'pm' : 'am';
+    const isToday = nowEAT.getDate() === deadline.getDate() &&
+                    nowEAT.getMonth() === deadline.getMonth() &&
+                    nowEAT.getFullYear() === deadline.getFullYear();
+    const isTomorrow = (() => {
+        const tomorrow = new Date(nowEAT);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.getDate() === deadline.getDate() &&
+               tomorrow.getMonth() === deadline.getMonth() &&
+               tomorrow.getFullYear() === deadline.getFullYear();
+    })();
+
+    if (isToday) {
         return `Today @ ${displayHour}${ampm} EAT`;
+    }
+    if (isTomorrow) {
+        return `Tomorrow @ ${displayHour}${ampm} EAT`;
     }
     const days = Math.round(diff / 86400000);
     return `In ${days} day${days !== 1 ? 's' : ''}`;
