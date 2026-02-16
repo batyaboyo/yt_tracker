@@ -1640,6 +1640,25 @@ textarea#v-notes:focus {
     font-weight: 700;
 }
 
+.day-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.schedule-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.6;
+}
+
 .calendar-events {
     display: flex;
     flex-direction: column;

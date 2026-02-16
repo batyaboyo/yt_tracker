@@ -1019,8 +1019,9 @@ function saveInspirationAsIdea(channelId, title, source) {
     renderAll();
 
     // Quick feedback
-    if (event && event.target) {
-        const btn = event.target;
+    const evt = window.event;
+    if (evt && evt.target) {
+        const btn = evt.target.closest('button') || evt.target;
         const originalText = btn.textContent;
         btn.textContent = '✓ Saved!';
         btn.disabled = true;
@@ -1133,10 +1134,11 @@ function exportData() {
         videos: videos,
         ideas: ideas,
         subsHistory: subsHistory,
-        apiKey: API_KEY,
+        apiKeys: API_KEYS,
         settings: {
             lpbz_id: CHANNELS.lpbz.channelId,
             ecq_id: CHANNELS.ecq.channelId,
+            tj_id: CHANNELS.tj.channelId,
             lastSync: lastSync,
             theme: localStorage.getItem('yt_tracker_theme') || 'dark'
         }
@@ -1161,15 +1163,20 @@ function importData(e) {
             if (data.videos) {
                 videos = data.videos;
                 ideas = data.ideas || [];
-                subsHistory = data.subsHistory || { lpbz: [], ecq: [] };
+                subsHistory = data.subsHistory || { lpbz: [], ecq: [], tj: [] };
                 saveToLocal();
-                if (data.apiKey) {
-                    API_KEY = data.apiKey;
-                    localStorage.setItem('yt_tracker_api_key', API_KEY);
+                if (data.apiKeys && Array.isArray(data.apiKeys)) {
+                    API_KEYS = data.apiKeys;
+                    localStorage.setItem('yt_tracker_api_keys', JSON.stringify(API_KEYS));
+                } else if (data.apiKey) {
+                    // Legacy single-key format
+                    API_KEYS = [data.apiKey];
+                    localStorage.setItem('yt_tracker_api_keys', JSON.stringify(API_KEYS));
                 }
                 if (data.settings) {
                     if (data.settings.lpbz_id) localStorage.setItem('yt_tracker_cid_lpbz', data.settings.lpbz_id);
                     if (data.settings.ecq_id) localStorage.setItem('yt_tracker_cid_ecq', data.settings.ecq_id);
+                    if (data.settings.tj_id) localStorage.setItem('yt_tracker_cid_tj', data.settings.tj_id);
                     if (data.settings.theme) localStorage.setItem('yt_tracker_theme', data.settings.theme);
                 }
                 alert('Data imported successfully! The page will reload.');
@@ -1462,7 +1469,7 @@ function renderBreakdown(channelId, channelVideos) {
         <div class="breakdown-item" style="margin-bottom: 1rem">
             <div style="display:flex; justify-content:space-between; margin-bottom: 0.2rem"><span>${type}</span><span>${count}</span></div>
             <div style="height: 8px; background: var(--bg-dark); border-radius: 4px; overflow:hidden">
-                <div style="height:100%; width: ${total ? (count / total) * 100 : 0}%; background: var(--tj-primary)"></div>
+                <div style="height:100%; width: ${total ? (count / total) * 100 : 0}%; background: ${channel.color}"></div>
             </div>
         </div>
     `).join('');
@@ -1567,27 +1574,44 @@ function renderSeriesStats(channelId, channelVideos) {
         seriesData[series].views += parseViews(v.views);
     });
 
+    // Add series performance to breakdown panel
     const breakdownEl = document.getElementById(`${channelId}-breakdown`);
-    if (!breakdownEl) return;
+    if (breakdownEl) {
+        const sortedSeries = Object.entries(seriesData).sort((a, b) => b[1].views - a[1].views);
+        const seriesHtml = `
+            <div class="series-stats">
+                <h4>Series Performance</h4>
+                ${sortedSeries.map(([name, data]) => `
+                    <div class="stat-row">
+                        <span>${name}</span>
+                        <span>${Math.round(data.views / data.count).toLocaleString()} avg</span>
+                    </div>
+                `).join('')}
+            </div>
+            <hr style="border:0; border-top:1px solid var(--border); margin:1rem 0">
+        `;
+        const existingHtml = breakdownEl.innerHTML;
+        if (!existingHtml.includes('series-stats')) {
+            breakdownEl.innerHTML = seriesHtml + existingHtml;
+        }
+    }
 
-    const sortedSeries = Object.entries(seriesData).sort((a, b) => b[1].views - a[1].views);
-
-    const seriesHtml = `
-        <div class="series-stats">
-            <h4>Series Performance</h4>
-            ${sortedSeries.map(([name, data]) => `
-                <div class="stat-row">
-                    <span>${name}</span>
-                    <span>${Math.round(data.views / data.count).toLocaleString()} avg</span>
+    // Append series avg to intelligence panel (only named series)
+    const container = document.getElementById(`${channelId}-intelligence`);
+    if (container) {
+        const namedSeries = Object.entries(seriesData).filter(([name]) => name !== 'No Series');
+        const statsHtml = namedSeries.map(([name, data]) => {
+            const avg = Math.round(data.views / data.count);
+            return `
+                <div class="intel-item">
+                    <span class="intel-value">${avg.toLocaleString()}</span>
+                    <span class="intel-label">${name} (Avg)</span>
                 </div>
-            `).join('')}
-        </div>
-        <hr style="border:0; border-top:1px solid var(--border); margin:1rem 0">
-    `;
-
-    const existingHtml = breakdownEl.innerHTML;
-    if (!existingHtml.includes('series-stats')) {
-        breakdownEl.innerHTML = seriesHtml + existingHtml;
+            `;
+        }).join('');
+        if (statsHtml) {
+            container.innerHTML += statsHtml;
+        }
     }
 }
 
@@ -1734,8 +1758,10 @@ function getNextUploadInfo(channelId) {
     if (isTomorrow) {
         return `Tomorrow @ ${displayHour}${ampm} EAT`;
     }
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const days = Math.round(diff / 86400000);
-    return `In ${days} day${days !== 1 ? 's' : ''}`;
+    const dayName = dayNames[deadline.getDay()];
+    return `${dayName} @ ${displayHour}${ampm} (${days}d)`;
 }
 
 // Live countdown timer
@@ -1787,6 +1813,9 @@ window.deleteIdea = deleteIdea;
 window.toggleInspiration = toggleInspiration;
 window.studyThumbnail = studyThumbnail;
 window.saveHookToIdea = saveHookToIdea;
+window.removeApiKey = removeApiKey;
+window.moveWorkflowStage = moveWorkflowStage;
+window.saveInspirationAsIdea = saveInspirationAsIdea;
 
 function getWorkflowSteps(currentStage) {
     const stages = ['Idea', 'Scripting', 'Filming', 'Editing', 'Ready'];
@@ -1930,12 +1959,25 @@ function renderCalendar() {
     for (let d = 1; d <= daysInMonth; d++) {
         const isToday = today.getDate() === d && today.getMonth() === month && today.getFullYear() === year;
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayOfWeek = new Date(year, month, d).getDay();
 
         const dayVideos = videos.filter(v => v.date === dateStr);
 
+        // Check if this day is a scheduled upload day for any channel
+        const scheduledChannels = Object.entries(CHANNELS)
+            .filter(([, ch]) => ch.uploadDays.includes(dayOfWeek))
+            .map(([, ch]) => ch);
+
+        const scheduleMarkers = scheduledChannels.map(ch => 
+            `<span class="schedule-dot" style="background:${ch.color}" title="${ch.name}"></span>`
+        ).join('');
+
         html += `
             <div class="calendar-day ${isToday ? 'today' : ''}">
-                <span class="day-number">${d}</span>
+                <div class="day-header-row">
+                    <span class="day-number">${d}</span>
+                    ${scheduleMarkers ? `<span class="schedule-dots">${scheduleMarkers}</span>` : ''}
+                </div>
                 <div class="calendar-events">
                     ${dayVideos.map(v => `
                         <div class="calendar-event event-${v.status.toLowerCase()}" 
@@ -2016,34 +2058,6 @@ function renderAIStrategist(channelId) {
             `).join('')}
         </div>
     `;
-}
-
-function renderSeriesStats(channelId, channelVideos) {
-    const container = document.getElementById(`${channelId}-intelligence`);
-    if (!container) return;
-
-    const seriesData = {};
-    channelVideos.forEach(v => {
-        if (!v.series) return;
-        if (!seriesData[v.series]) seriesData[v.series] = { views: 0, count: 0 };
-        seriesData[v.series].views += parseViews(v.views);
-        seriesData[v.series].count++;
-    });
-
-    const statsHtml = Object.entries(seriesData).map(([name, data]) => {
-        const avg = Math.round(data.views / data.count);
-        return `
-            <div class="intel-item">
-                <span class="intel-value">${avg.toLocaleString()}</span>
-                <span class="intel-label">${name} (Avg)</span>
-            </div>
-        `;
-    }).join('');
-
-    // Append to existing intelligence or replace if specialized
-    if (statsHtml) {
-        container.innerHTML += statsHtml;
-    }
 }
 
 
