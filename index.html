@@ -88,7 +88,7 @@
                 </div>
 
                 <div class="idea-section card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                    <div class="flex-between">
                         <h3>Idea Bank</h3>
                         <button class="btn btn-sm btn-primary" id="add-idea-btn">+ New Idea</button>
                     </div>
@@ -153,7 +153,7 @@
                     <h3>Competitor Watch</h3>
                     <span class="status-tag status-planned">Benchmarking</span>
                 </div>
-                <p style="color:var(--text-muted); margin-bottom:1.5rem">Top benchmark channels in the Christian & Bible
+                <p class="text-muted-desc">Top benchmark channels in the Christian & Bible
                     Study niche to observe for inspiration and trends.</p>
                 <div id="lpbz-competitors" class="competitor-grid">
                     <!-- Competitors injected by JS -->
@@ -246,7 +246,7 @@
                     <h3>Competitor Watch</h3>
                     <span class="status-tag status-planned">Benchmarking</span>
                 </div>
-                <p style="color:var(--text-muted); margin-bottom:1.5rem">Top benchmark channels in the Cozy & Wholesome
+                <p class="text-muted-desc">Top benchmark channels in the Cozy & Wholesome
                     Pets & Animals niche to observe for inspiration and trends.</p>
                 <div id="ecq-competitors" class="competitor-grid">
                     <!-- Competitors injected by JS -->
@@ -339,7 +339,7 @@
                     <h3>Competitor Watch</h3>
                     <span class="status-tag status-planned">Benchmarking</span>
                 </div>
-                <p style="color:var(--text-muted); margin-bottom:1.5rem">Top benchmark channels for Tozz Jerry to
+                <p class="text-muted-desc">Top benchmark channels for Tozz Jerry to
                     observe for inspiration and trends.</p>
                 <div id="tj-competitors" class="competitor-grid">
                     <!-- Competitors injected by JS -->
@@ -382,7 +382,7 @@
         <!-- Idea Bank View -->
         <section id="tab-idea-bank" class="tab-content">
             <div class="summary-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                <div class="flex-between">
                     <h2>Idea Bank</h2>
                     <button class="btn btn-primary" id="add-idea-page-btn">+ New Idea</button>
                 </div>
@@ -391,11 +391,11 @@
                 </div>
 
                 <!-- Inspiration Feed -->
-                <div class="inspiration-section" style="margin-top:2.5rem">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                <div class="inspiration-section inspiration-section-wrapper">
+                    <div class="flex-between">
                         <h2>💡 Inspiration Feed</h2>
-                        <div style="display:flex; gap:0.5rem">
-                            <select id="inspiration-channel-filter" class="inspiration-filter">
+                        <div class="flex-row-gap">
+                            <select id="inspiration-channel-filter" class="inspiration-filter" title="Filter by channel">
                                 <option value="all">All Channels</option>
                                 <option value="lpbz">Lets Pray & Bible Zone</option>
                                 <option value="ecq">Epic Cute Quests</option>
@@ -404,7 +404,7 @@
                             <button id="fetch-fresh-ideas" class="btn btn-primary btn-sm">🔄 Fetch Fresh Ideas</button>
                         </div>
                     </div>
-                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem">
+                    <p class="inspiration-hint">
                         Trending videos from competitor channels — click <strong>"Save as Idea"</strong> to add to your
                         bank.
                     </p>
@@ -420,18 +420,17 @@
             <div class="settings-grid">
                 <div class="settings-card card">
                     <h3>API Configuration</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem">
+                    <p class="settings-hint">
                         Add multiple API keys to increase your daily quota limits. The dashboard will automatically
                         rotate between them.
                     </p>
                     <div id="api-keys-list" class="api-keys-list">
                         <!-- API keys injected by JS -->
                     </div>
-                    <div class="form-group"
-                        style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem">
+                    <div class="form-group form-group-separator">
                         <label for="new-api-key">Add New API Key</label>
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
-                            <input type="password" id="new-api-key" placeholder="Enter API Key" style="flex: 1">
+                        <div class="api-key-input-row">
+                            <input type="password" id="new-api-key" placeholder="Enter API Key">
                             <button id="add-api-key-btn" class="btn btn-primary btn-sm">Add Key</button>
                         </div>
                     </div>
@@ -446,12 +445,12 @@
 
                 <div class="settings-card card">
                     <h3>Data Portability</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem">Backup your dashboard
+                    <p class="settings-hint">Backup your dashboard
                         data or restore it from a file.</p>
-                    <div class="form-actions" style="justify-content: flex-start">
+                    <div class="form-actions form-actions-left">
                         <button id="export-data-btn" class="btn btn-outline btn-sm">Export Data (JSON)</button>
                         <button id="import-data-btn" class="btn btn-outline btn-sm">Import Data</button>
-                        <input type="file" id="import-file-input" style="display: none" accept=".json">
+                        <input type="file" id="import-file-input" class="hidden-input" accept=".json" title="Import data file" aria-label="Import data file">
                     </div>
                 </div>
             </div>
@@ -459,11 +458,11 @@
         <!-- Calendar View -->
         <section id="tab-calendar" class="tab-content">
             <div class="summary-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                <div class="flex-between">
                     <h2>Content Calendar</h2>
-                    <div style="display:flex; gap:0.5rem">
+                    <div class="flex-row-gap">
                         <button id="prev-month" class="btn btn-outline btn-sm">&lt;</button>
-                        <h3 id="calendar-month-year" style="margin:0; min-width:150px; text-align:center"></h3>
+                        <h3 id="calendar-month-year" class="calendar-month-title"></h3>
                         <button id="next-month" class="btn btn-outline btn-sm">&gt;</button>
                     </div>
                 </div>
@@ -474,8 +473,7 @@
         </section>
     </main>
 
-    <footer
-        style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.8rem; border-top:1px solid var(--border); margin-top:4rem;">
+    <footer class="site-footer">
         <p>YT Tracker Dashboard &copy; 2026</p>
     </footer>
 
@@ -497,8 +495,7 @@
                     <span>Tozz Jerry</span>
                 </button>
             </div>
-            <button class="btn btn-outline btn-sm" id="cancel-channel-pick"
-                style="margin-top:1rem; width:100%">Cancel</button>
+            <button class="btn btn-outline btn-sm cancel-btn-full" id="cancel-channel-pick">Cancel</button>
         </div>
     </div>
 
@@ -507,8 +504,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Video Idea</h2>
-                <button type="button" class="btn-icon close-modal"
-                    style="background:none; border:none; color:var(--text-muted); cursor:pointer;">
+                <button type="button" class="btn-icon close-modal close-modal-btn" title="Close modal">
                     <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -550,7 +546,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="workflow-group" style="display:none">
+                    <div class="form-group workflow-group-hidden" id="workflow-group">
                         <label>Production Stage</label>
                         <div class="workflow-stages">
                             <input type="radio" name="w-stage" id="ws-idea" value="Idea" checked>
@@ -589,15 +585,15 @@
                         <label>Content Strategy</label>
                         <div class="strategy-grid">
                             <div class="strategy-field">
-                                <label for="v-hook" style="font-size: 0.75rem">The Hook (First 3s)</label>
+                                <label for="v-hook" class="strategy-field-label">The Hook (First 3s)</label>
                                 <input type="text" id="v-hook" placeholder="Catch attention...">
                             </div>
                             <div class="strategy-field">
-                                <label for="v-value" style="font-size: 0.75rem">Value Prop</label>
+                                <label for="v-value" class="strategy-field-label">Value Prop</label>
                                 <input type="text" id="v-value" placeholder="Why watch?">
                             </div>
                             <div class="strategy-field">
-                                <label for="v-cta" style="font-size: 0.75rem">CTA</label>
+                                <label for="v-cta" class="strategy-field-label">CTA</label>
                                 <input type="text" id="v-cta" placeholder="What to do?">
                             </div>
                         </div>

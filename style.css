@@ -138,6 +138,7 @@ main {
 /* Header */
 .main-header {
     background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     padding: 1.5rem 0;
     border-bottom: 1px solid var(--border);
@@ -279,6 +280,7 @@ body.light-theme .moon-icon {
 /* Navigation */
 .main-nav {
     background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
     margin-bottom: 3rem;
@@ -442,6 +444,7 @@ body.light-theme .moon-icon {
 /* Card Foundations */
 .card {
     background: var(--bg-card);
+    -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     padding: 2rem;
     border-radius: var(--radius-md);
@@ -1008,6 +1011,7 @@ textarea#v-notes:focus {
     width: 100%;
     height: 100%;
     background: rgba(2, 6, 23, 0.65);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     z-index: 1000;
     align-items: center;
@@ -1104,6 +1108,7 @@ textarea#v-notes:focus {
     border-bottom: 1px solid var(--border);
     background: var(--bg-card);
     /* Semi-transparent background */
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     flex-shrink: 0;
     display: flex;
@@ -1305,7 +1310,6 @@ textarea#v-notes:focus {
 
     .nav-container {
         padding: 0.5rem 1rem;
-        -webkit-overflow-scrolling: touch;
     }
 
     .management-grid {
@@ -1350,6 +1354,7 @@ textarea#v-notes:focus {
 
 .inspiration-card {
     background: var(--bg-card);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
@@ -1518,7 +1523,6 @@ textarea#v-notes:focus {
     overflow-x: auto;
     gap: 1.5rem;
     padding-bottom: 1.5rem;
-    -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
 }
 
@@ -1738,4 +1742,97 @@ textarea#v-notes:focus {
 .stat-row span:last-child {
     font-weight: 600;
     color: var(--accent);
+}
+
+/* Utility classes (extracted from inline styles) */
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.text-muted-desc {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.inspiration-section-wrapper {
+    margin-top: 2.5rem;
+}
+
+.flex-row-gap {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.inspiration-hint {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.form-group-separator {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}
+
+.api-key-input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.api-key-input-row input {
+    flex: 1;
+}
+
+.form-actions-left {
+    justify-content: flex-start;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.cancel-btn-full {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.workflow-group-hidden {
+    display: none;
+}
+
+.strategy-field-label {
+    font-size: 0.75rem;
+}
+
+.calendar-month-title {
+    margin: 0;
+    min-width: 150px;
+    text-align: center;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
 }
