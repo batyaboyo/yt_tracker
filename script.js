@@ -58,14 +58,25 @@ const CHANNELS = {
             },
 
             {
-                name: "Einzelgänger",
-                note: "Stoic philosophy & calm wisdom",
+                name: "Bible Stories for Everyone",
+                note: "Animated Bible stories & lessons",
                 topContent: [
-                    { title: "The Joys of Not Needing People", views: "2M" },
-                    { title: "Life Has No Meaning...", views: "3M" },
-                    { title: "Stop Letting the News Ruin Your Peace", views: "1.5M" },
-                    { title: "The Taoist Art of Non-Resistance", views: "1M" },
-                    { title: "Why Nothing Feels Exciting Anymore", views: "2.5M" }
+                    { title: "The Story of David and Goliath | Bible Stories", views: "12M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+David+and+Goliath" },
+                    { title: "The Story of Moses | Bible Stories for Kids", views: "8.5M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Story+of+Moses" },
+                    { title: "The Story of Joseph | Full Bible Movie", views: "6.2M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Story+of+Joseph" },
+                    { title: "The Birth of Jesus Christ | Christmas Story", views: "5.8M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Birth+of+Jesus" },
+                    { title: "Daniel in the Lion's Den | Animated Bible Story", views: "4.1M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Daniel+Lions+Den" }
+                ]
+            },
+            {
+                name: "The Bible Project",
+                note: "Visual Bible exploration & theology",
+                topContent: [
+                    { title: "The Book of Genesis Overview (Part 1)", views: "18M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Genesis+Overview+Part+1" },
+                    { title: "The Gospel of Luke | Full Movie", views: "14M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Gospel+of+Luke" },
+                    { title: "What Is the Bible? | Exploring Its Purpose", views: "9.3M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+What+Is+the+Bible" },
+                    { title: "The Story of Exodus | Animated Explanation", views: "7.6M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Story+of+Exodus" },
+                    { title: "Heaven and Earth | Biblical Themes", views: "5.4M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Heaven+and+Earth" }
                 ]
             },
             {
