@@ -1828,6 +1828,26 @@ textarea#v-notes:focus {
     text-align: center;
 }
 
+/* Calendar Markers */
+.schedule-dots {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.schedule-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: block;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-day.today .schedule-dot {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+
 .site-footer {
     text-align: center;
     padding: 2rem;

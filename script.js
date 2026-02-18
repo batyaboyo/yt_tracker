@@ -1,6 +1,6 @@
 // Configuration & Constants
 let API_KEYS = safeJSONParse('yt_tracker_api_keys', ['AIzaSyCxeLcxccx2O5ZZyIPszKM_egCVyZI6HhA']);
-let currentKeyIndex = 0;
+let currentKeyIndex = parseInt(localStorage.getItem('yt_tracker_current_key_index')) || 0;
 
 function getApiKey() {
     return API_KEYS[currentKeyIndex] || '';
@@ -9,6 +9,7 @@ function getApiKey() {
 function rotateApiKey() {
     if (API_KEYS.length > 1) {
         currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        localStorage.setItem('yt_tracker_current_key_index', currentKeyIndex);
         console.log(`📡 Switched to API Key #${currentKeyIndex + 1}`);
         return true;
     }
@@ -143,7 +144,7 @@ const CHANNELS = {
         channelId: localStorage.getItem('yt_tracker_cid_ecq') || 'UC9xco5rz9PCBTp8uEF7IbGg',
         name: 'Epic Cute Quests',
         targetPerWeek: 2,
-        types: ['Short'],
+        types: ['Short', 'Long-form'],
         schedule: 'Wednesday @ 8pm & Saturday @ 5pm EAT',
         color: '#f472b6',
         uploadDays: [3, 6],
@@ -222,6 +223,10 @@ const CHANNELS = {
         schedule: 'Wednesday (Shorts) & Friday (Long-form) @ 8pm EAT',
         color: '#10b981',
         uploadDays: [3, 5],
+        scheduleDetails: {
+            3: 20, // Wednesday @ 8pm (Shorts)
+            5: 20  // Friday @ 8pm (Long-form)
+        },
         subscribers: 0,
         searchFocus: 'AI reconstructions African cities historical architecture',
         competitors: [
@@ -462,17 +467,17 @@ async function fetchChannelVideos(channel) {
 
 function detectVideoType(channelKey, item) {
     const title = item.snippet.title.toLowerCase();
+    const duration = item.contentDetails?.duration || '';
+
+    // Common heuristic: Shorts are < 60s. YouTube ISO 8601 duration
+    const isShortDuration = duration.includes('S') && !duration.includes('M') && !duration.includes('H') && parseInt(duration.match(/PT(\d+)S/)?.[1] || 0) < 60;
+
     if (channelKey === 'lpbz') {
-        if (title.includes('prayer') || title.includes('short')) return 'Short Prayer';
+        if (title.includes('prayer')) return 'Short Prayer';
+        if (isShortDuration || title.includes('short')) return 'Short Prayer';
         return 'Long-form';
-    } else if (channelKey === 'tj') {
-        const duration = item.contentDetails?.duration || '';
-        // Heuristics: Shorts are < 60s. YouTube ISO 8601 duration
-        if (duration.includes('S') && !duration.includes('M') && !duration.includes('H')) {
-            const seconds = parseInt(duration.match(/PT(\d+)S/)?.[1] || 0);
-            if (seconds < 60) return 'Short';
-        }
-        if (title.includes('#shorts') || title.includes('short')) return 'Short';
+    } else if (channelKey === 'tj' || channelKey === 'ecq') {
+        if (isShortDuration || title.includes('#shorts') || title.includes('short')) return 'Short';
         return 'Long-form';
     } else {
         return 'Short';
@@ -1396,29 +1401,30 @@ function renderChannelView(channelId) {
     renderIntelligence(channelId, liveVideos);
     renderAIStrategist(channelId);
     renderCompetitors(channelId);
-    renderSeriesStats(channelId, liveVideos);
-
-    const tbody = document.querySelector(`#${channelId}-history tbody`);
-    if (!tbody) return; // Defensive check
-    tbody.innerHTML = liveVideos.map(v => `
-        <tr>
-            <td class="thumbnail-cell"><img src="${v.thumbnail || ''}" class="thumbnail-img"></td>
-            <td>${v.title}</td>
-            <td>${new Date(v.date).toLocaleDateString()}</td>
-            <td><span class="type-tag type-${v.type.toLowerCase().replace(' ', '-')}">${v.type}</span></td>
-            <td>${v.views.toLocaleString()}</td>
-            <td><span class="status-tag status-live">Live</span></td>
-            <td>${(v.likes || 0).toLocaleString()}</td>
-            <td>${(v.comments || 0).toLocaleString()}</td>
-            <td>
-                <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
-                <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteVideo('${v.id}')">Delete</button>
-            </td>
-        </tr>
-    `).join('') || '<tr><td colspan="9" style="text-align:center">No live videos yet.</td></tr>';
-
     const breakdownEl = document.getElementById(`${channelId}-breakdown`);
     if (breakdownEl) renderBreakdown(channelId, liveVideos);
+    renderSeriesStats(channelId, liveVideos); // Call this AFTER renderBreakdown
+
+    const tbody = document.querySelector(`#${channelId}-history tbody`);
+    if (tbody) {
+        tbody.innerHTML = liveVideos.map(v => `
+            <tr>
+                <td class="thumbnail-cell"><img src="${v.thumbnail || ''}" class="thumbnail-img"></td>
+                <td>${v.title}</td>
+                <td>${new Date(v.date).toLocaleDateString()}</td>
+                <td><span class="type-tag type-${v.type.toLowerCase().replace(' ', '-')}">${v.type}</span></td>
+                <td>${v.views.toLocaleString()}</td>
+                <td><span class="status-tag status-live">Live</span></td>
+                <td>${(v.likes || 0).toLocaleString()}</td>
+                <td>${(v.comments || 0).toLocaleString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
+                    <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteVideo('${v.id}')">Delete</button>
+                </td>
+            </tr>
+        `).join('') || '<tr><td colspan="9" style="text-align:center">No live videos yet.</td></tr>';
+    }
+
     setTimeout(() => {
         initChart(channelId, liveVideos);
         initSubsChart(channelId);
