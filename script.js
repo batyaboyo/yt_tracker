@@ -144,9 +144,13 @@ const CHANNELS = {
         name: 'Epic Cute Quests',
         targetPerWeek: 2,
         types: ['Short'],
-        schedule: 'Tuesday & Friday @ 8pm EAT',
+        schedule: 'Wednesday @ 8pm & Saturday @ 5pm EAT',
         color: '#f472b6',
-        uploadDays: [2, 5],
+        uploadDays: [3, 6],
+        scheduleDetails: {
+            3: 20, // Wednesday @ 8pm
+            6: 17  // Saturday @ 5pm
+        },
         subscribers: 0,
         searchFocus: 'cute animal videos pets',
         competitors: [
@@ -1753,14 +1757,14 @@ function getNextUploadInfo(channelId) {
     const displayHour = deadlineHour > 12 ? deadlineHour - 12 : (deadlineHour === 0 ? 12 : deadlineHour);
     const ampm = deadlineHour >= 12 ? 'pm' : 'am';
     const isToday = nowEAT.getDate() === deadline.getDate() &&
-                    nowEAT.getMonth() === deadline.getMonth() &&
-                    nowEAT.getFullYear() === deadline.getFullYear();
+        nowEAT.getMonth() === deadline.getMonth() &&
+        nowEAT.getFullYear() === deadline.getFullYear();
     const isTomorrow = (() => {
         const tomorrow = new Date(nowEAT);
         tomorrow.setDate(tomorrow.getDate() + 1);
         return tomorrow.getDate() === deadline.getDate() &&
-               tomorrow.getMonth() === deadline.getMonth() &&
-               tomorrow.getFullYear() === deadline.getFullYear();
+            tomorrow.getMonth() === deadline.getMonth() &&
+            tomorrow.getFullYear() === deadline.getFullYear();
     })();
 
     if (isToday) {
@@ -1979,7 +1983,7 @@ function renderCalendar() {
             .filter(([, ch]) => ch.uploadDays.includes(dayOfWeek))
             .map(([, ch]) => ch);
 
-        const scheduleMarkers = scheduledChannels.map(ch => 
+        const scheduleMarkers = scheduledChannels.map(ch =>
             `<span class="schedule-dot" style="background:${ch.color}" title="${ch.name}"></span>`
         ).join('');
 
