@@ -21,12 +21,12 @@ const CHANNELS = {
         name: 'Lets Pray and Bible Zone',
         targetPerWeek: 4,
         types: ['Short Prayer', 'Long-form'],
-        schedule: 'Sun, Tue (Shorts) @ 7am | Wed (Long-form) @ 8pm, Sat @ 5pm EAT',
+        schedule: 'Sun (Short) @ 7am, Tue (Short) @ 8pm | Wed @ 8pm, Sat @ 5pm (Long-form) EAT',
         color: '#818cf8',
         uploadDays: [0, 2, 3, 6],
         scheduleDetails: {
             0: 7,  // Sunday @ 7am (Short)
-            2: 7,  // Tuesday @ 7am (Short)
+            2: 20, // Tuesday @ 8pm (Short)
             3: 20, // Wednesday @ 8pm (Long-form)
             6: 17  // Saturday @ 5pm (Long-form)
         },
