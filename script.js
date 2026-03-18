@@ -475,10 +475,7 @@ function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = fals
             document.getElementById('v-title').value = video.title;
             document.getElementById('v-date').value = video.date;
             document.getElementById('v-type').value = video.type;
-            document.getElementById('v-views').value = video.views;
-            document.getElementById('v-status').value = video.status || 'Live';
-
-            // Trigger change to show/hide workflow
+            document.getElementById('v-status').value = video.status;
             document.getElementById('v-status').dispatchEvent(new Event('change'));
 
             if (video.workflowStage) {
@@ -1269,15 +1266,15 @@ function renderChannelView(channelId) {
     if (tbody) {
         tbody.innerHTML = liveVideos.map(v => `
             <tr>
-                <td class="thumbnail-cell"><img src="${v.thumbnail || ''}" class="thumbnail-img"></td>
-                <td>${v.title}</td>
-                <td>${new Date(v.date).toLocaleDateString()}</td>
-                <td><span class="type-tag type-${v.type.toLowerCase().replace(' ', '-')}">${v.type}</span></td>
-                <td>${v.views.toLocaleString()}</td>
-                <td><span class="status-tag status-live">Live</span></td>
-                <td>${(v.likes || 0).toLocaleString()}</td>
-                <td>${(v.comments || 0).toLocaleString()}</td>
-                <td>
+                <td class="thumbnail-cell" data-label="Thumb"><img src="${v.thumbnail || ''}" class="thumbnail-img"></td>
+                <td data-label="Title">${v.title}</td>
+                <td data-label="Date">${new Date(v.date).toLocaleDateString()}</td>
+                <td data-label="Type"><span class="type-tag type-${v.type.toLowerCase().replace(' ', '-')}">${v.type}</span></td>
+                <td data-label="Views">${v.views.toLocaleString()}</td>
+                <td data-label="Status"><span class="status-tag status-live">Live</span></td>
+                <td data-label="Likes">${(v.likes || 0).toLocaleString()}</td>
+                <td data-label="Comments">${(v.comments || 0).toLocaleString()}</td>
+                <td data-label="Actions">
                     <button class="btn btn-sm btn-outline" onclick="openModal('${channelId}', '${v.id}')">Edit</button>
                     <button class="btn btn-sm btn-outline" style="color:var(--danger)" onclick="deleteVideo('${v.id}')">Delete</button>
                 </td>
