@@ -58,6 +58,7 @@
             <button class="nav-btn" data-tab="ecq">Epic Cute Quests</button>
             <button class="nav-btn" data-tab="tj">Tozz Jerry</button>
             <button class="nav-btn" data-tab="idea-bank">Idea Bank</button>
+            <button class="nav-btn" data-tab="schedule">Upload Schedule</button>
             <button class="nav-btn" data-tab="calendar">Calendar</button>
             <button class="nav-btn" data-tab="settings">Settings</button>
         </div>
@@ -440,6 +441,25 @@
                     <h3>Channel Management</h3>
                     <div id="settings-channels-list">
                         <!-- Dynamic channel settings -->
+                    </div>
+                </div>
+
+                <div class="settings-card card">
+                    <h3>Preferences</h3>
+                    <div class="form-group">
+                        <label for="timezone-select">Upload Time Timezone</label>
+                        <select id="timezone-select" class="form-control">
+                            <option value="UTC">UTC (Coordinated Universal Time)</option>
+                            <option value="EAT">EAT (East Africa Time, UTC+3)</option>
+                            <option value="EST">EST (Eastern Standard Time, UTC-5)</option>
+                            <option value="CST">CST (Central Standard Time, UTC-6)</option>
+                            <option value="PST">PST (Pacific Standard Time, UTC-8)</option>
+                            <option value="GMT">GMT (Greenwich Mean Time, UTC+0)</option>
+                            <option value="CET">CET (Central European Time, UTC+1)</option>
+                            <option value="IST">IST (India Standard Time, UTC+5:30)</option>
+                            <option value="JST">JST (Japan Standard Time, UTC+9)</option>
+                            <option value="AEST">AEST (Australian Eastern Standard Time, UTC+10)</option>
+                        </select>
                     </div>
                 </div>
 

@@ -21,7 +21,9 @@ const CHANNELS = {
         id: 'lpbz',
         channelId: localStorage.getItem('yt_tracker_cid_lpbz') || 'UCScdEW9zdV25rmeMFm-DzRw',
         name: 'Lets Pray and Bible Zone',
+        niche: 'Daily prayer and biblical teachings',
         targetPerWeek: 4,
+        targetSubscribers: 50000,
         types: ['Short Prayer', 'Long-form'],
         schedule: 'Sun (Short) @ 7am, Tue (Short) @ 8pm | Wed @ 8pm, Sat @ 5pm (Long-form) EAT',
         color: '#818cf8',
@@ -33,19 +35,21 @@ const CHANNELS = {
             6: 17  // Saturday @ 5pm (Long-form)
         },
         subscribers: 0,
-        searchFocus: ''
+        searchFocus: 'prayer motivation devotional bible faith'
     },
     ecq: {
         id: 'ecq',
         channelId: localStorage.getItem('yt_tracker_cid_ecq') || 'UC9xco5rz9PCBTp8uEF7IbGg',
         name: 'Epic Cute Quests',
+        niche: 'Rescued pets and cute animal adventures',
         targetPerWeek: 2,
+        targetSubscribers: 100000,
         types: ['Short', 'Long-form'],
-        schedule: 'Wednesday @ 8pm & Saturday @ 5pm EAT',
+        schedule: 'Monday @ 8pm & Saturday @ 5pm EAT',
         color: '#f472b6',
-        uploadDays: [3, 6],
+        uploadDays: [1, 6],
         scheduleDetails: {
-            3: 20, // Wednesday @ 8pm
+            1: 20, // Monday @ 8pm (moved from Wed to avoid conflict)
             6: 17  // Saturday @ 5pm
         },
         subscribers: 0,
@@ -55,17 +59,19 @@ const CHANNELS = {
         id: 'tj',
         channelId: localStorage.getItem('yt_tracker_cid_tj') || 'UCtIova4flqS4LBtA5hQ8o5w',
         name: 'Tozz Jerry',
+        niche: 'AI-powered historical and cultural reconstruction',
         targetPerWeek: 2,
+        targetSubscribers: 25000,
         types: ['Short', 'Long-form'],
-        schedule: 'Wednesday (Shorts) & Friday (Long-form) @ 8pm EAT',
+        schedule: 'Wednesday (Shorts) @ 8pm & Friday (Long-form) @ 12pm UTC EAT',
         color: '#10b981',
         uploadDays: [3, 5],
         scheduleDetails: {
             3: 20, // Wednesday @ 8pm (Shorts)
-            5: 20  // Friday @ 8pm (Long-form)
+            5: 12  // Friday @ 12pm UTC (noon - global audience)
         },
         subscribers: 0,
-        searchFocus: 'AI reconstructions African cities historical architecture'
+        searchFocus: 'African AI history'
     }
 };
 
