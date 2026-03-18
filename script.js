@@ -22,17 +22,15 @@ const CHANNELS = {
         channelId: localStorage.getItem('yt_tracker_cid_lpbz') || 'UCScdEW9zdV25rmeMFm-DzRw',
         name: 'Lets Pray and Bible Zone',
         niche: 'Daily prayer and biblical teachings',
-        targetPerWeek: 4,
+        targetPerWeek: 2,
         targetSubscribers: 50000,
         types: ['Short Prayer', 'Long-form'],
-        schedule: 'Sun (Short) @ 7am, Tue (Short) @ 8pm | Wed @ 8pm, Sat @ 5pm (Long-form) EAT',
+        schedule: 'Wednesday @ 10pm & Friday @ 8pm EAT',
         color: '#818cf8',
-        uploadDays: [0, 2, 3, 6],
+        uploadDays: [3, 5],
         scheduleDetails: {
-            0: 7,  // Sunday @ 7am (Short)
-            2: 20, // Tuesday @ 8pm (Short)
-            3: 20, // Wednesday @ 8pm (Long-form)
-            6: 17  // Saturday @ 5pm (Long-form)
+            3: 22, // Wednesday @ 10pm
+            5: 20  // Friday @ 8pm
         },
         subscribers: 0,
         searchFocus: 'prayer motivation devotional bible faith'
@@ -45,12 +43,12 @@ const CHANNELS = {
         targetPerWeek: 2,
         targetSubscribers: 100000,
         types: ['Short', 'Long-form'],
-        schedule: 'Monday @ 8pm & Saturday @ 5pm EAT',
+        schedule: 'Wednesday @ 10pm & Friday @ 8pm EAT',
         color: '#f472b6',
-        uploadDays: [1, 6],
+        uploadDays: [3, 5],
         scheduleDetails: {
-            1: 20, // Monday @ 8pm (moved from Wed to avoid conflict)
-            6: 17  // Saturday @ 5pm
+            3: 22, // Wednesday @ 10pm
+            5: 20  // Friday @ 8pm
         },
         subscribers: 0,
         searchFocus: 'cute animal videos pets'
@@ -63,12 +61,12 @@ const CHANNELS = {
         targetPerWeek: 2,
         targetSubscribers: 25000,
         types: ['Short', 'Long-form'],
-        schedule: 'Wednesday (Shorts) @ 8pm & Friday (Long-form) @ 12pm UTC EAT',
+        schedule: 'Wednesday @ 10pm & Friday @ 8pm EAT',
         color: '#10b981',
         uploadDays: [3, 5],
         scheduleDetails: {
-            3: 20, // Wednesday @ 8pm (Shorts)
-            5: 12  // Friday @ 12pm UTC (noon - global audience)
+            3: 22, // Wednesday @ 10pm
+            5: 20  // Friday @ 8pm
         },
         subscribers: 0,
         searchFocus: 'African AI history'
