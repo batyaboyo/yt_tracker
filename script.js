@@ -33,112 +33,7 @@ const CHANNELS = {
             6: 17  // Saturday @ 5pm (Long-form)
         },
         subscribers: 0,
-        searchFocus: '',
-        competitors: [
-            {
-                name: "Tales by Monisha",
-                note: "Cultural fables & moral stories",
-                topContent: [
-                    { title: "Don't Share Everything | A Deep Moral Story About Trust", views: "733K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Don%27t+Share+Everything" },
-                    { title: "You're Not Less Than Anyone | Life-Changing Moral Story", views: "37K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+You%27re+Not+Less+Than+Anyone" },
-                    { title: "Use Mind, Not Muscle | A Powerful Jungle Lesson", views: "25K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Use+Mind+Not+Muscle" },
-                    { title: "Never Lose Your Identity | A Powerful Life Lesson", views: "24K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Never+Lose+Your+Identity" },
-                    { title: "Power of a Calm Mind | A Powerful Life Lesson Story", views: "20K", url: "https://www.youtube.com/results?search_query=Tales+by+Monisha+Power+of+a+Calm+Mind" }
-                ]
-            },
-
-            {
-                name: "Life Lessons Library",
-                note: "Powerful English stories that touch the soul",
-                topContent: [
-                    { title: "The Wrong Door That Opened the Right Future", views: "73K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+The+Wrong+Door" },
-                    { title: "7 Rules of Success and Wealth | Life-Changing Motivational", views: "26K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+7+Rules+of+Success" },
-                    { title: "Three Greatest Enemies of Success — A Zen Story", views: "18K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+Three+Greatest+Enemies" },
-                    { title: "Why God Took Everything From Him | Heart-Touching Story", views: "7.5K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+Why+God+Took+Everything" },
-                    { title: "You're Not Anxious, You're Awake — A Soul-Healing Story", views: "2.1K", url: "https://www.youtube.com/results?search_query=Life+Lessons+Library+You%27re+Not+Anxious" }
-                ]
-            },
-
-            {
-                name: "Bible Stories for Everyone",
-                note: "Animated Bible stories & lessons",
-                topContent: [
-                    { title: "The Story of David and Goliath | Bible Stories", views: "12M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+David+and+Goliath" },
-                    { title: "The Story of Moses | Bible Stories for Kids", views: "8.5M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Story+of+Moses" },
-                    { title: "The Story of Joseph | Full Bible Movie", views: "6.2M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Story+of+Joseph" },
-                    { title: "The Birth of Jesus Christ | Christmas Story", views: "5.8M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Birth+of+Jesus" },
-                    { title: "Daniel in the Lion's Den | Animated Bible Story", views: "4.1M", url: "https://www.youtube.com/results?search_query=Bible+Stories+for+Everyone+Daniel+Lions+Den" }
-                ]
-            },
-            {
-                name: "The Bible Project",
-                note: "Visual Bible exploration & theology",
-                topContent: [
-                    { title: "The Book of Genesis Overview (Part 1)", views: "18M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Genesis+Overview+Part+1" },
-                    { title: "The Gospel of Luke | Full Movie", views: "14M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Gospel+of+Luke" },
-                    { title: "What Is the Bible? | Exploring Its Purpose", views: "9.3M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+What+Is+the+Bible" },
-                    { title: "The Story of Exodus | Animated Explanation", views: "7.6M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Story+of+Exodus" },
-                    { title: "Heaven and Earth | Biblical Themes", views: "5.4M", url: "https://www.youtube.com/results?search_query=The+Bible+Project+Heaven+and+Earth" }
-                ]
-            },
-            {
-                name: "Living Life Tales",
-                note: "Daily inspiration & vocabulary",
-                topContent: [
-                    { title: "The Secret of 5 AM | One Habit That Changed a Poor Man's Life", views: "644K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+The+Secret+of+5+AM" },
-                    { title: "The Lazy Boy Story | Motivational video", views: "609K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+The+Lazy+Boy+Story" },
-                    { title: "You're Not Alone - A Beautiful Inspirational Short Story", views: "483K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+You%27re+Not+Alone" },
-                    { title: "A Story About Life (INSPIRATIONAL)", views: "446K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+A+Story+About+Life" },
-                    { title: "A SHORT STORY FULL OF WISDOM", views: "403K", url: "https://www.youtube.com/results?search_query=Living+Life+Tales+A+Short+Story+Full+of+Wisdom" }
-                ]
-            },
-            {
-                name: "Grace for Purpose",
-                note: "Morning prayers & motivation",
-                topContent: [
-                    { title: "Speak God's Blessing Over Your Mornings in 2026", views: "138K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Speak+God%27s+Blessing" },
-                    { title: "GOD IS NEAR To Those Who Call On Him", views: "127K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+GOD+IS+NEAR" },
-                    { title: "Start Your Morning with a Prayer That Carries Power", views: "112K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Start+Your+Morning+Prayer" },
-                    { title: "Be Still and Begin Your Day Rich In Spiritual Blessings", views: "100K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Be+Still+and+Begin+Your+Day" },
-                    { title: "Never Forget That Living For God Is Your MAIN Priority", views: "92K", url: "https://www.youtube.com/results?search_query=Grace+for+Purpose+Never+Forget+Living+For+God" }
-                ]
-            },
-            {
-                name: "Daily Jesus Prayers",
-                note: "Daily devotionals & prayers",
-                topContent: [
-                    { title: "PRAY THIS Powerful February 2026 Prayer for Blessing", views: "21K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+February+2026+Prayer" },
-                    { title: "Go Before Me & Guide Me For The Rest Of 2026", views: "15K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Go+Before+Me" },
-                    { title: "Guide My Steps in Peace and Strength", views: "13K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Guide+My+Steps" },
-                    { title: "Lord, Restore Me and Save Me", views: "11K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+Lord+Restore+Me" },
-                    { title: "I Need You, Lord | Morning Prayer", views: "11K", url: "https://www.youtube.com/results?search_query=Daily+Jesus+Prayers+I+Need+You+Lord" }
-                ]
-            },
-            {
-                name: "Wisdom of Hope",
-                note: "Motivational & inspirational stories",
-                topContent: [
-                    { title: "How to Stay Positive in Tough Times | Power of Belief", views: "71K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+How+to+Stay+Positive" },
-                    { title: "Who Is Truly Happy? | Eye-Opening Story", views: "8.5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Who+Is+Truly+Happy" },
-                    { title: "Everything You Do to Others… Comes Back to You", views: "3.5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Everything+You+Do+to+Others" },
-                    { title: "The Value of Your Life – A Powerful Story on Self-Worth", views: "1.3K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+The+Value+of+Your+Life" },
-                    { title: "Never Lose Hope", views: "5K", url: "https://www.youtube.com/results?search_query=Wisdom+of+Hope+Never+Lose+Hope" }
-                ]
-            },
-            {
-                name: "Reflections of Life",
-                note: "Cinematic, high-quality short films",
-                topContent: [
-                    { title: "96 Years of WISDOM: The 3 Lessons That Will Make You Feel Awe", views: "2.9M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+96+Years+of+WISDOM" },
-                    { title: "Our Island Life: Finding Peace & Freedom in Isolation", views: "2.5M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Our+Island+Life" },
-                    { title: "The Simple Life: How to Find Your 'ENOUGH'", views: "2.3M", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+The+Simple+Life" },
-                    { title: "Silence and Noise", views: "500K", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Silence+and+Noise" },
-                    { title: "Finding Meaning", views: "250K", url: "https://www.youtube.com/results?search_query=Reflections+of+Life+Finding+Meaning" }
-                ]
-            },
-
-
-        ]
+        searchFocus: ''
     },
     ecq: {
         id: 'ecq',
@@ -154,66 +49,7 @@ const CHANNELS = {
             6: 17  // Saturday @ 5pm
         },
         subscribers: 0,
-        searchFocus: 'cute animal videos pets',
-        competitors: [
-
-
-            {
-                name: "The Secret Life of my Hamster",
-                note: "Epic hamster mazes & escapes",
-                topContent: [
-                    { title: "Hamster Ball pool Maze", views: "289M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Hamster+Ball+pool+Maze" },
-                    { title: "Hamster vs Pop It maze for pets Escape", views: "198M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Pop+It+maze" },
-                    { title: "Hamster Pop It Maze", views: "136M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Hamster+Pop+It+Maze" },
-                    { title: "The Best Hamster Challenges", views: "108M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Best+Hamster+Challenges" },
-                    { title: "Hamster Escapes the Pool Maze", views: "72M", url: "https://www.youtube.com/results?search_query=The+Secret+Life+of+my+Hamster+Escapes+the+Pool+Maze" }
-                ]
-            },
-            {
-                name: "Shadow the Rat",
-                note: "Incredible rat tricks & agility",
-                topContent: [
-                    { title: "Shadow The Rat - Best Rat Tricks (Compilation)", views: "805K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Best+Rat+Tricks" },
-                    { title: "10 Weird Yet Totally Normal Behaviors from Pet Rats", views: "517K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+10+Weird+Yet+Totally+Normal+Behaviors" },
-                    { title: "Rats vs Boiled Egg Part 2 - Chill Out Bean!", views: "206K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Rats+vs+Boiled+Egg" },
-                    { title: "Latte's Epic Rat Tricks - Part 3!", views: "147K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+Latte%27s+Epic+Rat+Tricks" },
-                    { title: "How I Introduced My 3 Younger Rats to My 2 Older Girls", views: "144K", url: "https://www.youtube.com/results?search_query=Shadow+the+Rat+How+I+Introduced+My+3+Younger+Rats" }
-                ]
-            },
-            {
-                name: "Little Adventures",
-                note: "Cinematic guinea pig life",
-                topContent: [
-                    { title: "New Guinea Pig Introduction", views: "872K", url: "https://www.youtube.com/results?search_query=Little+Adventures+New+Guinea+Pig+Introduction" },
-                    { title: "I Bought My Guinea Pigs Everything They Asked For", views: "544K", url: "https://www.youtube.com/results?search_query=Little+Adventures+I+Bought+My+Guinea+Pigs+Everything" },
-                    { title: "My Instagram Followers Control My Life Guinea Pig Edition", views: "535K", url: "https://www.youtube.com/results?search_query=Little+Adventures+My+Instagram+Followers+Control+My+Life" },
-                    { title: "10 Strange But Common Guinea Pig Behaviors", views: "533K", url: "https://www.youtube.com/results?search_query=Little+Adventures+10+Strange+But+Common+Guinea+Pig+Behaviors" },
-                    { title: "Failed Guinea Pig Introduction", views: "518K", url: "https://www.youtube.com/results?search_query=Little+Adventures+Failed+Guinea+Pig+Introduction" }
-                ]
-            },
-            {
-                name: "The Modern Ferret",
-                note: "Funny ferret chaos & bonding",
-                topContent: [
-                    { title: "FERRETS Taking Over TikTok | FUNNIEST Trending", views: "1.3M", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+FERRETS+Taking+Over+TikTok" },
-                    { title: "FERRETS Taking Over Tiktok | FUNNIEST Trending pt. 2", views: "797K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+Taking+Over+Tiktok+pt+2" },
-                    { title: "What is a Ferret? | Ferrets as Pets 101", views: "713K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+What+is+a+Ferret" },
-                    { title: "11 FUN Ways to Bond With Your Ferret", views: "411K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+11+FUN+Ways+to+Bond" },
-                    { title: "BEST FERRET Products | The Modern Ferret", views: "290K", url: "https://www.youtube.com/results?search_query=The+Modern+Ferret+BEST+FERRET+Products" }
-                ]
-            },
-            {
-                name: "Pet Pop",
-                note: "Viral cute & funny pet compilations (@petpopz)",
-                topContent: [
-                    { title: "Try Not To Laugh - Funniest Pet Moments", views: "5M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+funny+pets" },
-                    { title: "Cutest Pets Doing Funny Things", views: "3.2M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+cutest+pets" },
-                    { title: "Animals That Will Make Your Day Better", views: "2.1M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+animals+make+day+better" },
-                    { title: "Funny Dogs And Cats - Best Of The Week", views: "1.8M", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+funny+dogs+cats" },
-                    { title: "Adorable Pets You Need To See", views: "900K", url: "https://www.youtube.com/results?search_query=Pet+Pop+petpopz+adorable+pets" }
-                ]
-            }
-        ]
+        searchFocus: 'cute animal videos pets'
     },
     tj: {
         id: 'tj',
@@ -229,44 +65,7 @@ const CHANNELS = {
             5: 20  // Friday @ 8pm (Long-form)
         },
         subscribers: 0,
-        searchFocus: 'AI reconstructions African cities historical architecture',
-        competitors: [
-            {
-                name: "SeeNew Africa",
-                note: "AI Visualization of precolonial African Architecture",
-                topContent: [
-                    { title: "AI: Bringing precolonial African Architecture to life", views: "15K", url: "https://www.youtube.com/results?search_query=SeeNew+Africa+AI+African+Architecture" }
-                ]
-            },
-            {
-                name: "African History Fountain",
-                note: "Digital reconstructions of ancient history",
-                topContent: [
-                    { title: "The Algorithm Remembers: AI Says I Know Africa's History", views: "45K", url: "https://www.youtube.com/results?search_query=African+History+Fountain+AI+History" }
-                ]
-            },
-            {
-                name: "Pan-African History",
-                note: "Urban history and civilization depth",
-                topContent: [
-                    { title: "Lost Cities of Ancient Africa", views: "120K", url: "https://www.youtube.com/results?search_query=Pan+African+History+Lost+Cities" }
-                ]
-            },
-            {
-                name: "Ancient African Viz",
-                note: "3D renders of lost African empires",
-                topContent: [
-                    { title: "Timbuktu: A 3D Reconstruction", views: "30K", url: "https://www.youtube.com/results?search_query=Ancient+African+Viz+Timbuktu" }
-                ]
-            },
-            {
-                name: "Historical Africa AI",
-                note: "AI-driven historical face and city reconstructions",
-                topContent: [
-                    { title: "Faces of Ancient African Kings (AI)", views: "200K", url: "https://www.youtube.com/results?search_query=Historical+Africa+AI+Reconstruction" }
-                ]
-            }
-        ]
+        searchFocus: 'AI reconstructions African cities historical architecture'
     }
 };
 
