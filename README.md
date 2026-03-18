@@ -2,7 +2,7 @@
 
 A premium, glassmorphic analytics and content strategy dashboard designed for high-growth YouTube creators. This "Creator OS" helps you track performance, manage multiple channels, brainstorm viral ideas, and monitor competitor intelligence in one sleek interface.
 
-![Dashboard Preview](file:///C:/Users/batzt/.gemini/antigravity/brain/6ee44755-bc34-456a-8d26-dae48a36fdb4/final_premium_ui_preview_1770815743957.webp)
+Dashboard preview image intentionally omitted in this repo copy.
 
 ## ✨ Key Features
 
@@ -36,7 +36,7 @@ A premium, glassmorphic analytics and content strategy dashboard designed for hi
 2.  **Open locally**:
     Simply open `index.html` in your browser.
 3.  **Setup API**:
-    Navigate to the **Settings** tab and enter your YouTube Data API v3 key to enable live syncing.
+    Navigate to the **Settings** tab and add at least one YouTube Data API v3 key to enable live syncing.
 
 ## 🛠️ Tech Stack
 - **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom Properties, Glassmorphism).

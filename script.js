@@ -1,5 +1,6 @@
 // Configuration & Constants
-let API_KEYS = safeJSONParse('yt_tracker_api_keys', ['AIzaSyCxeLcxccx2O5ZZyIPszKM_egCVyZI6HhA']);
+let API_KEYS = safeJSONParse('yt_tracker_api_keys', []);
+if (!Array.isArray(API_KEYS)) API_KEYS = [];
 let currentKeyIndex = parseInt(localStorage.getItem('yt_tracker_current_key_index')) || 0;
 
 function getApiKey() {
@@ -280,6 +281,27 @@ function safeJSONParse(key, fallback) {
     }
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value) {
+    return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function escapeJsSingleQuoted(value) {
+    return String(value ?? '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, ' ')
+        .replace(/\r/g, ' ');
+}
+
 // State Management
 let videos = safeJSONParse('yt_tracker_videos', []);
 let ideas = safeJSONParse('yt_tracker_ideas', []);
@@ -303,8 +325,15 @@ const syncBtn = document.getElementById('sync-youtube-btn');
 const syncStatusEl = document.getElementById('sync-status');
 const themeToggleBtn = document.getElementById('theme-toggle');
 
+function updateHeaderHeightVar() {
+    const header = document.querySelector('.main-header');
+    if (!header) return;
+    document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
+}
+
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    updateHeaderHeightVar();
     initTheme();
     initTabs();
     initForms();
@@ -324,6 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
         calendarDate.setMonth(calendarDate.getMonth() + 1);
         renderCalendar();
     });
+
+    window.addEventListener('resize', updateHeaderHeightVar);
 });
 
 // Theme Logic
@@ -331,6 +362,7 @@ function initTheme() {
     const savedTheme = localStorage.getItem('yt_tracker_theme') || 'dark';
     document.body.className = `${savedTheme}-theme`;
 
+    if (!themeToggleBtn) return;
     themeToggleBtn.addEventListener('click', () => {
         const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -342,6 +374,11 @@ function initTheme() {
 
 // Sync Logic
 async function syncWithYouTube(retryCount = 0) {
+    if (!getApiKey()) {
+        alert('No YouTube API key found. Add one in Settings before syncing.');
+        return;
+    }
+
     // Check for quota backoff
     const quotaBlock = localStorage.getItem('yt_tracker_quota_blocked_until');
     if (quotaBlock && Date.now() < parseInt(quotaBlock)) {
@@ -541,12 +578,12 @@ function initForms() {
         });
     });
 
-    window.onclick = (event) => {
+    window.addEventListener('click', (event) => {
         if (event.target === videoModal) {
             videoModal.classList.remove('active');
             videoForm.reset();
         }
-    };
+    });
     videoForm.addEventListener('submit', (e) => {
         e.preventDefault();
         saveVideo();
@@ -563,9 +600,22 @@ function initForms() {
             ideas = [];
             subsHistory = {};
             Object.keys(CHANNELS).forEach(id => subsHistory[id] = []);
+            Object.keys(CHANNELS).forEach(id => CHANNELS[id].subscribers = 0);
             lastSync = 'Never';
-            localStorage.clear();
+            [
+                'yt_tracker_videos',
+                'yt_tracker_ideas',
+                'yt_tracker_subs_history',
+                'yt_tracker_last_sync',
+                'yt_tracker_last_sync_timestamp',
+                'yt_tracker_quota_blocked_until',
+                'yt_tracker_subs_lpbz',
+                'yt_tracker_subs_ecq',
+                'yt_tracker_subs_tj',
+                'yt_tracker_inspiration'
+            ].forEach(key => localStorage.removeItem(key));
             saveToLocal();
+            localStorage.setItem('yt_tracker_subs_history', JSON.stringify(subsHistory));
             updateSyncStatusDisplay();
             renderAll();
         }
@@ -869,19 +919,25 @@ function renderInspirationFeed() {
             const items = comp.topContent.slice(0, 3);
             items.forEach(item => {
                 const videoUrl = item.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`;
+                const safeTitle = escapeHtml(item.title);
+                const safeViews = escapeHtml(`${item.views}`);
+                const safeCompName = escapeHtml(comp.name);
+                const safeChannelName = escapeHtml(channel.name);
+                const titleArg = escapeJsSingleQuoted(item.title);
+                const compArg = escapeJsSingleQuoted(comp.name);
                 html += `
                     <div class="inspiration-card">
                         <div class="inspiration-card-header">
-                            <h4>${item.title}</h4>
+                            <h4>${safeTitle}</h4>
                         </div>
                         <div class="inspiration-card-meta">
-                            <span class="views-badge">${item.views} views</span>
-                            <span class="inspiration-source">${comp.name}</span>
-                            <span>→ ${channel.name}</span>
+                            <span class="views-badge">${safeViews} views</span>
+                            <span class="inspiration-source">${safeCompName}</span>
+                            <span>→ ${safeChannelName}</span>
                         </div>
                         <div class="inspiration-card-actions">
-                            <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${key}', '${item.title.replace(/'/g, "\\'")}', '${comp.name.replace(/'/g, "\\'")}')">Save as Idea</button>
-                            <a href="${videoUrl}" target="_blank" class="btn btn-sm btn-outline">Watch ↗</a>
+                            <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${key}', '${titleArg}', '${compArg}', event)">Save as Idea</button>
+                            <a href="${escapeAttr(videoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Watch ↗</a>
                         </div>
                     </div>
                 `;
@@ -905,6 +961,11 @@ async function fetchFreshInspirations() {
         targets = [{ key, compName }];
     } else {
         targets = [{ key: filterVal, compName: null }];
+    }
+
+    if (!getApiKey()) {
+        feed.innerHTML = '<p style="color:var(--danger); text-align:center; padding:2rem">No API key configured. Add one in Settings to fetch inspirations.</p>';
+        return;
     }
 
     btn.disabled = true;
@@ -991,21 +1052,23 @@ async function fetchFreshInspirations() {
         if (allResults.length > 0) {
             feed.innerHTML = allResults.map(r => {
                 const viewsFormatted = r.views ? formatViews(r.views) : 'N/A';
+                const titleArg = escapeJsSingleQuoted(r.title);
+                const sourceArg = escapeJsSingleQuoted(r.channelTitle);
                 return `
                 <div class="inspiration-card">
                     <div class="inspiration-card-header">
-                        <img src="${r.thumbnail}" alt="" style="width:120px; height:68px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0">
-                        <h4>${r.title}</h4>
+                        <img src="${escapeAttr(r.thumbnail)}" alt="" style="width:120px; height:68px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0">
+                        <h4>${escapeHtml(r.title)}</h4>
                     </div>
                     <div class="inspiration-card-meta">
-                        <span class="views-badge">${viewsFormatted} views</span>
-                        <span class="inspiration-source">${r.channelTitle}</span>
-                        <span>for ${CHANNELS[r.forChannel].name}</span>
+                        <span class="views-badge">${escapeHtml(viewsFormatted)} views</span>
+                        <span class="inspiration-source">${escapeHtml(r.channelTitle)}</span>
+                        <span>for ${escapeHtml(CHANNELS[r.forChannel].name)}</span>
                         <span>${new Date(r.publishedAt).toLocaleDateString()}</span>
                     </div>
                     <div class="inspiration-card-actions">
-                        <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${r.forChannel}', '${r.title.replace(/'/g, "\\'")}', '${r.channelTitle.replace(/'/g, "\\'")}')">Save as Idea</button>
-                        <a href="https://www.youtube.com/watch?v=${r.videoId}" target="_blank" class="btn btn-sm btn-outline">Watch ↗</a>
+                        <button class="btn btn-sm btn-primary" onclick="saveInspirationAsIdea('${r.forChannel}', '${titleArg}', '${sourceArg}', event)">Save as Idea</button>
+                        <a href="https://www.youtube.com/watch?v=${escapeAttr(r.videoId)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Watch ↗</a>
                     </div>
                 </div>
             `}).join('');
@@ -1025,7 +1088,7 @@ async function fetchFreshInspirations() {
     }
 }
 
-function saveInspirationAsIdea(channelId, title, source) {
+function saveInspirationAsIdea(channelId, title, source, event) {
     const newIdea = {
         id: Date.now().toString(),
         title: `[Inspired] ${title}`,
@@ -1039,7 +1102,7 @@ function saveInspirationAsIdea(channelId, title, source) {
     renderAll();
 
     // Quick feedback
-    const evt = window.event;
+    const evt = event;
     if (evt && evt.target) {
         const btn = evt.target.closest('button') || evt.target;
         const originalText = btn.textContent;
@@ -1129,7 +1192,7 @@ function renderSettings() {
             <div class="channel-setting-info">
                 <strong>${ch.name}</strong>
                 <span>ID: ${ch.channelId}</span>
-                <a href="https://youtube.com/channel/${ch.channelId}" target="_blank" class="visit-channel-link">Visit Channel ↗</a>
+                <a href="https://youtube.com/channel/${escapeAttr(ch.channelId)}" target="_blank" rel="noopener noreferrer" class="visit-channel-link">Visit Channel ↗</a>
             </div>
             <div style="display: flex; gap: 0.5rem">
                 <input type="text" class="channel-setting-input" value="${ch.channelId}" placeholder="New Channel ID" id="input-cid-${key}">
@@ -1859,27 +1922,32 @@ function renderCompetitors(channelId) {
                 <span class="hook-label">High-Performance Hooks:</span>
                 ${comp.topContent.map(hook => {
             const videoUrl = hook.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(hook.title)}`;
+            const safeHookTitle = escapeHtml(hook.title);
+            const safeHookViews = escapeHtml(`${hook.views}`);
+            const hookArg = escapeJsSingleQuoted(hook.title);
             return `
                         <div class="hook-item">
-                            <a href="${videoUrl}" target="_blank" class="hook-title" title="Watch on YouTube">${hook.title}</a>
-                            <span class="hook-views">${hook.views} views</span>
-                            <button class="btn-hook-add" onclick="saveHookToIdea('${channelId}', '${hook.title}')" title="Save hook to Idea Bank">+</button>
+                            <a href="${escapeAttr(videoUrl)}" target="_blank" rel="noopener noreferrer" class="hook-title" title="Watch on YouTube">${safeHookTitle}</a>
+                            <span class="hook-views">${safeHookViews} views</span>
+                            <button class="btn-hook-add" onclick="saveHookToIdea('${channelId}', '${hookArg}')" title="Save hook to Idea Bank">+</button>
                         </div>
                     `;
         }).join('')}
             </div>
         ` : '';
 
+        const compNameArg = escapeJsSingleQuoted(comp.name);
+
         return `
             <div class="competitor-item ${isInspired ? 'inspired' : ''} ${comp.topContent ? 'has-content' : ''}">
                 <div class="comp-main">
                     <div class="comp-info">
-                        <h4>${comp.name}</h4>
-                        <p>${comp.note}</p>
+                        <h4>${escapeHtml(comp.name)}</h4>
+                        <p>${escapeHtml(comp.note)}</p>
                     </div>
                     <div class="comp-actions">
-                        <button class="btn btn-sm btn-outline study-btn" onclick="studyThumbnail('${comp.name}')">Study Thumbnails</button>
-                        <button class="btn-icon" onclick="toggleInspiration('${comp.name}')" title="${isInspired ? 'Remove from Inspiration' : 'Add to Inspiration'}">
+                        <button class="btn btn-sm btn-outline study-btn" onclick="studyThumbnail('${compNameArg}')">Study Thumbnails</button>
+                        <button class="btn-icon" onclick="toggleInspiration('${compNameArg}')" title="${isInspired ? 'Remove from Inspiration' : 'Add to Inspiration'}">
                             <svg viewBox="0 0 24 24" fill="${isInspired ? 'var(--accent)' : 'none'}" stroke="currentColor" stroke-width="2">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
