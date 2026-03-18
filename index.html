@@ -416,6 +416,31 @@
             </div>
         </section>
 
+        <!-- Schedule View -->
+        <section id="tab-schedule" class="tab-content">
+            <div class="summary-section">
+                <h2>Upload Schedule Heatmap</h2>
+                <div class="schedule-alerts" id="schedule-alerts">
+                    <!-- Conflict warnings injected by JS -->
+                </div>
+                <div class="schedule-heatmap card">
+                    <div class="heatmap-header">
+                        <h3>Weekly Upload Schedule</h3>
+                        <p class="heatmap-legend">Color intensity shows activity level. Green = optimal spread.</p>
+                    </div>
+                    <div id="schedule-grid" class="schedule-grid">
+                        <!-- Heatmap injected by JS -->
+                    </div>
+                </div>
+                <div class="schedule-details card">
+                    <h3>Channel Details</h3>
+                    <div id="channel-schedule-details">
+                        <!-- Channel schedule details injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Settings View -->
         <section id="tab-settings" class="tab-content">
             <div class="settings-grid">
@@ -635,6 +660,7 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="schedule-functions.js"></script>
 </body>
 
 </html>
