@@ -769,56 +769,50 @@ async function fetchFreshInspirations() {
 
     btn.disabled = true;
     btn.textContent = '⏳ Fetching...';
-    feed.innerHTML = '<div class="inspiration-loading"><p>Fetching trending videos from competitor channels...</p></div>';
+    feed.innerHTML = '<div class="inspiration-loading"><p>Fetching trending videos based on your channel focus...</p></div>';
 
     try {
         let allResults = [];
 
         for (const { key, compName } of targets) {
             const channel = CHANNELS[key];
-            let selectedComps = [];
 
-            if (compName) {
-                selectedComps = channel.competitors.filter(c => c.name === compName);
-            } else {
-                selectedComps = channel.competitors
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, 3);
+            // Use searchFocus to find related trending videos
+            const queryStr = channel.searchFocus || channel.name;
+            if (!queryStr) {
+                console.warn(`No search focus defined for ${channel.name}`);
+                continue;
             }
 
-            for (const comp of selectedComps) {
-                try {
-                    // Fix: If specific competitor, prioritize their name over searchFocus for broader results
-                    const queryStr = compName ? comp.name : `${comp.name} ${channel.searchFocus || ''}`;
-                    const query = encodeURIComponent(queryStr);
+            try {
+                const query = encodeURIComponent(queryStr);
 
-                    const res = await fetch(
-                        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=5&key=${getApiKey()}`
-                    );
-                    const data = await res.json();
+                const res = await fetch(
+                    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=15&key=${getApiKey()}`
+                );
+                const data = await res.json();
 
-                    if (data.error) {
-                        throw new Error(data.error.message || 'YouTube API error');
-                    }
+                if (data.error) {
+                    throw new Error(data.error.message || 'YouTube API error');
+                }
 
-                    if (data.items) {
-                        data.items.forEach(item => {
-                            allResults.push({
-                                title: item.snippet.title,
-                                channelTitle: item.snippet.channelTitle,
-                                thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
-                                videoId: item.id.videoId,
-                                publishedAt: item.snippet.publishedAt,
-                                forChannel: key,
-                                source: comp.name
-                            });
+                if (data.items) {
+                    data.items.forEach(item => {
+                        allResults.push({
+                            title: item.snippet.title,
+                            channelTitle: item.snippet.channelTitle,
+                            thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+                            videoId: item.id.videoId,
+                            publishedAt: item.snippet.publishedAt,
+                            forChannel: key,
+                            source: `Trending in: ${queryStr}`
                         });
-                    }
-                } catch (err) {
-                    console.warn(`Failed to fetch for ${comp.name}:`, err);
-                    if (err.message.includes('quota') || err.message.includes('key')) {
-                        throw err; // Escalate quota/key errors
-                    }
+                    });
+                }
+            } catch (err) {
+                console.warn(`Failed to fetch for ${channel.name}:`, err);
+                if (err.message.includes('quota') || err.message.includes('key')) {
+                    throw err; // Escalate quota/key errors
                 }
             }
         }
