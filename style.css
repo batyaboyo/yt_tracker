@@ -723,7 +723,8 @@ tr:hover td {
 }
 
 .type-short-prayer,
-.type-short {
+.type-short,
+.type-shorts {
     border-color: var(--ecq-primary);
     color: var(--ecq-primary);
 }
