@@ -24,7 +24,7 @@ const CHANNELS = {
         niche: 'Daily prayer and biblical teachings',
         targetPerWeek: 2,
         targetSubscribers: 50000,
-        types: ['Short Prayer', 'Long-form'],
+        types: ['Shorts', 'Long-form'],
         schedule: 'Wednesday @ 10pm & Friday @ 8pm EAT',
         color: '#818cf8',
         uploadDays: [3, 5],
@@ -313,8 +313,8 @@ function detectVideoType(channelKey, item) {
     const isShortDuration = duration.includes('S') && !duration.includes('M') && !duration.includes('H') && parseInt(duration.match(/PT(\d+)S/)?.[1] || 0) < 60;
 
     if (channelKey === 'lpbz') {
-        if (title.includes('prayer')) return 'Short Prayer';
-        if (isShortDuration || title.includes('short')) return 'Short Prayer';
+        if (title.includes('prayer')) return 'Shorts';
+        if (isShortDuration || title.includes('short')) return 'Shorts';
         return 'Long-form';
     } else if (channelKey === 'tj' || channelKey === 'ecq') {
         if (isShortDuration || title.includes('#shorts') || title.includes('short')) return 'Short';
