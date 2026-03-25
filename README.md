@@ -20,7 +20,7 @@ Dashboard preview image intentionally omitted in this repo copy.
 ### 💡 Creator Workflow Tools
 - **Idea Bank**: A dedicated brainstorming sandbox to capture and promote viral concepts.
 - **Production Checklists**: Track SEO, Thumbnail, and Description readiness for every planned upload.
-- **Multi-Channel Management**: Seamlessly toggle between distinct channel strategies (e.g., L-P-B-Z and Epic Cute Quests).
+- **Multi-Channel Management**: Seamlessly toggle between distinct channel strategies (e.g., L-P-B-Z and Tozz Jerry).
 
 ### ⚙️ Management & Portability
 - **YouTube API Integration**: One-click sync to pull live subscriber counts and video metadata.
