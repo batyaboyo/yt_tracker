@@ -35,24 +35,6 @@ const CHANNELS = {
         subscribers: 0,
         searchFocus: 'prayer motivation devotional bible faith'
     },
-    ecq: {
-        id: 'ecq',
-        channelId: localStorage.getItem('yt_tracker_cid_ecq') || 'UC9xco5rz9PCBTp8uEF7IbGg',
-        name: 'Epic Cute Quests',
-        niche: 'Rescued pets and cute animal adventures',
-        targetPerWeek: 2,
-        targetSubscribers: 100000,
-        types: ['Short', 'Long-form'],
-        schedule: 'Wednesday @ 10pm & Friday @ 8pm EAT',
-        color: '#f472b6',
-        uploadDays: [3, 5],
-        scheduleDetails: {
-            3: 22, // Wednesday @ 10pm
-            5: 20  // Friday @ 8pm
-        },
-        subscribers: 0,
-        searchFocus: 'cute animal videos pets'
-    },
     tj: {
         id: 'tj',
         channelId: localStorage.getItem('yt_tracker_cid_tj') || 'UCtIova4flqS4LBtA5hQ8o5w',
@@ -108,7 +90,7 @@ function escapeJsSingleQuoted(value) {
 // State Management
 let videos = safeJSONParse('yt_tracker_videos', []);
 let ideas = safeJSONParse('yt_tracker_ideas', []);
-let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], ecq: [], tj: [] });
+let subsHistory = safeJSONParse('yt_tracker_subs_history', { lpbz: [], tj: [] });
 let activeTab = 'dashboard';
 let lastSync = localStorage.getItem('yt_tracker_last_sync') || 'Never';
 let inspirationSources = safeJSONParse('yt_tracker_inspiration', []);
@@ -316,7 +298,7 @@ function detectVideoType(channelKey, item) {
         if (title.includes('prayer')) return 'Shorts';
         if (isShortDuration || title.includes('short')) return 'Shorts';
         return 'Long-form';
-    } else if (channelKey === 'tj' || channelKey === 'ecq') {
+    } else if (channelKey === 'tj') {
         if (isShortDuration || title.includes('#shorts') || title.includes('short')) return 'Short';
         return 'Long-form';
     } else {
@@ -413,7 +395,6 @@ function initForms() {
                 'yt_tracker_last_sync_timestamp',
                 'yt_tracker_quota_blocked_until',
                 'yt_tracker_subs_lpbz',
-                'yt_tracker_subs_ecq',
                 'yt_tracker_subs_tj',
                 'yt_tracker_inspiration'
             ].forEach(key => localStorage.removeItem(key));
@@ -1014,7 +995,6 @@ function exportData() {
         apiKeys: API_KEYS,
         settings: {
             lpbz_id: CHANNELS.lpbz.channelId,
-            ecq_id: CHANNELS.ecq.channelId,
             tj_id: CHANNELS.tj.channelId,
             lastSync: lastSync,
             theme: localStorage.getItem('yt_tracker_theme') || 'dark'
@@ -1040,7 +1020,7 @@ function importData(e) {
             if (data.videos) {
                 videos = data.videos;
                 ideas = data.ideas || [];
-                subsHistory = data.subsHistory || { lpbz: [], ecq: [], tj: [] };
+                subsHistory = data.subsHistory || { lpbz: [], tj: [] };
                 saveToLocal();
                 if (data.apiKeys && Array.isArray(data.apiKeys)) {
                     API_KEYS = data.apiKeys;
@@ -1052,7 +1032,6 @@ function importData(e) {
                 }
                 if (data.settings) {
                     if (data.settings.lpbz_id) localStorage.setItem('yt_tracker_cid_lpbz', data.settings.lpbz_id);
-                    if (data.settings.ecq_id) localStorage.setItem('yt_tracker_cid_ecq', data.settings.ecq_id);
                     if (data.settings.tj_id) localStorage.setItem('yt_tracker_cid_tj', data.settings.tj_id);
                     if (data.settings.theme) localStorage.setItem('yt_tracker_theme', data.settings.theme);
                 }

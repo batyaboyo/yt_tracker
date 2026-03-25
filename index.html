@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YT Channel Management Dashboard</title>
     <meta name="description"
-        content="Dashboard for tracking YouTube channel metrics, ideas, and production schedules for Lets Pray & Bible Zone and Epic Cute Quests.">
+        content="Dashboard for tracking YouTube channel metrics, ideas, and production schedules for Lets Pray & Bible Zone and Tozz Jerry.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +55,6 @@
         <div class="container nav-container">
             <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
             <button class="nav-btn" data-tab="lpbz">Lets Pray & Bible Zone</button>
-            <button class="nav-btn" data-tab="ecq">Epic Cute Quests</button>
             <button class="nav-btn" data-tab="tj">Tozz Jerry</button>
             <button class="nav-btn" data-tab="idea-bank">Idea Bank</button>
             <button class="nav-btn" data-tab="schedule">Upload Schedule</button>
@@ -71,9 +70,6 @@
                 <h2>Overview</h2>
                 <div class="dashboard-grid">
                     <div id="card-lpbz" class="channel-card lpbz-theme">
-                        <!-- Content injected by JS -->
-                    </div>
-                    <div id="card-ecq" class="channel-card ecq-theme">
                         <!-- Content injected by JS -->
                     </div>
                     <div id="card-tj" class="channel-card tj-theme">
@@ -194,99 +190,6 @@
             </div>
         </section>
 
-        <section id="tab-ecq" class="tab-content channel-management ecq-theme">
-            <div class="management-header">
-                <h2>Epic Cute Quests</h2>
-                <button class="btn btn-primary add-video-btn" data-channel="ecq">+ Video Idea</button>
-            </div>
-
-            <div class="stats-row" id="ecq-stats">
-                <!-- Stats injected by JS -->
-            </div>
-
-            <div class="chart-section card">
-                <h3>Views Trend</h3>
-                <div class="chart-container">
-                    <canvas id="ecq-chart"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-section card">
-                <h3>Subscriber Trend</h3>
-                <div class="chart-container">
-                    <canvas id="ecq-subs-chart"></canvas>
-                </div>
-            </div>
-
-            <div class="production-section card">
-                <h3>In Production (Planned)</h3>
-                <div id="ecq-production" class="production-list">
-                    <!-- Planned videos injected by JS -->
-                </div>
-            </div>
-
-            <div class="intelligence-section card">
-                <h3>Creator Intelligence</h3>
-                <div id="ecq-intelligence" class="intelligence-grid">
-                    <!-- Intelligence injected by JS -->
-                </div>
-            </div>
-
-            <div class="strategy-section card ecq-theme">
-                <div class="management-header">
-                    <h3>AI Content Strategist</h3>
-                    <span class="status-tag status-live">Active Analysis</span>
-                </div>
-                <div id="ecq-strategy" class="strategy-content">
-                    <!-- Advice injected by JS -->
-                </div>
-            </div>
-
-            <div class="competitor-section card">
-                <div class="management-header">
-                    <h3>Competitor Watch</h3>
-                    <span class="status-tag status-planned">Benchmarking</span>
-                </div>
-                <p class="text-muted-desc">Top benchmark channels in the Cozy & Wholesome
-                    Pets & Animals niche to observe for inspiration and trends.</p>
-                <div id="ecq-competitors" class="competitor-grid">
-                    <!-- Competitors injected by JS -->
-                </div>
-            </div>
-
-            <div class="management-grid">
-                <div class="history-section">
-                    <h3>Upload History</h3>
-                    <div class="table-container">
-                        <table id="ecq-history">
-                            <thead>
-                                <tr>
-                                    <th>Thumb</th>
-                                    <th>Title</th>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Views</th>
-                                    <th>Status</th>
-                                    <th>Likes</th>
-                                    <th>Comm</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="breakdown-section">
-                    <h3>Content Breakdown</h3>
-                    <div id="ecq-breakdown" class="breakdown-chart">
-                        <!-- Breakdown injected by JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section id="tab-tj" class="tab-content channel-management tj-theme">
             <div class="management-header">
                 <h2>Tozz Jerry</h2>
@@ -399,7 +302,6 @@
                             <select id="inspiration-channel-filter" class="inspiration-filter" title="Filter by channel">
                                 <option value="all">All Channels</option>
                                 <option value="lpbz">Lets Pray & Bible Zone</option>
-                                <option value="ecq">Epic Cute Quests</option>
                                 <option value="tj">Tozz Jerry</option>
                             </select>
                             <button id="fetch-fresh-ideas" class="btn btn-primary btn-sm">🔄 Fetch Fresh Ideas</button>
@@ -530,10 +432,6 @@
                 <button class="channel-pick-btn lpbz-pick" data-channel="lpbz">
                     <span class="channel-pick-icon">🙏</span>
                     <span>Lets Pray & Bible Zone</span>
-                </button>
-                <button class="channel-pick-btn ecq-pick" data-channel="ecq">
-                    <span class="channel-pick-icon">🐾</span>
-                    <span>Epic Cute Quests</span>
                 </button>
                 <button class="channel-pick-btn tj-pick" data-channel="tj">
                     <span class="channel-pick-icon">🎮</span>
