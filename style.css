@@ -796,6 +796,14 @@ tr:hover td {
     width: auto !important;
 }
 
+.strict-prayer-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    white-space: nowrap;
+}
+
 /* Card overrides for sections */
 .card {
     background: var(--bg-card);

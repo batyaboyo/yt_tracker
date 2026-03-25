@@ -33,7 +33,7 @@ const CHANNELS = {
             5: 20  // Friday @ 8pm
         },
         subscribers: 0,
-        searchFocus: 'prayer motivation devotional bible faith'
+        searchFocus: 'daily prayer powerful prayer morning prayer night prayer'
     },
     tj: {
         id: 'tj',
@@ -56,9 +56,15 @@ const CHANNELS = {
 };
 
 const CHANNEL_IDS = new Set(Object.keys(CHANNELS));
+const REMOVED_CHANNEL_IDS = new Set(['ecq']);
+const REMOVED_BRAND_PATTERN = /epic\s*cute\s*quests?/i;
 
 function hasValidChannel(channelId) {
     return CHANNEL_IDS.has(channelId);
+}
+
+function hasRemovedBrandText(...values) {
+    return values.some(value => REMOVED_BRAND_PATTERN.test(String(value ?? '')));
 }
 
 // Helper for safe JSON parsing
@@ -93,6 +99,51 @@ function escapeJsSingleQuoted(value) {
         .replace(/\r/g, ' ');
 }
 
+function isPrayerContent(...values) {
+    const text = values.map(v => String(v ?? '')).join(' ').toLowerCase();
+    return /\b(prayer|prayers|pray|praying|intercession|supplication)\b/.test(text);
+}
+
+function isStrictPrayerTitle(title) {
+    return /\bprayer\b/i.test(String(title ?? ''));
+}
+
+function getStrictPrayerMode() {
+    const saved = localStorage.getItem('yt_tracker_lpbz_strict_prayer_mode');
+    if (saved === null) return true;
+    return saved === 'true';
+}
+
+function isLpbzInspirationMatch(itemTitle, ...extraValues) {
+    return getStrictPrayerMode()
+        ? isStrictPrayerTitle(itemTitle)
+        : isPrayerContent(itemTitle, ...extraValues);
+}
+
+const PRAYER_QUERY_VARIANTS = [
+    'daily prayer',
+    'morning prayer',
+    'night prayer',
+    'powerful prayer',
+    'prayer for breakthrough',
+    'healing prayer',
+    'prayer and worship',
+    'short prayer message'
+];
+
+function shuffleArray(items) {
+    const arr = [...items];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function pickRandomUnique(items, count) {
+    return shuffleArray(items).slice(0, Math.min(count, items.length));
+}
+
 // State Management
 let videos = safeJSONParse('yt_tracker_videos', []);
 let ideas = safeJSONParse('yt_tracker_ideas', []);
@@ -109,8 +160,38 @@ function normalizeStoredData() {
     if (!Array.isArray(ideas)) ideas = [];
     if (!subsHistory || typeof subsHistory !== 'object') subsHistory = {};
 
-    videos = videos.filter(v => hasValidChannel(v?.channelId));
-    ideas = ideas.filter(i => hasValidChannel(i?.channelId));
+    // Purge legacy keys and values that may keep removed channel content visible.
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        if (REMOVED_CHANNEL_IDS.has(key.replace(/^yt_tracker_(cid_|subs_)?/, ''))) {
+            localStorage.removeItem(key);
+            continue;
+        }
+        if (/ecq/i.test(key)) {
+            localStorage.removeItem(key);
+            continue;
+        }
+        const raw = localStorage.getItem(key);
+        if (raw && REMOVED_BRAND_PATTERN.test(raw)) {
+            localStorage.removeItem(key);
+        }
+    }
+
+    videos = videos.filter(v => {
+        if (!hasValidChannel(v?.channelId)) return false;
+        if (REMOVED_CHANNEL_IDS.has(String(v?.channelId || '').toLowerCase())) return false;
+        return !hasRemovedBrandText(v?.title, v?.notes, v?.series);
+    });
+
+    ideas = ideas.filter(i => {
+        if (!hasValidChannel(i?.channelId)) return false;
+        if (REMOVED_CHANNEL_IDS.has(String(i?.channelId || '').toLowerCase())) return false;
+        return !hasRemovedBrandText(i?.title, i?.description);
+    });
+
+    if (!Array.isArray(inspirationSources)) inspirationSources = [];
+    inspirationSources = inspirationSources.filter(name => !hasRemovedBrandText(name));
 
     const normalizedHistory = {};
     Object.keys(CHANNELS).forEach(channelId => {
@@ -674,10 +755,18 @@ function formatViews(num) {
 function initInspirationFeed() {
     const fetchBtn = document.getElementById('fetch-fresh-ideas');
     const filter = document.getElementById('inspiration-channel-filter');
+    const strictPrayerMode = document.getElementById('strict-prayer-mode');
 
     if (filter) {
         populateInspirationFilter();
         filter.addEventListener('change', renderInspirationFeed);
+    }
+    if (strictPrayerMode) {
+        strictPrayerMode.checked = getStrictPrayerMode();
+        strictPrayerMode.addEventListener('change', (e) => {
+            localStorage.setItem('yt_tracker_lpbz_strict_prayer_mode', String(e.target.checked));
+            renderInspirationFeed();
+        });
     }
     if (fetchBtn) {
         fetchBtn.addEventListener('click', fetchFreshInspirations);
@@ -732,7 +821,9 @@ function renderInspirationFeed() {
 
         competitors.forEach(comp => {
             if (!comp.topContent) return;
-            const items = comp.topContent.slice(0, 3);
+            const items = comp.topContent
+                .filter(item => key !== 'lpbz' || isLpbzInspirationMatch(item.title, comp.name, item.views))
+                .slice(0, 3);
             items.forEach(item => {
                 const videoUrl = item.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`;
                 const safeTitle = escapeHtml(item.title);
@@ -790,6 +881,7 @@ async function fetchFreshInspirations() {
 
     try {
         let allResults = [];
+        const seenVideoIds = new Set();
 
         for (const { key, compName } of targets) {
             const channel = CHANNELS[key];
@@ -803,29 +895,46 @@ async function fetchFreshInspirations() {
             }
 
             try {
-                const query = encodeURIComponent(queryStr);
+                const queries = key === 'lpbz'
+                    ? pickRandomUnique(PRAYER_QUERY_VARIANTS, 3)
+                    : [queryStr];
 
-                const res = await fetch(
-                    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=viewCount&maxResults=15&key=${getApiKey()}`
-                );
-                const data = await res.json();
+                for (const q of queries) {
+                    const query = encodeURIComponent(q);
+                    let endpoint = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&order=${key === 'lpbz' ? 'date' : 'viewCount'}&maxResults=15&key=${getApiKey()}`;
 
-                if (data.error) {
-                    throw new Error(data.error.message || 'YouTube API error');
-                }
+                    // Keep L-P-B-Z results fresh (last 30 days) to reduce repeated evergreen items.
+                    if (key === 'lpbz') {
+                        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+                        endpoint += `&publishedAfter=${encodeURIComponent(thirtyDaysAgo)}`;
+                    }
 
-                if (data.items) {
-                    data.items.forEach(item => {
-                        allResults.push({
-                            title: item.snippet.title,
-                            channelTitle: item.snippet.channelTitle,
-                            thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
-                            videoId: item.id.videoId,
-                            publishedAt: item.snippet.publishedAt,
-                            forChannel: key,
-                            source: `Trending in: ${queryStr}`
+                    const res = await fetch(endpoint);
+                    const data = await res.json();
+
+                    if (data.error) {
+                        throw new Error(data.error.message || 'YouTube API error');
+                    }
+
+                    if (data.items) {
+                        data.items.forEach(item => {
+                            const videoId = item?.id?.videoId;
+                            if (!videoId || seenVideoIds.has(videoId)) return;
+                            if (key === 'lpbz' && !isLpbzInspirationMatch(item.snippet.title, item.snippet.description, item.snippet.channelTitle)) {
+                                return;
+                            }
+                            seenVideoIds.add(videoId);
+                            allResults.push({
+                                title: item.snippet.title,
+                                channelTitle: item.snippet.channelTitle,
+                                thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+                                videoId: videoId,
+                                publishedAt: item.snippet.publishedAt,
+                                forChannel: key,
+                                source: `Trending in: ${q}`
+                            });
                         });
-                    });
+                    }
                 }
             } catch (err) {
                 console.warn(`Failed to fetch for ${channel.name}:`, err);
@@ -858,6 +967,11 @@ async function fetchFreshInspirations() {
             } catch (err) {
                 console.warn('Failed to fetch video stats:', err);
             }
+        }
+
+        // For prayer channel requests, shuffle the ranked set so repeated fetches are less repetitive.
+        if (targets.length === 1 && targets[0].key === 'lpbz') {
+            allResults = shuffleArray(allResults);
         }
 
         if (allResults.length > 0) {
@@ -934,6 +1048,7 @@ function saveToLocal() {
     localStorage.setItem('yt_tracker_videos', JSON.stringify(videos));
     localStorage.setItem('yt_tracker_ideas', JSON.stringify(ideas));
     localStorage.setItem('yt_tracker_subs_history', JSON.stringify(subsHistory));
+    localStorage.setItem('yt_tracker_inspiration', JSON.stringify(inspirationSources));
 }
 
 // Settings Logic
@@ -1122,7 +1237,21 @@ function renderGlobalStats() {
 
 function renderDashboard() {
     Object.keys(CHANNELS).forEach(channelId => {
-        renderChannelCard(channelId, videos.filter(v => v.channelId === channelId));
+        try {
+            const channelVideos = videos.filter(v => v.channelId === channelId);
+            renderChannelCard(channelId, channelVideos);
+        } catch (err) {
+            console.error(`Failed to render channel card for ${channelId}:`, err);
+            const card = document.getElementById(`card-${channelId}`);
+            if (!card) return;
+            const ch = CHANNELS[channelId];
+            card.innerHTML = `
+                <h3>${escapeHtml(ch?.name || channelId)}</h3>
+                <div class="channel-card-stat"><span>Subscribers</span><span>${(ch?.subscribers || 0).toLocaleString()}</span></div>
+                <div class="channel-card-stat"><span>Weekly Goal</span><span>${escapeHtml(ch?.schedule || 'Not set')}</span></div>
+                <div class="channel-card-stat"><span>Status</span><span>Available</span></div>
+            `;
+        }
     });
 
     // Idea Bank
@@ -1200,6 +1329,7 @@ function renderIdeaBank() {
 function renderChannelCard(channelId, channelVideos) {
     const channel = CHANNELS[channelId];
     const card = document.getElementById(`card-${channelId}`);
+    if (!channel || !card) return;
     const nextUploadText = getNextUploadInfo(channelId);
 
     card.innerHTML = `
