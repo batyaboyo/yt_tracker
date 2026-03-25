@@ -55,6 +55,12 @@ const CHANNELS = {
     }
 };
 
+const CHANNEL_IDS = new Set(Object.keys(CHANNELS));
+
+function hasValidChannel(channelId) {
+    return CHANNEL_IDS.has(channelId);
+}
+
 // Helper for safe JSON parsing
 function safeJSONParse(key, fallback) {
     try {
@@ -98,6 +104,21 @@ let charts = {};
 let subsCharts = {}; // Track sub growth charts
 let calendarDate = new Date();
 
+function normalizeStoredData() {
+    if (!Array.isArray(videos)) videos = [];
+    if (!Array.isArray(ideas)) ideas = [];
+    if (!subsHistory || typeof subsHistory !== 'object') subsHistory = {};
+
+    videos = videos.filter(v => hasValidChannel(v?.channelId));
+    ideas = ideas.filter(i => hasValidChannel(i?.channelId));
+
+    const normalizedHistory = {};
+    Object.keys(CHANNELS).forEach(channelId => {
+        normalizedHistory[channelId] = Array.isArray(subsHistory[channelId]) ? subsHistory[channelId] : [];
+    });
+    subsHistory = normalizedHistory;
+}
+
 // DOM Elements
 const tabs = document.querySelectorAll('.nav-btn');
 const tabContents = document.querySelectorAll('.tab-content');
@@ -118,6 +139,8 @@ function updateHeaderHeightVar() {
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    normalizeStoredData();
+    saveToLocal();
     updateHeaderHeightVar();
     initTheme();
     initTabs();
@@ -409,6 +432,10 @@ function initForms() {
 
 function openModal(channelId, videoId = null, ideaData = null, isIdeaMode = false, prefillDate = null) {
     const channel = CHANNELS[channelId];
+    if (!channel) {
+        alert('This channel is no longer available.');
+        return;
+    }
     videoForm.reset();
 
     let titleText = 'Video Idea';
@@ -615,6 +642,13 @@ function initIdeaBank() {
 function promoteIdea(id) {
     const idea = ideas.find(i => i.id === id);
     if (idea) {
+        if (!hasValidChannel(idea.channelId)) {
+            alert('This idea belongs to a removed channel and cannot be promoted.');
+            ideas = ideas.filter(i => i.id !== id);
+            saveToLocal();
+            renderAll();
+            return;
+        }
         openModal(idea.channelId, null, idea);
         // Remove idea after promotion (optional, or keep it until saved)
         // ideas = ideas.filter(i => i.id !== id);
@@ -691,9 +725,10 @@ function renderInspirationFeed() {
     let html = '';
     targets.forEach(({ key, compName }) => {
         const channel = CHANNELS[key];
+        if (!channel) return;
         const competitors = compName
-            ? channel.competitors.filter(c => c.name === compName)
-            : channel.competitors;
+            ? (channel.competitors || []).filter(c => c.name === compName)
+            : (channel.competitors || []);
 
         competitors.forEach(comp => {
             if (!comp.topContent) return;
@@ -758,6 +793,7 @@ async function fetchFreshInspirations() {
 
         for (const { key, compName } of targets) {
             const channel = CHANNELS[key];
+            if (!channel) continue;
 
             // Use searchFocus to find related trending videos
             const queryStr = channel.searchFocus || channel.name;
@@ -864,6 +900,10 @@ async function fetchFreshInspirations() {
 }
 
 function saveInspirationAsIdea(channelId, title, source, event) {
+    if (!hasValidChannel(channelId)) {
+        alert('This channel is no longer available.');
+        return;
+    }
     const newIdea = {
         id: Date.now().toString(),
         title: `[Inspired] ${title}`,
@@ -893,6 +933,7 @@ function saveInspirationAsIdea(channelId, title, source, event) {
 function saveToLocal() {
     localStorage.setItem('yt_tracker_videos', JSON.stringify(videos));
     localStorage.setItem('yt_tracker_ideas', JSON.stringify(ideas));
+    localStorage.setItem('yt_tracker_subs_history', JSON.stringify(subsHistory));
 }
 
 // Settings Logic
@@ -1021,6 +1062,7 @@ function importData(e) {
                 videos = data.videos;
                 ideas = data.ideas || [];
                 subsHistory = data.subsHistory || { lpbz: [], tj: [] };
+                normalizeStoredData();
                 saveToLocal();
                 if (data.apiKeys && Array.isArray(data.apiKeys)) {
                     API_KEYS = data.apiKeys;
@@ -1089,7 +1131,7 @@ function renderDashboard() {
         ideaList.innerHTML = ideas.map(idea => `
             <div class="idea-item idea-${idea.channelId}">
                 <div>
-                    <span class="status-tag status-planned" style="margin-bottom:0.5rem">${CHANNELS[idea.channelId].name}</span>
+                    <span class="status-tag status-planned" style="margin-bottom:0.5rem">${escapeHtml(CHANNELS[idea.channelId]?.name || 'Unknown Channel')}</span>
                     <h4>${idea.title}</h4>
                     <p>${idea.description || 'No description provided.'}</p>
                 </div>
@@ -1823,7 +1865,7 @@ function renderCalendar() {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const dayOfWeek = new Date(year, month, d).getDay();
 
-        const dayVideos = videos.filter(v => v.date === dateStr);
+        const dayVideos = videos.filter(v => v.date === dateStr && hasValidChannel(v.channelId));
 
         // Check if this day is a scheduled upload day for any channel
         const scheduledChannels = Object.entries(CHANNELS)
